@@ -90,3 +90,61 @@ export const sectionTwo: HomepageSectionTwo = {
     },
   ],
 };
+
+export type HomepageSectionThreeVisual = {
+  title: string;
+  image: { src: string; alt: string };
+};
+
+export type HomepageSectionThreeFirstVisual = HomepageSectionThreeVisual & {
+  paragraphs: string[];
+  cta: { label: string; href: string };
+};
+
+export type HomepageSectionThreeSecondVisual = HomepageSectionThreeVisual & {
+  intro: string;
+  highlights: string[];
+  footerPrefix: string;
+  footerAccent: string;
+  footerSuffix: string;
+};
+
+export type HomepageSectionThree = {
+  visuals: [HomepageSectionThreeFirstVisual, HomepageSectionThreeSecondVisual];
+};
+
+export const sectionThree: HomepageSectionThree = {
+  visuals: [
+    {
+      title: "We Make Your Pets Happy and Healthy",
+      paragraphs: [
+        "We are a small firm with 15 dedicated employees that provide all kinds of pet care services in New York.",
+        "We know how much you adore your pet and care about it with all our attention and love for animals.",
+        "Our dedicated team of vets, groomers, pet sitters and other specialists will provide all kinds of services and look after your pet. We find an approach to every animal. You can rest assured that your fluffy family member will stay healthy and happy.",
+      ],
+      cta: { label: "More About Us", href: "/services" },
+      image: {
+        src: "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=1200&q=80",
+        alt: "White dog smiling on a pink background",
+      },
+    },
+    {
+      title: "Why You Need Our Help",
+      intro: "You may be out for a while or too busy to give your pet the care it deserves, and our services will come in handy:",
+      highlights: [
+        "You will be sure your pet is eating the right food;",
+        "Our staff will make sure your pet is healthy;",
+        "We take your dogs for a walk on schedule;",
+        "No need to ask your friends to stay with your pet;",
+        "We'll give your pets a bath and groom them on time.",
+      ],
+      footerPrefix: "We can provide",
+      footerAccent: "one-time or regular",
+      footerSuffix: "care for your pet.",
+      image: {
+        src: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=1200&q=80",
+        alt: "Rabbit on a blue background",
+      },
+    },
+  ],
+};

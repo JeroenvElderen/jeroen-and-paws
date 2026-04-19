@@ -75,7 +75,7 @@ export function SectionTwoServices() {
   const visibleCards = useMemo(() => getVisibleCards(sectionTwo.cards, startIndex, 4), [startIndex]);
 
   return (
-    <section className="bg-[#f7f1eb] px-6 py-16 sm:px-10 lg:px-12">
+    <section className="px-6 py-16 sm:px-10 lg:px-12">
       <div className="mx-auto mb-8 flex w-full max-w-6xl items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7e869f]">Tailored services</p>
