@@ -6,11 +6,11 @@ export function SiteMenu() {
   return (
     <header className="px-6 pt-8 sm:px-10 lg:px-12">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6">
-        <Link href="/" className="flex items-center gap-2 text-[#15277a]">
+        <Link href="/" className="flex items-center gap-2 text-[#2b145e]">
           <span className="text-3xl leading-none">♡</span>
           <div>
             <p className="text-4xl font-extrabold leading-none">Best.Pet</p>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#4f5d95]">Safe and caring hands</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6f5aa1]">Safe and caring hands</p>
           </div>
         </Link>
 
@@ -27,7 +27,7 @@ export function SiteMenu() {
             <Link
               key={item.label}
               href={item.href}
-              className="flex h-8 min-w-8 items-center justify-center rounded-full bg-accent px-2 text-xs font-bold uppercase text-accent-foreground shadow-[0_10px_18px_rgba(255,103,56,0.22)]"
+              className="flex h-8 min-w-8 items-center justify-center rounded-full bg-accent px-2 text-xs font-bold uppercase text-accent-foreground shadow-[0_10px_18px_rgba(124,58,237,0.3)]"
             >
               {item.label}
             </Link>
