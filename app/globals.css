@@ -123,10 +123,21 @@
   }
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
+    background-color: #090512;
     background-image:
-      radial-gradient(circle at 8% 10%, rgba(189, 117, 255, 0.24) 0%, transparent 35%),
-      radial-gradient(circle at 88% 16%, rgba(143, 92, 220, 0.22) 0%, transparent 40%),
-      radial-gradient(circle at 50% 100%, rgba(90, 44, 170, 0.2) 0%, transparent 48%);
+      radial-gradient(circle at 12% 12%, rgba(199, 140, 255, 0.3) 0%, transparent 28%),
+      radial-gradient(circle at 84% 14%, rgba(146, 92, 227, 0.26) 0%, transparent 34%),
+      radial-gradient(circle at 52% 78%, rgba(109, 58, 194, 0.2) 0%, transparent 44%),
+      linear-gradient(160deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 36%),
+      repeating-linear-gradient(
+        115deg,
+        rgba(255, 255, 255, 0.018) 0,
+        rgba(255, 255, 255, 0.018) 1px,
+        transparent 1px,
+        transparent 24px
+      );
+    background-attachment: fixed;
   }
   html {
     @apply font-sans;
@@ -138,9 +149,9 @@
   .premium-shell {
     @apply relative overflow-x-clip;
     background-image:
-      radial-gradient(circle at 6% 6%, rgba(189, 117, 255, 0.18) 0%, transparent 33%),
-      radial-gradient(circle at 94% 12%, rgba(130, 72, 213, 0.16) 0%, transparent 38%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
+      radial-gradient(circle at 4% 4%, rgba(199, 140, 255, 0.16) 0%, transparent 32%),
+      radial-gradient(circle at 92% 10%, rgba(130, 72, 213, 0.14) 0%, transparent 36%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.024) 0%, rgba(255, 255, 255, 0) 100%);
   }
 
   .premium-section {
