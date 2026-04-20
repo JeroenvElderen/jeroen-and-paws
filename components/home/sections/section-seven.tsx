@@ -17,7 +17,7 @@ export function SectionSevenContact() {
               const Icon = item.icon === "map" ? MapPin : item.icon === "hours" ? Clock3 : PhoneCall;
 
               return (
-                <article key={item.title} className="flex gap-4 rounded-3xl border border-white/20 bg-[#2a1b46]/70 p-5 sm:gap-5">
+                <article key={item.title} className="dynamic-band flex gap-4 sm:gap-5">
                   <div
                     className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full"
                     style={{ backgroundColor: item.iconColor }}
@@ -40,7 +40,7 @@ export function SectionSevenContact() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-white/20 bg-[#24183d] px-7 py-10 shadow-[0_22px_55px_rgba(0,0,0,0.35)] sm:px-10">
+        <div className="dynamic-band px-7 py-10 sm:px-10">
           <form className="space-y-6" aria-label="Contact request form">
             {sectionSeven.formFields.map((field) => (
               <div key={field.name} className="relative">

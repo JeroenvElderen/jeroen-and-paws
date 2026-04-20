@@ -207,4 +207,31 @@
     mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
     opacity: 0.14;
   }
+
+  .dynamic-band {
+    @apply relative overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(140deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.02)_46%,rgba(255,255,255,0.03)_100%)] p-5 sm:p-7;
+    box-shadow: 0 20px 58px rgba(0, 0, 0, 0.24);
+  }
+
+  .dynamic-band::before {
+    content: "";
+    position: absolute;
+    inset: auto -30% -65% auto;
+    width: 20rem;
+    height: 20rem;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(255, 116, 179, 0.22) 0%, rgba(255, 116, 179, 0) 72%);
+    pointer-events: none;
+  }
+
+  .dynamic-band::after {
+    content: "";
+    position: absolute;
+    inset: -70% auto auto -22%;
+    width: 18rem;
+    height: 18rem;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(143, 99, 255, 0.22) 0%, rgba(143, 99, 255, 0) 74%);
+    pointer-events: none;
+  }
 }
