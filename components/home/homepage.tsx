@@ -10,7 +10,7 @@ export function Homepage() {
   return (
     <>
       <SectionOneHero />
-      <div className="bg-[#f7f1eb]">
+      <div className="bg-muted/70">
         <SectionTwoServices />
         <SectionThreeImages />
         <SectionFourContact />

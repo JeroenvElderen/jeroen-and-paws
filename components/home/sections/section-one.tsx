@@ -22,7 +22,7 @@ export function SectionOneHero() {
             <Button
               asChild
               size="lg"
-              className="h-14 rounded-full bg-[#ff6738] px-10 text-lg font-semibold text-white shadow-[0_16px_28px_rgba(255,103,56,0.3)] hover:bg-[#f35b2a]"
+              className="h-14 rounded-full bg-accent px-10 text-lg font-semibold text-accent-foreground shadow-[0_16px_28px_rgba(255,103,56,0.3)] hover:bg-[#f35b2a]"
             >
               <Link href={sectionOne.primaryCta.href}>{sectionOne.primaryCta.label} →</Link>
             </Button>

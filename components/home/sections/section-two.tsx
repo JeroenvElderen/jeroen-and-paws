@@ -34,7 +34,7 @@ function ServiceCardIcon({ icon }: { icon: HomepageSectionTwoCard["icon"] }) {
 
 function ServiceCardItem({ card }: { card: HomepageSectionTwoCard }) {
   return (
-    <article className="group overflow-hidden rounded-[2rem] border border-[#e6e0db] bg-white shadow-[0_16px_40px_rgba(16,31,120,0.08)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(16,31,120,0.16)]">
+    <article className="group overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-[0_16px_40px_rgba(16,31,120,0.08)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(16,31,120,0.16)]">
       <div className="relative h-44 overflow-hidden">
         <Image
           src={card.image}
@@ -60,7 +60,7 @@ function ServiceCardItem({ card }: { card: HomepageSectionTwoCard }) {
 
       <Link
           href={card.href}
-          className="mt-auto inline-flex items-center gap-3 pt-7 text-base font-extrabold text-[#263985]"
+          className="mt-auto inline-flex items-center gap-3 pt-7 text-base font-extrabold text-primary"
         >
           Learn More <span aria-hidden="true">→</span>
         </Link>
@@ -78,8 +78,8 @@ export function SectionTwoServices() {
     <section className="px-6 py-16 sm:px-10 lg:px-12">
       <div className="mx-auto mb-8 flex w-full max-w-6xl items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7e869f]">Tailored services</p>
-          <h2 className="text-3xl font-extrabold text-[#101f78] sm:text-4xl">Choose a premium care experience</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Tailored services</p>
+          <h2 className="text-3xl font-extrabold text-primary sm:text-4xl">Choose a premium care experience</h2>
         </div>
       </div>
 
@@ -88,8 +88,7 @@ export function SectionTwoServices() {
           type="button"
           aria-label="Previous services"
           onClick={() => setStartIndex((index) => (index - 1 + sectionTwo.cards.length) % sectionTwo.cards.length)}
-          className="hidden rounded-full border border-[#ddd8d2] bg-white p-3 text-[#4d5ca0] transition-colors hover:bg-white/70 lg:block"
-        >
+className="hidden rounded-full border border-border/90 bg-card p-3 text-primary/70 transition-colors hover:bg-secondary lg:block"        >
           <ChevronLeft className="h-8 w-8" />
         </button>
 
@@ -103,8 +102,7 @@ export function SectionTwoServices() {
           type="button"
           aria-label="Next services"
           onClick={() => setStartIndex((index) => (index + 1) % sectionTwo.cards.length)}
-          className="hidden rounded-full border border-[#ddd8d2] bg-white p-3 text-[#4d5ca0] transition-colors hover:bg-white/70 lg:block"
-        >
+className="hidden rounded-full border border-border/90 bg-card p-3 text-primary/70 transition-colors hover:bg-secondary lg:block"        >
           <ChevronRight className="h-8 w-8" />
         </button>
       </div>

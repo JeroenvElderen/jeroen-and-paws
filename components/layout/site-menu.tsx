@@ -14,9 +14,9 @@ export function SiteMenu() {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-8 text-lg font-semibold text-[#525f89] lg:flex">
+<nav className="hidden items-center gap-8 text-lg font-semibold text-muted-foreground lg:flex">
           {navLinks.map((link) => (
-            <Link key={link.label} href={link.href} className="transition hover:text-[#15277a]">
+            <Link key={link.label} href={link.href} className="transition hover:text-primary">
               {link.label}
             </Link>
           ))}
@@ -27,7 +27,7 @@ export function SiteMenu() {
             <Link
               key={item.label}
               href={item.href}
-              className="flex h-8 min-w-8 items-center justify-center rounded-full bg-[#ff6a3b] px-2 text-xs font-bold uppercase text-white"
+              className="flex h-8 min-w-8 items-center justify-center rounded-full bg-accent px-2 text-xs font-bold uppercase text-accent-foreground shadow-[0_10px_18px_rgba(255,103,56,0.22)]"
             >
               {item.label}
             </Link>
