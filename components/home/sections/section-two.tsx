@@ -34,7 +34,7 @@ function ServiceCardIcon({ icon }: { icon: HomepageSectionTwoCard["icon"] }) {
 
 function ServiceCardItem({ card }: { card: HomepageSectionTwoCard }) {
   return (
-    <article className="group overflow-hidden rounded-[2rem] border border-white/20 bg-gradient-to-b from-[#2b1d47] to-[#211538] shadow-[0_16px_40px_rgba(0,0,0,0.35)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(0,0,0,0.5)]">
+    <article className="group overflow-hidden rounded-[2rem] border border-white/20 bg-gradient-to-b from-[#2b1d47] to-[#211538] shadow-[0_20px_48px_rgba(0,0,0,0.38)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_65px_rgba(0,0,0,0.52)]">
       <div className="relative h-44 overflow-hidden">
         <Image
           src={card.image}
@@ -72,8 +72,8 @@ export function SectionTwoServices() {
   const visibleCards = useMemo(() => getVisibleCards(sectionTwo.cards, startIndex, 4), [startIndex]);
 
   return (
-    <section id="services" className="px-6 py-10 sm:px-10 lg:px-12">
-      <div className="premium-section playful-panel mb-8">
+    <section id="services" className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="premium-section playful-panel relative isolate mb-8">
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute left-0 top-0 h-24 w-48" />
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -91,7 +91,7 @@ export function SectionTwoServices() {
             type="button"
             aria-label="Previous services"
             onClick={() => setStartIndex((index) => (index - 1 + sectionTwo.cards.length) % sectionTwo.cards.length)}
-            className="rounded-full border border-white/30 bg-[#2b1f45] p-2 text-[#f8ddff] transition-colors hover:bg-[#3a2a5c] sm:p-3"
+            className="rounded-full border border-white/30 bg-[#2b1f45] p-2 text-[#f8ddff] shadow-lg transition-colors hover:bg-[#3a2a5c] sm:p-3"
           >
             <ChevronLeft className="h-6 w-6 sm:h-8 sm:w-8" />
           </button>
@@ -106,7 +106,7 @@ export function SectionTwoServices() {
             type="button"
             aria-label="Next services"
             onClick={() => setStartIndex((index) => (index + 1) % sectionTwo.cards.length)}
-            className="rounded-full border border-white/30 bg-[#2b1f45] p-2 text-[#f8ddff] transition-colors hover:bg-[#3a2a5c] sm:p-3"
+            className="rounded-full border border-white/30 bg-[#2b1f45] p-2 text-[#f8ddff] shadow-lg transition-colors hover:bg-[#3a2a5c] sm:p-3"
           >
             <ChevronRight className="h-6 w-6 sm:h-8 sm:w-8" />
           </button>

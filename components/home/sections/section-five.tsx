@@ -4,8 +4,8 @@ import { sectionFive } from "@/lib/data/homepage-data";
 
 export function SectionFiveTeam() {
   return (
-    <section id="reviews" className="px-6 py-10 sm:px-10 lg:px-12">
-      <div className="premium-section playful-panel">
+    <section id="reviews" className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="premium-section playful-panel relative isolate">
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute left-0 top-0 h-24 w-44" />
         <div className="mx-auto max-w-3xl text-center">
@@ -15,7 +15,7 @@ export function SectionFiveTeam() {
 
         <div className="mt-14 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           {sectionFive.members.map((member) => (
-            <article key={member.name} className="rounded-3xl border border-white/20 bg-gradient-to-b from-[#2a1c46] to-[#1d1230] p-5 text-center transition-transform hover:-translate-y-1">
+            <article key={member.name} className="rounded-3xl border border-white/20 bg-gradient-to-b from-[#2a1c46] to-[#1d1230] p-5 text-center shadow-[0_18px_45px_rgba(0,0,0,0.32)] transition-transform duration-300 hover:-translate-y-1.5">
               <div className="mx-auto max-w-[24rem] rounded-[3rem] border border-white/15 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
                 <div
                   className="relative h-[22rem] overflow-hidden rounded-[2.4rem]"
