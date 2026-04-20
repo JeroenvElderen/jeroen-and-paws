@@ -133,6 +133,18 @@ export type HomepageSectionFive = {
   members: HomepageSectionFiveMember[];
 };
 
+export type HomepageSectionSixFaqItem = {
+  question: string;
+  answer: string;
+};
+
+export type HomepageSectionSix = {
+  title: string;
+  subtitle: string;
+  image: { src: string; alt: string };
+  items: HomepageSectionSixFaqItem[];
+};
+
 export const sectionThree: HomepageSectionThree = {
   visuals: [
     {
@@ -207,6 +219,47 @@ export const sectionFive: HomepageSectionFive = {
         alt: "Groomer smiling with a dog",
         bgColor: "#bcaee9",
       },
+    },
+  ],
+};
+
+export const sectionSix: HomepageSectionSix = {
+  title: "FAQ",
+  subtitle: "Perhaps you'll find an answer to your question here.",
+  image: {
+    src: "https://images.unsplash.com/photo-1544923408-75c5cef46f14?auto=format&fit=crop&w=1200&q=80",
+    alt: "Blue parakeet standing on a skateboard in front of a yellow background",
+  },
+  items: [
+    {
+      question: "What services do you provide?",
+      answer:
+        "We provide daily walks, pet sitting, grooming support, vet visits, and tailored care plans that match your pet's age, temperament, and routine.",
+    },
+    {
+      question: "Do you have a professional vet?",
+      answer:
+        "Yes. We work with licensed veterinary professionals and can schedule preventive checkups, vaccinations, and follow-up visits whenever your pet needs care.",
+    },
+    {
+      question: "What does a pet sitter do?",
+      answer:
+        "A pet sitter handles feeding, hydration, walks, playtime, medication reminders, and companionship while keeping your pet comfortable in a familiar routine.",
+    },
+    {
+      question: "Can I leave my pet at your place?",
+      answer:
+        "Absolutely. We offer supervised day and overnight stays with safe spaces, structured breaks, and regular updates so you know how your pet is doing.",
+    },
+    {
+      question: "Can I order one-time pet sitting services?",
+      answer:
+        "Yes, one-time bookings are available for single days, evenings, or short trips. You can also switch to a recurring plan whenever you want.",
+    },
+    {
+      question: "How much does it cost to groom my dog?",
+      answer:
+        "Pricing depends on breed, coat condition, and selected services. We share a clear quote in advance so you know exactly what is included.",
     },
   ],
 };
