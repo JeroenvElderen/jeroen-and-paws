@@ -10,16 +10,15 @@ export type SocialLink = {
 
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "About Us", href: "/#about" },
+  { label: "About", href: "/#about" },
   { label: "Services", href: "/services" },
   { label: "FAQ", href: "/#faq" },
-  { label: "Happy Clients", href: "/#reviews" },
-  { label: "Contacts", href: "/#contact" },
+  { label: "Reviews", href: "/#reviews" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export const socialLinks: SocialLink[] = [
-  { label: "f", href: "https://facebook.com" },
-  { label: "ig", href: "https://instagram.com" },
-  { label: "x", href: "https://x.com" },
-  { label: "yt", href: "https://youtube.com" },
+  { label: "fb", href: "https://facebook.com/jeroenandpaws" },
+  { label: "ig", href: "https://instagram.com/jeroenandpaws" },
+  { label: "wa", href: "https://wa.me/447000000000" },
 ];

@@ -11,114 +11,114 @@ export type ServiceCategory = {
 };
 
 export const homepageHighlights = [
-  { label: "Active service options", value: "27" },
-  { label: "Registered owners", value: "2" },
-  { label: "Registered dogs", value: "3" },
-  { label: "Bookings already captured", value: "2" },
+  { label: "Core services", value: "5" },
+  { label: "Happy owners", value: "100+" },
+  { label: "Walks and visits", value: "5k+" },
+  { label: "Years of care", value: "7+" },
 ];
 
 export const serviceCategories: ServiceCategory[] = [
   {
-    category: "Daily Strolls",
+    category: "Walking Services",
     items: [
       {
-        title: "Standard stroll",
-        price: "€18/visit",
+        title: "Daily Stroll",
+        price: "From £18",
         duration: "30 min",
         description:
-          "A refreshing 30-minute stroll — ideal for movement, fresh air, and enrichment during the day.",
+          "A reliable daily walk focused on exercise, enrichment, and consistency.",
       },
       {
-        title: "Extended stroll",
-        price: "€28/visit",
+        title: "Extended Stroll",
+        price: "From £28",
         duration: "60 min",
         description:
-          "A longer outing with extra time for sniffing, exploring, and enjoying the neighbourhood.",
+          "Extra time for active dogs who benefit from longer routes and exploration.",
       },
       {
-        title: "Custom Care",
+        title: "Solo Journey",
         price: "Custom quote",
         duration: "Flexible",
         description:
-          "Personalised walking plans for unique schedules, preferred routes, and special requests.",
+          "One-to-one sessions for dogs who prefer focused individual attention.",
       },
     ],
   },
   {
-    category: "Daytime Care",
+    category: "Day Care & Home Visits",
     items: [
       {
-        title: "Half-day stay",
-        price: "€25/day",
+        title: "Half-Day Day Care",
+        price: "From £25",
         duration: "4 hrs",
         description:
-          "A relaxed daytime stay with gentle activity, rest, and attention before heading home.",
+          "A calm supervised stay with play, rest, and regular comfort breaks.",
       },
       {
-        title: "Full-day care",
-        price: "€40/day",
+        title: "Full-Day Day Care",
+        price: "From £40",
         duration: "8 hrs",
         description:
-          "A complete day of calm supervision, enrichment, and rest while you are occupied.",
+          "A full day of structured care while you're at work or away.",
       },
       {
-        title: "Tailored daytime care",
+        title: "Home Check-In",
         price: "Custom quote",
-        duration: "Flexible",
+        duration: "20-30 min",
         description:
-          "A daytime schedule perfectly matched to timing, pick-up, and enrichment preferences.",
+          "A short home visit for feeding, toilet breaks, companionship, and updates.",
       },
     ],
   },
   {
-    category: "Overnight & Adventures",
+    category: "Boarding",
     items: [
       {
-        title: "Standard Overnight Stay",
-        price: "€70/night",
+        title: "Overnight Stay",
+        price: "From £70",
         duration: "Overnight",
         description:
-          "Overnight care in a calm home setting with routines designed around your companion.",
+          "Safe, home-style overnight care with your dog's routine followed closely.",
       },
       {
-        title: "Half-Day Adventure",
-        price: "€75",
-        duration: "4 hrs",
+        title: "Weekend Boarding",
+        price: "Custom quote",
+        duration: "2-3 days",
         description:
-          "Steady interaction, relaxed walks, and restful pauses in a guided group setting.",
+          "Support for short trips with regular walks, mealtimes, and personal attention.",
       },
       {
-        title: "Full-Day Solo Journey",
-        price: "€120/journey",
-        duration: "6 hrs",
+        title: "Holiday Boarding",
+        price: "Custom quote",
+        duration: "Multi-day",
         description:
-          "A full day exploring together at your dog's pace — unhurried and deeply engaging.",
+          "Longer-stay care for holidays with clear communication and daily updates.",
       },
     ],
   },
   {
-    category: "Training & Support",
+    category: "Training Support",
     items: [
       {
-        title: "Introductory Training Session",
-        price: "€35/session",
+        title: "Behaviour Basics",
+        price: "From £35",
         duration: "30 min",
         description:
-          "A short focused session to build confidence and create early momentum.",
+          "Foundational support for recall, lead walking, and calm daily behaviour.",
       },
       {
-        title: "Puppy training",
-        price: "€65",
+        title: "Puppy Training",
+        price: "From £65",
         duration: "60 min",
         description:
-          "One-to-one puppy support for socialisation, potty routines, and foundational cues.",
+          "Structured one-to-one puppy sessions for confidence and healthy habits.",
       },
       {
-        title: "Bespoke Care Plan",
+        title: "Custom Plan",
         price: "Custom quote",
         duration: "Flexible",
         description:
-          "Tailored plans for behaviour, medical needs, and long-term care routines.",
+          "A tailored program for dogs with special routines, needs, or sensitivities.",
       },
     ],
   },
