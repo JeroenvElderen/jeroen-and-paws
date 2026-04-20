@@ -5,8 +5,8 @@ import { sectionThree } from "@/lib/data/homepage-data";
 
 function FramedImage({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="relative mx-auto max-w-[38rem] rounded-[8rem] border-[14px] border-white shadow-[0_28px_70px_rgba(0,0,0,0.45)]">
-      <div className="relative h-[28rem] overflow-hidden rounded-[7rem] sm:h-[34rem]">
+    <div className="relative mx-auto max-w-[38rem] rounded-[3.5rem] border border-white/20 bg-[#201530] p-3 shadow-[0_28px_70px_rgba(0,0,0,0.45)]">
+      <div className="relative h-[28rem] overflow-hidden rounded-[3rem] sm:h-[34rem]">
         <Image src={src} alt={alt} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
       </div>
     </div>
@@ -33,7 +33,7 @@ export function SectionThreeImages() {
             ))}
             <Link
               href={firstVisual.cta.href}
-              className="mt-8 inline-flex rounded-full bg-[#9d64ff] px-8 py-3 text-lg font-extrabold text-white transition-colors hover:bg-[#8448e8]"
+              className="mt-8 inline-flex rounded-full border border-[#a883ff] bg-[#9d64ff] px-8 py-3 text-lg font-extrabold text-white transition-colors hover:bg-[#8448e8]"
             >
               {firstVisual.cta.label}
             </Link>
@@ -41,7 +41,7 @@ export function SectionThreeImages() {
         </article>
 
         <article className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <div className="order-2 lg:order-1">
+          <div className="order-2 lg:order-1 rounded-3xl border border-white/10 bg-[#1c152c]/70 p-8">
             <h2 className="premium-title">{secondVisual.title}</h2>
             <p className="mt-6 text-lg leading-relaxed text-[#bca3e7]">{secondVisual.intro}</p>
 

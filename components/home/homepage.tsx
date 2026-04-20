@@ -8,14 +8,14 @@ import { SectionSevenContact } from "@/components/home/sections/section-seven";
 
 export function Homepage() {
   return (
-    <div className="premium-shell">
+    <div className="premium-shell pb-10">
       <SectionOneHero />
-        <SectionTwoServices />
-        <SectionThreeImages />
-        <SectionFourContact />
-        <SectionFiveTeam />
-        <SectionSixFaq />
-        <SectionSevenContact />
-      </div>
+      <SectionTwoServices />
+      <SectionThreeImages />
+      <SectionFourContact />
+      <SectionFiveTeam />
+      <SectionSixFaq />
+      <SectionSevenContact />
+    </div>
   );
 }
