@@ -51,7 +51,7 @@ export function SectionSevenContact() {
                   id={field.name}
                   type={field.type}
                   name={field.name}
-                  placeholder={`Enter ${field.placeholder.toLowerCase()}`}
+                  placeholder={field.placeholder}
                   className="h-14 w-full rounded-2xl border border-white/20 bg-[#31204f] px-6 text-lg text-[#fff0ff] placeholder:text-[#baa0de] outline-none ring-0 transition focus-visible:border-[#ff9ec9] focus-visible:ring-2 focus-visible:ring-[#ff9ec9]/30"
                 />
                 {field.name === "date" ? (
@@ -60,12 +60,48 @@ export function SectionSevenContact() {
               </div>
             ))}
 
+            <div>
+              <label htmlFor="care-plan" className="mb-2 block pl-2 text-sm font-semibold text-[#f2dcff]">
+                Care plan
+              </label>
+              <select
+                id="care-plan"
+                name="carePlan"
+                defaultValue=""
+                className="h-14 w-full rounded-2xl border border-white/20 bg-[#31204f] px-6 text-lg text-[#fff0ff] outline-none ring-0 transition focus-visible:border-[#ff9ec9] focus-visible:ring-2 focus-visible:ring-[#ff9ec9]/30"
+              >
+                <option value="" disabled>
+                  Select a preferred package
+                </option>
+                <option value="daily">Daily walks</option>
+                <option value="daycare">Daytime care</option>
+                <option value="overnight">Overnight care</option>
+                <option value="bespoke">Bespoke plan</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="notes" className="mb-2 block pl-2 text-sm font-semibold text-[#f2dcff]">
+                Pet notes
+              </label>
+              <textarea
+                id="notes"
+                name="notes"
+                rows={4}
+                placeholder="Temperament, medication, feeding routine, and anything we should know."
+                className="w-full rounded-2xl border border-white/20 bg-[#31204f] px-6 py-4 text-base text-[#fff0ff] placeholder:text-[#baa0de] outline-none ring-0 transition focus-visible:border-[#ff9ec9] focus-visible:ring-2 focus-visible:ring-[#ff9ec9]/30"
+              />
+            </div>
+
             <button
               type="submit"
               className="mt-6 h-14 w-full rounded-2xl bg-gradient-to-r from-[#ff74b3] to-[#8f63ff] text-xl font-extrabold text-white transition hover:from-[#ff63aa] hover:to-[#7f52f6]"
             >
               {sectionSeven.submitLabel}
             </button>
+            <p className="text-center text-xs leading-relaxed text-[#cbb0ea]">
+              We usually respond within 2 business hours. Your information is used only to prepare your care consultation.
+            </p>
           </form>
         </div>
       </div>
