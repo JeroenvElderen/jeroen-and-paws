@@ -75,7 +75,7 @@ export function SectionTwoServices() {
   const visibleCards = useMemo(() => getVisibleCards(sectionTwo.cards, startIndex, 4), [startIndex]);
 
   return (
-    <section className="px-6 py-10 sm:px-10 lg:px-12">
+    <section id="services" className="px-6 py-10 sm:px-10 lg:px-12">
       <div className="premium-section mb-8">
         <div className="mb-8 flex items-end justify-between gap-4">
         <div>

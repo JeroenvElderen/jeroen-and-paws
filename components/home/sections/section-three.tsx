@@ -17,7 +17,7 @@ export function SectionThreeImages() {
   const [firstVisual, secondVisual] = sectionThree.visuals;
 
   return (
-    <section className="px-6 py-10 sm:px-10 lg:px-12">
+    <section id="about" className="px-6 py-10 sm:px-10 lg:px-12">
       <div className="premium-section space-y-20">
         <article className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div>

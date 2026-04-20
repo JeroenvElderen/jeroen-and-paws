@@ -10,7 +10,7 @@ export function SectionSixFaq() {
   const [openItem, setOpenItem] = useState<string | null>(null);
 
   return (
-    <section className="px-6 py-10 sm:px-10 lg:px-12">
+    <section id="faq" className="px-6 py-10 sm:px-10 lg:px-12">
       <div className="premium-section grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
         <div>
           <h2 className="premium-title tracking-tight">{sectionSix.title}</h2>
