@@ -113,6 +113,14 @@ export type HomepageSectionThree = {
   visuals: [HomepageSectionThreeFirstVisual, HomepageSectionThreeSecondVisual];
 };
 
+export type HomepageSectionFour = {
+  title: string;
+  phoneLabel: string;
+  phoneNumber: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta: { label: string; href: string };
+};
+
 export const sectionThree: HomepageSectionThree = {
   visuals: [
     {
@@ -147,4 +155,12 @@ export const sectionThree: HomepageSectionThree = {
       },
     },
   ],
+};
+
+export const sectionFour: HomepageSectionFour = {
+  title: "Need to Call a Pet Sitter or Schedule a Visit to a Vet or Groomer?",
+  phoneLabel: "Call us",
+  phoneNumber: "+ 1 (234) 567 89 00",
+  primaryCta: { label: "Contact Us", href: "/services" },
+  secondaryCta: { label: "Order Services", href: "/services" },
 };
