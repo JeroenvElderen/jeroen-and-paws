@@ -121,6 +121,18 @@ export type HomepageSectionFour = {
   secondaryCta: { label: string; href: string };
 };
 
+export type HomepageSectionFiveMember = {
+  name: string;
+  role: string;
+  image: { src: string; alt: string; bgColor: string };
+};
+
+export type HomepageSectionFive = {
+  title: string;
+  subtitle: string;
+  members: HomepageSectionFiveMember[];
+};
+
 export const sectionThree: HomepageSectionThree = {
   visuals: [
     {
@@ -163,4 +175,38 @@ export const sectionFour: HomepageSectionFour = {
   phoneNumber: "+ 1 (234) 567 89 00",
   primaryCta: { label: "Contact Us", href: "/services" },
   secondaryCta: { label: "Order Services", href: "/services" },
+};
+
+export const sectionFive: HomepageSectionFive = {
+  title: "Meet Our Team",
+  subtitle: "Each member of our Best.Pet family loves animals and is trained to look after them.",
+  members: [
+    {
+      name: "Alina Maisner",
+      role: "Pet Sitter",
+      image: {
+        src: "https://images.unsplash.com/photo-1614436163996-25cee5f54290?auto=format&fit=crop&w=1000&q=80",
+        alt: "Pet sitter smiling while holding a cat",
+        bgColor: "#f5b7ca",
+      },
+    },
+    {
+      name: "Jessica Shimmer",
+      role: "Veterinarian",
+      image: {
+        src: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1000&q=80",
+        alt: "Veterinarian in a white coat",
+        bgColor: "#61d8e5",
+      },
+    },
+    {
+      name: "Mary Douglas",
+      role: "Groomer",
+      image: {
+        src: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=80",
+        alt: "Groomer smiling with a dog",
+        bgColor: "#bcaee9",
+      },
+    },
+  ],
 };
