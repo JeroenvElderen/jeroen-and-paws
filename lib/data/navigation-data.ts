@@ -18,8 +18,8 @@ export const navLinks: NavLink[] = [
 ];
 
 export const socialLinks: SocialLink[] = [
-  { label: "f", href: "#" },
-  { label: "ig", href: "#" },
-  { label: "x", href: "#" },
-  { label: "yt", href: "#" },
+  { label: "f", href: "https://facebook.com" },
+  { label: "ig", href: "https://instagram.com" },
+  { label: "x", href: "https://x.com" },
+  { label: "yt", href: "https://youtube.com" },
 ];

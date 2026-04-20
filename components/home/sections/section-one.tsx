@@ -41,6 +41,13 @@ export function SectionOneHero() {
               </Button>
             </div>
 
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#e8cffd] sm:text-sm">
+              <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5">Licensed</span>
+              <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5">Insured</span>
+              <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5">Background-checked</span>
+              <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5">Real-time visit updates</span>
+            </div>
+
             <div className="grid max-w-xl grid-cols-3 gap-3">
               {sectionOne.stats.map((stat) => (
                 <article key={stat.label} className="rounded-2xl border border-white/25 bg-[#2f1e4f]/70 px-4 py-4 backdrop-blur">

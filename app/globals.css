@@ -171,7 +171,7 @@
   }
 
   .premium-section {
-    @apply mx-auto w-full max-w-6xl rounded-[2rem] border border-white/15 bg-[#171126]/75 px-6 py-12 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:px-10 lg:px-12;
+    @apply mx-auto w-full max-w-6xl rounded-[2rem] border border-white/12 bg-[#171126]/72 px-6 py-12 shadow-[0_20px_70px_rgba(0,0,0,0.28)] backdrop-blur-sm sm:px-10 lg:px-12;
   }
 
   .premium-title {
@@ -185,16 +185,16 @@
   .playful-panel {
     @apply relative overflow-hidden;
     background-image:
-      radial-gradient(circle at 16% 8%, rgba(255, 116, 179, 0.15) 0%, transparent 34%),
-      radial-gradient(circle at 86% 12%, rgba(143, 99, 255, 0.16) 0%, transparent 38%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 26%);
+      radial-gradient(circle at 16% 8%, rgba(255, 116, 179, 0.11) 0%, transparent 34%),
+      radial-gradient(circle at 86% 12%, rgba(143, 99, 255, 0.11) 0%, transparent 38%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 26%);
   }
 
   .playful-waves {
     background-image:
-      radial-gradient(120% 55% at 18% 108%, rgba(255, 133, 187, 0.24) 0%, transparent 70%),
-      radial-gradient(110% 50% at 78% 110%, rgba(142, 101, 255, 0.22) 0%, transparent 70%);
-    opacity: 0.9;
+      radial-gradient(120% 55% at 18% 108%, rgba(255, 133, 187, 0.16) 0%, transparent 70%),
+      radial-gradient(110% 50% at 78% 110%, rgba(142, 101, 255, 0.14) 0%, transparent 70%);
+    opacity: 0.7;
   }
 
   .playful-ribbons {
@@ -205,6 +205,6 @@
         rgba(255, 255, 255, 0) 2px 14px
       );
     mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
-    opacity: 0.22;
+    opacity: 0.14;
   }
 }

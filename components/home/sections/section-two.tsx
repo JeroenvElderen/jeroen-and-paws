@@ -86,14 +86,14 @@ export function SectionTwoServices() {
           </p>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 sm:gap-6">
           <button
             type="button"
             aria-label="Previous services"
             onClick={() => setStartIndex((index) => (index - 1 + sectionTwo.cards.length) % sectionTwo.cards.length)}
-            className="hidden rounded-full border border-white/30 bg-[#2b1f45] p-3 text-[#f8ddff] transition-colors hover:bg-[#3a2a5c] lg:block"
+            className="rounded-full border border-white/30 bg-[#2b1f45] p-2 text-[#f8ddff] transition-colors hover:bg-[#3a2a5c] sm:p-3"
           >
-            <ChevronLeft className="h-8 w-8" />
+            <ChevronLeft className="h-6 w-6 sm:h-8 sm:w-8" />
           </button>
 
           <div className="grid flex-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -106,11 +106,12 @@ export function SectionTwoServices() {
             type="button"
             aria-label="Next services"
             onClick={() => setStartIndex((index) => (index + 1) % sectionTwo.cards.length)}
-            className="hidden rounded-full border border-white/30 bg-[#2b1f45] p-3 text-[#f8ddff] transition-colors hover:bg-[#3a2a5c] lg:block"
+            className="rounded-full border border-white/30 bg-[#2b1f45] p-2 text-[#f8ddff] transition-colors hover:bg-[#3a2a5c] sm:p-3"
           >
-            <ChevronRight className="h-8 w-8" />
+            <ChevronRight className="h-6 w-6 sm:h-8 sm:w-8" />
           </button>
         </div>
+        <p className="mt-5 text-sm text-[#ccafe9] sm:hidden">Tap arrows to browse all concierge services.</p>
       </div>
     </section>
   );
