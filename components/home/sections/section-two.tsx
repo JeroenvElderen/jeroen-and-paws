@@ -43,7 +43,7 @@ function ServiceCardItem({ card }: { card: HomepageSectionTwoCard }) {
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#110a1fcc] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(17,10,31,0.8)] to-transparent" />
         <div
           className="absolute bottom-4 left-4 flex h-11 w-11 items-center justify-center rounded-full shadow-lg"
           style={{ backgroundColor: card.iconBg }}

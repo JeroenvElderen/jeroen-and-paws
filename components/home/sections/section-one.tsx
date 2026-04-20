@@ -59,7 +59,7 @@ export function SectionOneHero() {
                 sizes="(max-width: 1024px) 90vw, 520px"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#120a1ed9] via-[#1b123066] to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(18,10,30,0.85)] via-[rgba(27,18,48,0.4)] to-transparent" />
             </div>
 
             <div className="absolute -bottom-5 left-6 flex items-center gap-3 rounded-2xl border border-border bg-card/95 px-4 py-3 shadow-xl backdrop-blur">
