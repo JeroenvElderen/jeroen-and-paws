@@ -132,3 +132,26 @@
     @apply font-sans;
   }
 }
+
+
+@layer components {
+  .premium-shell {
+    @apply relative overflow-x-clip;
+    background-image:
+      radial-gradient(circle at 6% 6%, rgba(189, 117, 255, 0.18) 0%, transparent 33%),
+      radial-gradient(circle at 94% 12%, rgba(130, 72, 213, 0.16) 0%, transparent 38%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  .premium-section {
+    @apply mx-auto w-full max-w-6xl rounded-[2rem] border border-white/10 bg-[#171126]/70 px-6 py-12 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:px-10 lg:px-12;
+  }
+
+  .premium-title {
+    @apply text-4xl font-black leading-[1.05] text-[#f3e9ff] sm:text-5xl;
+  }
+
+  .premium-subtitle {
+    @apply mt-4 text-lg leading-relaxed text-[#c6afea] sm:text-xl;
+  }
+}

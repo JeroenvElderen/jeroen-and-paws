@@ -7,8 +7,8 @@ import { sectionOne } from "@/lib/data/homepage-data";
 
 export function SectionOneHero() {
   return (
-    <section className="px-6 pb-20 pt-10 sm:px-10 lg:px-12">
-      <div className="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+    <section className="px-6 pb-10 pt-10 sm:px-10 lg:px-12">
+      <div className="premium-section grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div className="space-y-8">
           <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             <Sparkles className="h-3.5 w-3.5" />

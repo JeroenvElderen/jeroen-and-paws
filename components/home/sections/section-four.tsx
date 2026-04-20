@@ -5,8 +5,8 @@ import { sectionFour } from "@/lib/data/homepage-data";
 
 export function SectionFourContact() {
   return (
-    <section className="px-6 pb-20 sm:px-10 lg:px-12">
-      <div className="mx-auto w-full max-w-6xl rounded-[2rem] bg-[#171126] px-6 py-16 sm:px-10 lg:px-20 lg:py-20">
+    <section className="px-6 py-10 sm:px-10 lg:px-12">
+      <div className="premium-section px-6 py-16 sm:px-10 lg:px-20 lg:py-20">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#9d64ff]/25 text-[#9d64ff]">
             <Mail className="h-6 w-6" strokeWidth={1.8} />

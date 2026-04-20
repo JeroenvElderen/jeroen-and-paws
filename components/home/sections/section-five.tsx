@@ -4,10 +4,10 @@ import { sectionFive } from "@/lib/data/homepage-data";
 
 export function SectionFiveTeam() {
   return (
-    <section className="px-6 pb-24 pt-4 sm:px-10 lg:px-12">
-      <div className="mx-auto w-full max-w-6xl">
+    <section className="px-6 py-10 sm:px-10 lg:px-12">
+      <div className="premium-section">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-4xl font-extrabold text-[#efe3ff] sm:text-5xl">{sectionFive.title}</h2>
+          <h2 className="premium-title">{sectionFive.title}</h2>
           <p className="mt-6 text-lg leading-relaxed text-[#bda5e9] sm:text-[1.35rem]">{sectionFive.subtitle}</p>
         </div>
 

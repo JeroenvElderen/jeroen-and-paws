@@ -17,15 +17,15 @@ export function SectionThreeImages() {
   const [firstVisual, secondVisual] = sectionThree.visuals;
 
   return (
-    <section className="px-6 pb-20 sm:px-10 lg:px-12">
-      <div className="mx-auto w-full max-w-6xl space-y-20">
+    <section className="px-6 py-10 sm:px-10 lg:px-12">
+      <div className="premium-section space-y-20">
         <article className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
             <FramedImage src={firstVisual.image.src} alt={firstVisual.image.alt} />
           </div>
 
           <div>
-            <h2 className="text-4xl font-extrabold leading-tight text-[#efe3ff] sm:text-5xl">{firstVisual.title}</h2>
+            <h2 className="premium-title">{firstVisual.title}</h2>
             {firstVisual.paragraphs.map((paragraph) => (
               <p key={paragraph} className="mt-6 text-lg leading-relaxed text-[#bca3e7]">
                 {paragraph}
@@ -42,7 +42,7 @@ export function SectionThreeImages() {
 
         <article className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="order-2 lg:order-1">
-            <h2 className="text-4xl font-extrabold leading-tight text-[#efe3ff] sm:text-5xl">{secondVisual.title}</h2>
+            <h2 className="premium-title">{secondVisual.title}</h2>
             <p className="mt-6 text-lg leading-relaxed text-[#bca3e7]">{secondVisual.intro}</p>
 
             <ul className="mt-6 space-y-3 text-lg leading-relaxed text-[#bca3e7]">

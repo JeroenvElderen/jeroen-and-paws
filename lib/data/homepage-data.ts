@@ -9,9 +9,9 @@ export type HeroSectionOne = {
 };
 
 export const sectionOne: HeroSectionOne = {
-  eyebrow: "Safe and caring hands",
-  title: "Your Pet Deserves the Best Care",
-  subtitle: "Boutique-level dog care in Amsterdam with trusted professionals and tailored routines.",
+  eyebrow: "Private, concierge-level care",
+  title: "A Signature Care Experience for Extraordinary Pets",
+  subtitle: "Premium pet care with deeply personalized routines, trusted specialists, and beautifully transparent communication.",
   primaryCta: { label: "Order Services", href: "/services" },
   secondaryCta: { label: "Call Us", href: "tel:+31000000000" },
   stats: [
@@ -169,11 +169,11 @@ export type HomepageSectionSeven = {
 export const sectionThree: HomepageSectionThree = {
   visuals: [
     {
-      title: "We Make Your Pets Happy and Healthy",
+      title: "Wellbeing-first care, designed around your pet",
       paragraphs: [
-        "We are a small firm with 15 dedicated employees that provide all kinds of pet care services in New York.",
-        "We know how much you adore your pet and care about it with all our attention and love for animals.",
-        "Our dedicated team of vets, groomers, pet sitters and other specialists will provide all kinds of services and look after your pet. We find an approach to every animal. You can rest assured that your fluffy family member will stay healthy and happy.",
+        "Our team pairs veterinary insight with white-glove hospitality so your companion receives thoughtful, consistent support.",
+        "Every plan is built around your pet's temperament, energy level, health profile, and your household schedule.",
+        "From enrichment to grooming and supervised rest, every touchpoint is calm, structured, and held to exceptional standards.",
       ],
       cta: { label: "More About Us", href: "/services" },
       image: {
@@ -182,18 +182,18 @@ export const sectionThree: HomepageSectionThree = {
       },
     },
     {
-      title: "Why You Need Our Help",
-      intro: "You may be out for a while or too busy to give your pet the care it deserves, and our services will come in handy:",
+      title: "Why families choose us",
+      intro: "When time is tight, we preserve your pet's routine, comfort, and confidence with dependable professional care:",
       highlights: [
-        "You will be sure your pet is eating the right food;",
-        "Our staff will make sure your pet is healthy;",
-        "We take your dogs for a walk on schedule;",
-        "No need to ask your friends to stay with your pet;",
-        "We'll give your pets a bath and groom them on time.",
+        "Diet, medication, and hydration guidance are followed with precision;",
+        "Daily wellness checks help us spot concerns early;",
+        "Walks, play, and downtime happen on a predictable rhythm;",
+        "You get reliable coverage without last-minute favors;",
+        "Grooming and hygiene support keep your pet polished and comfortable.",
       ],
-      footerPrefix: "We can provide",
-      footerAccent: "one-time or regular",
-      footerSuffix: "care for your pet.",
+      footerPrefix: "Choose",
+      footerAccent: "one-time, ongoing, or fully bespoke",
+      footerSuffix: "care with complete flexibility.",
       image: {
         src: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=1200&q=80",
         alt: "Rabbit on a blue background",
@@ -203,7 +203,7 @@ export const sectionThree: HomepageSectionThree = {
 };
 
 export const sectionFour: HomepageSectionFour = {
-  title: "Need to Call a Pet Sitter or Schedule a Visit to a Vet or Groomer?",
+  title: "Ready to book your pet's premium care plan?",
   phoneLabel: "Call us",
   phoneNumber: "+ 1 (234) 567 89 00",
   primaryCta: { label: "Contact Us", href: "/services" },
@@ -212,7 +212,7 @@ export const sectionFour: HomepageSectionFour = {
 
 export const sectionFive: HomepageSectionFive = {
   title: "Meet Our Team",
-  subtitle: "Each member of our Best.Pet family loves animals and is trained to look after them.",
+  subtitle: "Experienced handlers, certified professionals, and true animal people committed to exceptional care.",
   members: [
     {
       name: "Alina Maisner",
@@ -245,8 +245,8 @@ export const sectionFive: HomepageSectionFive = {
 };
 
 export const sectionSix: HomepageSectionSix = {
-  title: "FAQ",
-  subtitle: "Perhaps you'll find an answer to your question here.",
+  title: "Frequently Asked Questions",
+  subtitle: "Everything you need to know before entrusting us with your companion.",
   image: {
     src: "https://images.unsplash.com/photo-1544923408-75c5cef46f14?auto=format&fit=crop&w=1200&q=80",
     alt: "Blue parakeet standing on a skateboard in front of a yellow background",
@@ -286,8 +286,8 @@ export const sectionSix: HomepageSectionSix = {
 };
 
 export const sectionSeven: HomepageSectionSeven = {
-  title: "Still Have Questions?",
-  subtitle: "Need some advice or have any questions about our services? Contact us in any convenient way.",
+  title: "Let's Design Your Pet's Ideal Routine",
+  subtitle: "Share your pet's needs and we'll craft a refined, practical plan that fits your schedule.",
   info: [
     {
       icon: "map",

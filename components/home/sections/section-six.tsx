@@ -10,10 +10,10 @@ export function SectionSixFaq() {
   const [openItem, setOpenItem] = useState<string | null>(null);
 
   return (
-    <section className="px-6 pb-24 pt-2 sm:px-10 lg:px-12">
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
+    <section className="px-6 py-10 sm:px-10 lg:px-12">
+      <div className="premium-section grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
         <div>
-          <h2 className="text-4xl font-extrabold tracking-tight text-[#efe3ff] sm:text-5xl">{sectionSix.title}</h2>
+          <h2 className="premium-title tracking-tight">{sectionSix.title}</h2>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-[#bda5e9] sm:text-xl">{sectionSix.subtitle}</p>
 
           <div className="mt-10 border-b border-[#4a356f]">

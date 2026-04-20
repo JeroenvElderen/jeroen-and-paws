@@ -8,9 +8,8 @@ import { SectionSevenContact } from "@/components/home/sections/section-seven";
 
 export function Homepage() {
   return (
-    <>
+    <div className="premium-shell">
       <SectionOneHero />
-      <div className="bg-muted/70">
         <SectionTwoServices />
         <SectionThreeImages />
         <SectionFourContact />
@@ -18,6 +17,5 @@ export function Homepage() {
         <SectionSixFaq />
         <SectionSevenContact />
       </div>
-    </>
   );
 }

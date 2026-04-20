@@ -4,10 +4,10 @@ import { sectionSeven } from "@/lib/data/homepage-data";
 
 export function SectionSevenContact() {
   return (
-    <section className="px-6 pb-24 pt-4 sm:px-10 lg:px-12">
-      <div className="mx-auto grid w-full max-w-6xl gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-start lg:gap-12">
+    <section className="px-6 py-10 sm:px-10 lg:px-12">
+      <div className="premium-section grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-start lg:gap-12">
         <div>
-          <h2 className="text-4xl font-extrabold tracking-tight text-[#efe3ff] sm:text-6xl">{sectionSeven.title}</h2>
+          <h2 className="premium-title tracking-tight sm:text-6xl">{sectionSeven.title}</h2>
           <p className="mt-6 max-w-xl text-xl leading-relaxed text-[#bda5e9]">{sectionSeven.subtitle}</p>
 
           <div className="mt-10 space-y-10">

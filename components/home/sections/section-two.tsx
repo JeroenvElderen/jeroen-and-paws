@@ -75,15 +75,16 @@ export function SectionTwoServices() {
   const visibleCards = useMemo(() => getVisibleCards(sectionTwo.cards, startIndex, 4), [startIndex]);
 
   return (
-    <section className="px-6 py-16 sm:px-10 lg:px-12">
-      <div className="mx-auto mb-8 flex w-full max-w-6xl items-end justify-between gap-4">
+    <section className="px-6 py-10 sm:px-10 lg:px-12">
+      <div className="premium-section mb-8">
+        <div className="mb-8 flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Tailored services</p>
-          <h2 className="text-3xl font-extrabold text-primary sm:text-4xl">Choose a premium care experience</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Tailored services</p>
+          <h2 className="premium-title mt-3">Choose a premium care experience</h2>
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-6xl items-center gap-6">
+        <div className="flex items-center gap-6">
         <button
           type="button"
           aria-label="Previous services"
@@ -107,6 +108,7 @@ export function SectionTwoServices() {
         >
           <ChevronRight className="h-8 w-8" />
         </button>
+        </div>
       </div>
     </section>
   );
