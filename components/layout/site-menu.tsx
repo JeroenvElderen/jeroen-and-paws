@@ -11,7 +11,7 @@ export function SiteMenu() {
           <span className="text-3xl leading-none">♡</span>
           <div>
             <p className="text-2xl font-extrabold leading-none sm:text-3xl">Jeroen &amp; Paws</p>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#bda5e9]">Signature Pet Concierge</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#bda5e9]">Dog Walking · Training · Boarding</p>
           </div>
         </Link>
 

@@ -78,11 +78,11 @@ export function SectionTwoServices() {
         <div className="playful-ribbons pointer-events-none absolute left-0 top-0 h-24 w-48" />
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#f2d7ff]">Tailored services</p>
-            <h2 className="premium-title mt-3">Choose a playful care experience</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#f2d7ff]">Our Services</p>
+            <h2 className="premium-title mt-3">Care options built around your dog&apos;s needs</h2>
           </div>
           <p className="max-w-md text-sm leading-relaxed text-[#e3cbff] sm:text-base">
-            Swipe through concierge-grade options designed to match your pet&apos;s rhythm, temperament, and routine.
+            Explore walking, training, daycare, home check-ins, and boarding options with flexible support for every routine.
           </p>
         </div>
 
