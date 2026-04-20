@@ -49,72 +49,72 @@
 }
 
 :root {
-  --background: #f7f1ff;
-  --foreground: #2b145e;
-  --card: #ffffff;
-  --card-foreground: #2b145e;
-  --popover: #ffffff;
-  --popover-foreground: #2b145e;
-  --primary: #2b145e;
-  --primary-foreground: #ffffff;
-  --secondary: #f2eaff;
-  --secondary-foreground: #4b2b93;
-  --muted: #f4eeff;
-  --muted-foreground: #7b68a5;
-  --accent: #7c3aed;
-  --accent-foreground: #ffffff;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e6dcff;
-  --input: #ece4ff;
-  --ring: #6e56a8;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --background: #13071f;
+  --foreground: #f7edff;
+  --card: #1a0b2f;
+  --card-foreground: #f8eeff;
+  --popover: #1a0b2f;
+  --popover-foreground: #f8eeff;
+  --primary: #bb35ff;
+  --primary-foreground: #19062b;
+  --secondary: #2a1142;
+  --secondary-foreground: #ead0ff;
+  --muted: #221135;
+  --muted-foreground: #c8a2ea;
+  --accent: #d946ef;
+  --accent-foreground: #19062b;
+  --destructive: #ff5f93;
+  --border: #4f2275;
+  --input: #3e1b5c;
+  --ring: #c95bff;
+  --chart-1: #d946ef;
+  --chart-2: #bb35ff;
+  --chart-3: #8a2be2;
+  --chart-4: #6f1dc1;
+  --chart-5: #54118f;
   --radius: 0.625rem;
-  --sidebar: #f2eaff;
-  --sidebar-foreground: #2b145e;
-  --sidebar-primary: #2b145e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f4eeff;
-  --sidebar-accent-foreground: #4b2b93;
-  --sidebar-border: #e6dcff;
-  --sidebar-ring: #6e56a8;
+  --sidebar: #170a29;
+  --sidebar-foreground: #f7edff;
+  --sidebar-primary: #bb35ff;
+  --sidebar-primary-foreground: #19062b;
+  --sidebar-accent: #2e1448;
+  --sidebar-accent-foreground: #f3d9ff;
+  --sidebar-border: #4f2275;
+  --sidebar-ring: #c95bff;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0d0418;
+  --foreground: #f9f1ff;
+  --card: #16082a;
+  --card-foreground: #f9f1ff;
+  --popover: #16082a;
+  --popover-foreground: #f9f1ff;
+  --primary: #c84cff;
+  --primary-foreground: #11021f;
+  --secondary: #250e3c;
+  --secondary-foreground: #efd8ff;
+  --muted: #1d0c30;
+  --muted-foreground: #cfaeea;
+  --accent: #e756ff;
+  --accent-foreground: #120321;
+  --destructive: #ff5f93;
+  --border: #50237a;
+  --input: #3a1858;
+  --ring: #d16bff;
+  --chart-1: #e756ff;
+  --chart-2: #c84cff;
+  --chart-3: #9a38f0;
+  --chart-4: #7423cf;
+  --chart-5: #551497;
+  --sidebar: #120522;
+  --sidebar-foreground: #f9f1ff;
+  --sidebar-primary: #c84cff;
+  --sidebar-primary-foreground: #11021f;
+  --sidebar-accent: #2b1246;
+  --sidebar-accent-foreground: #f3dcff;
+  --sidebar-border: #50237a;
+  --sidebar-ring: #d16bff;
 }
 
 @layer base {
@@ -123,7 +123,10 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: radial-gradient(circle at top right, #f5edff 0%, transparent 35%);
+    background-image:
+      radial-gradient(circle at 10% 10%, rgba(217, 70, 239, 0.35) 0%, transparent 32%),
+      radial-gradient(circle at 85% 15%, rgba(187, 53, 255, 0.3) 0%, transparent 38%),
+      radial-gradient(circle at 50% 100%, rgba(111, 29, 193, 0.2) 0%, transparent 45%);
   }
   html {
     @apply font-sans;
