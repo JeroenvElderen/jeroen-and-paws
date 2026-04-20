@@ -4,7 +4,7 @@ import { sectionSeven } from "@/lib/data/homepage-data";
 
 export function SectionSevenContact() {
   return (
-    <section className="px-6 py-10 sm:px-10 lg:px-12">
+    <section id="contact" className="px-6 py-10 sm:px-10 lg:px-12">
       <div className="premium-section grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-start lg:gap-12">
         <div>
           <h2 className="premium-title tracking-tight sm:text-6xl">{sectionSeven.title}</h2>
@@ -47,12 +47,15 @@ export function SectionSevenContact() {
           <form className="space-y-6" aria-label="Contact request form">
             {sectionSeven.formFields.map((field) => (
               <div key={field.name} className="relative">
+                <label htmlFor={field.name} className="mb-2 block pl-2 text-sm font-semibold text-[#d8c1ff]">
+                  {field.placeholder}
+                </label>
                 <input
+                  id={field.name}
                   type={field.type}
                   name={field.name}
-                  placeholder={field.placeholder}
-                  className="h-14 w-full rounded-full border-none bg-[#261c38] px-6 text-lg text-[#bda5e9] placeholder:text-[#9b87c1] outline-none"
-                  readOnly
+                  placeholder={`Enter ${field.placeholder.toLowerCase()}`}
+                  className="h-14 w-full rounded-full border border-[#3f2f5c] bg-[#261c38] px-6 text-lg text-[#e6d7ff] placeholder:text-[#9b87c1] outline-none ring-0 transition focus-visible:border-[#a97dfb] focus-visible:ring-2 focus-visible:ring-[#a97dfb]/30"
                 />
                 {field.name === "date" ? (
                   <CalendarDays className="pointer-events-none absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#ac95d0]" />

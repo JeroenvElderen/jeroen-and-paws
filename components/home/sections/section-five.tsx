@@ -4,7 +4,7 @@ import { sectionFive } from "@/lib/data/homepage-data";
 
 export function SectionFiveTeam() {
   return (
-    <section className="px-6 py-10 sm:px-10 lg:px-12">
+    <section id="reviews" className="px-6 py-10 sm:px-10 lg:px-12">
       <div className="premium-section">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="premium-title">{sectionFive.title}</h2>
