@@ -5,15 +5,17 @@ import { sectionFive } from "@/lib/data/homepage-data";
 export function SectionFiveTeam() {
   return (
     <section id="reviews" className="px-6 py-10 sm:px-10 lg:px-12">
-      <div className="premium-section">
+      <div className="premium-section playful-panel">
+        <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
+        <div className="playful-ribbons pointer-events-none absolute left-0 top-0 h-24 w-44" />
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="premium-title">{sectionFive.title}</h2>
-          <p className="mt-6 text-lg leading-relaxed text-[#bda5e9] sm:text-[1.35rem]">{sectionFive.subtitle}</p>
+          <p className="mt-6 text-lg leading-relaxed text-[#e3cbff] sm:text-[1.35rem]">{sectionFive.subtitle}</p>
         </div>
 
         <div className="mt-14 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           {sectionFive.members.map((member) => (
-            <article key={member.name} className="rounded-3xl border border-white/10 bg-[#1e1530]/80 p-5 text-center transition-transform hover:-translate-y-1">
+            <article key={member.name} className="rounded-3xl border border-white/20 bg-gradient-to-b from-[#2a1c46] to-[#1d1230] p-5 text-center transition-transform hover:-translate-y-1">
               <div className="mx-auto max-w-[24rem] rounded-[3rem] border border-white/15 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
                 <div
                   className="relative h-[22rem] overflow-hidden rounded-[2.4rem]"
@@ -23,8 +25,8 @@ export function SectionFiveTeam() {
                 </div>
               </div>
 
-              <h3 className="mt-7 text-[1.7rem] font-extrabold leading-tight text-[#efe3ff]">{member.name}</h3>
-              <p className="mt-2 text-[1.05rem] font-bold text-[#9d64ff]">{member.role}</p>
+              <h3 className="mt-7 text-[1.7rem] font-extrabold leading-tight text-[#fff4ff]">{member.name}</h3>
+              <p className="mt-2 text-[1.05rem] font-bold text-[#ff9ec9]">{member.role}</p>
             </article>
           ))}
         </div>
