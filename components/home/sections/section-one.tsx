@@ -7,8 +7,8 @@ import { sectionOne } from "@/lib/data/homepage-data";
 
 export function SectionOneHero() {
   return (
-    <section className="px-6 pb-8 pt-10 sm:px-10 lg:px-12">
-      <div className="premium-section playful-panel relative overflow-hidden">
+    <section className="px-4 pb-8 pt-10 sm:px-6 lg:px-8">
+      <div className="premium-section playful-panel relative isolate overflow-hidden">
         <div className="pointer-events-none absolute -left-16 top-6 h-52 w-52 rounded-full bg-[#ff74b3]/25 blur-3xl" />
         <div className="pointer-events-none absolute -right-12 bottom-4 h-60 w-60 rounded-full bg-[#8c63ff]/30 blur-3xl" />
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-28" />
@@ -50,7 +50,7 @@ export function SectionOneHero() {
 
             <div className="grid max-w-xl grid-cols-3 gap-3">
               {sectionOne.stats.map((stat) => (
-                <article key={stat.label} className="rounded-2xl border border-white/25 bg-[#2f1e4f]/70 px-4 py-4 backdrop-blur">
+                <article key={stat.label} className="rounded-2xl border border-white/25 bg-[#2f1e4f]/70 px-4 py-4 shadow-lg backdrop-blur">
                   <p className="text-2xl font-extrabold text-[#fff3ff]">{stat.value}</p>
                   <p className="text-sm font-medium text-[#dfc2ff]">{stat.label}</p>
                 </article>
@@ -59,7 +59,7 @@ export function SectionOneHero() {
           </div>
 
           <div className="relative mx-auto w-full max-w-[560px]">
-            <div className="relative aspect-[0.85] overflow-hidden rounded-[2.8rem] border-[10px] border-[#3a235f] shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+            <div className="relative aspect-[0.85] overflow-hidden rounded-[2.8rem] border-[10px] border-[#3a235f] shadow-[0_34px_85px_rgba(0,0,0,0.52)]">
               <Image
                 src={sectionOne.heroImage.src}
                 alt={sectionOne.heroImage.alt}

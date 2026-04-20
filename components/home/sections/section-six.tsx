@@ -10,15 +10,15 @@ export function SectionSixFaq() {
   const [openItem, setOpenItem] = useState<string | null>(sectionSix.items[0]?.question ?? null);
 
   return (
-    <section id="faq" className="px-6 py-10 sm:px-10 lg:px-12">
-      <div className="premium-section playful-panel grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
+    <section id="faq" className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="premium-section playful-panel relative isolate grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute right-0 top-0 h-24 w-44" />
         <div>
           <h2 className="premium-title tracking-tight">{sectionSix.title}</h2>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-[#e3cbff] sm:text-xl">{sectionSix.subtitle}</p>
 
-          <div className="mt-10 overflow-hidden rounded-3xl border border-white/25 bg-[#23163a]/60">
+          <div className="mt-10 overflow-hidden rounded-3xl border border-white/25 bg-[#23163a]/60 shadow-[0_20px_50px_rgba(0,0,0,0.32)]">
             {sectionSix.items.map((item) => {
               const isOpen = openItem === item.question;
 

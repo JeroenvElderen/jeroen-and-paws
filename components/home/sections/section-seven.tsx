@@ -4,8 +4,8 @@ import { sectionSeven } from "@/lib/data/homepage-data";
 
 export function SectionSevenContact() {
   return (
-    <section id="contact" className="px-6 py-10 sm:px-10 lg:px-12">
-      <div className="premium-section playful-panel grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-start lg:gap-12">
+    <section id="contact" className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="premium-section playful-panel relative isolate grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-start lg:gap-12">
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute left-0 top-0 h-24 w-44" />
         <div>
@@ -40,7 +40,7 @@ export function SectionSevenContact() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-white/20 bg-[#24183d] px-7 py-10 sm:px-10">
+        <div className="rounded-[2rem] border border-white/20 bg-[#24183d] px-7 py-10 shadow-[0_22px_55px_rgba(0,0,0,0.35)] sm:px-10">
           <form className="space-y-6" aria-label="Contact request form">
             {sectionSeven.formFields.map((field) => (
               <div key={field.name} className="relative">

@@ -5,12 +5,12 @@ import { sectionFour } from "@/lib/data/homepage-data";
 
 export function SectionFourContact() {
   return (
-    <section className="px-6 py-10 sm:px-10 lg:px-12">
-      <div className="premium-section playful-panel relative px-6 py-16 sm:px-10 lg:px-20 lg:py-20">
+    <section className="px-4 py-10 sm:px-6 lg:px-8">
+      <div className="premium-section playful-panel relative isolate px-6 py-16 sm:px-10 lg:px-20 lg:py-20">
         <div className="absolute left-0 top-0 h-full w-full rounded-[2rem] bg-[radial-gradient(circle_at_18%_12%,rgba(255,116,179,0.2),transparent_34%)]" />
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute right-0 top-0 h-24 w-44" />
-        <div className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
+        <div className="relative mx-auto flex max-w-3xl flex-col items-center rounded-[1.8rem] border border-white/10 bg-white/[0.02] px-6 py-8 text-center sm:px-8">
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/30 text-[#ffc6e4]">
             <Mail className="h-6 w-6" strokeWidth={1.8} />
           </span>
