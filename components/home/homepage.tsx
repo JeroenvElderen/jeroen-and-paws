@@ -4,6 +4,7 @@ import { SectionThreeImages } from "@/components/home/sections/section-three";
 import { SectionFourContact } from "@/components/home/sections/section-four";
 import { SectionFiveTeam } from "@/components/home/sections/section-five";
 import { SectionSixFaq } from "@/components/home/sections/section-six";
+import { SectionSevenContact } from "@/components/home/sections/section-seven";
 
 export function Homepage() {
   return (
@@ -15,6 +16,7 @@ export function Homepage() {
         <SectionFourContact />
         <SectionFiveTeam />
         <SectionSixFaq />
+        <SectionSevenContact />
       </div>
     </>
   );

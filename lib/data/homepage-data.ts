@@ -145,6 +145,27 @@ export type HomepageSectionSix = {
   items: HomepageSectionSixFaqItem[];
 };
 
+export type HomepageSectionSevenInfo = {
+  icon: "map" | "hours" | "contact";
+  iconColor: string;
+  title: string;
+  lines: string[];
+};
+
+export type HomepageSectionSevenFormField = {
+  name: string;
+  placeholder: string;
+  type: "text" | "tel";
+};
+
+export type HomepageSectionSeven = {
+  title: string;
+  subtitle: string;
+  info: HomepageSectionSevenInfo[];
+  formFields: HomepageSectionSevenFormField[];
+  submitLabel: string;
+};
+
 export const sectionThree: HomepageSectionThree = {
   visuals: [
     {
@@ -262,4 +283,37 @@ export const sectionSix: HomepageSectionSix = {
         "Pricing depends on breed, coat condition, and selected services. We share a clear quote in advance so you know exactly what is included.",
     },
   ],
+};
+
+export const sectionSeven: HomepageSectionSeven = {
+  title: "Still Have Questions?",
+  subtitle: "Need some advice or have any questions about our services? Contact us in any convenient way.",
+  info: [
+    {
+      icon: "map",
+      iconColor: "#ff6436",
+      title: "Our Address",
+      lines: ["2562 Francis Lewis Blvd,", "Flushing, NY 11358"],
+    },
+    {
+      icon: "hours",
+      iconColor: "#79beef",
+      title: "Working Hours",
+      lines: ["Monday - Saturday: 11 AM - 9 PM", "Sunday: 11 AM - 7 PM"],
+    },
+    {
+      icon: "contact",
+      iconColor: "#f4bd35",
+      title: "Our Contacts",
+      lines: ["bestpet@email.com", "+ 1 (234) 567 89 00"],
+    },
+  ],
+  formFields: [
+    { name: "name", placeholder: "Enter your full name*", type: "text" },
+    { name: "phone", placeholder: "Enter your phone number*", type: "tel" },
+    { name: "pet", placeholder: "Pet's name and age*", type: "text" },
+    { name: "service", placeholder: "Service*", type: "text" },
+    { name: "date", placeholder: "Choose date", type: "text" },
+  ],
+  submitLabel: "Send",
 };
