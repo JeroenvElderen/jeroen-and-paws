@@ -7,14 +7,14 @@ export function SectionFiveTeam() {
     <section className="px-6 pb-24 pt-4 sm:px-10 lg:px-12">
       <div className="mx-auto w-full max-w-6xl">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-4xl font-extrabold text-[#351a75] sm:text-5xl">{sectionFive.title}</h2>
-          <p className="mt-6 text-lg leading-relaxed text-[#6f5aa1] sm:text-[1.35rem]">{sectionFive.subtitle}</p>
+          <h2 className="text-4xl font-extrabold text-[#efe3ff] sm:text-5xl">{sectionFive.title}</h2>
+          <p className="mt-6 text-lg leading-relaxed text-[#bda5e9] sm:text-[1.35rem]">{sectionFive.subtitle}</p>
         </div>
 
         <div className="mt-14 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           {sectionFive.members.map((member) => (
             <article key={member.name} className="text-center">
-              <div className="mx-auto max-w-[24rem] rounded-[6rem] border-[10px] border-white p-0 shadow-[0_24px_60px_rgba(13,28,105,0.10)]">
+              <div className="mx-auto max-w-[24rem] rounded-[6rem] border-[10px] border-white p-0 shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
                 <div
                   className="relative h-[30rem] overflow-hidden rounded-[5.4rem]"
                   style={{ backgroundColor: member.image.bgColor }}
@@ -23,8 +23,8 @@ export function SectionFiveTeam() {
                 </div>
               </div>
 
-              <h3 className="mt-9 text-[2rem] font-extrabold leading-tight text-[#351a75]">{member.name}</h3>
-              <p className="mt-3 text-[1.35rem] font-bold text-[#7c3aed]">{member.role}</p>
+              <h3 className="mt-9 text-[2rem] font-extrabold leading-tight text-[#efe3ff]">{member.name}</h3>
+              <p className="mt-3 text-[1.35rem] font-bold text-[#9d64ff]">{member.role}</p>
             </article>
           ))}
         </div>

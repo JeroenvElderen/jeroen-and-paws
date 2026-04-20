@@ -49,72 +49,72 @@
 }
 
 :root {
-  --background: #13071f;
-  --foreground: #f7edff;
-  --card: #1a0b2f;
-  --card-foreground: #f8eeff;
-  --popover: #1a0b2f;
-  --popover-foreground: #f8eeff;
-  --primary: #bb35ff;
-  --primary-foreground: #19062b;
-  --secondary: #2a1142;
-  --secondary-foreground: #ead0ff;
-  --muted: #221135;
-  --muted-foreground: #c8a2ea;
-  --accent: #d946ef;
-  --accent-foreground: #19062b;
+  --background: #0f0918;
+  --foreground: #f4ecff;
+  --card: #171126;
+  --card-foreground: #efe3ff;
+  --popover: #171126;
+  --popover-foreground: #efe3ff;
+  --primary: #b78cff;
+  --primary-foreground: #120b1e;
+  --secondary: #211633;
+  --secondary-foreground: #e6d4ff;
+  --muted: #1b132b;
+  --muted-foreground: #c9afe9;
+  --accent: #d7b2ff;
+  --accent-foreground: #120d1e;
   --destructive: #ff5f93;
-  --border: #4f2275;
-  --input: #3e1b5c;
-  --ring: #c95bff;
-  --chart-1: #d946ef;
-  --chart-2: #bb35ff;
-  --chart-3: #8a2be2;
-  --chart-4: #6f1dc1;
-  --chart-5: #54118f;
+  --border: #432a66;
+  --input: #382451;
+  --ring: #c797ff;
+  --chart-1: #d7b2ff;
+  --chart-2: #b78cff;
+  --chart-3: #9a5fe8;
+  --chart-4: #8248d5;
+  --chart-5: #6f35c1;
   --radius: 0.625rem;
-  --sidebar: #170a29;
-  --sidebar-foreground: #f7edff;
-  --sidebar-primary: #bb35ff;
-  --sidebar-primary-foreground: #19062b;
-  --sidebar-accent: #2e1448;
-  --sidebar-accent-foreground: #f3d9ff;
-  --sidebar-border: #4f2275;
-  --sidebar-ring: #c95bff;
+  --sidebar: #120d1e;
+  --sidebar-foreground: #efe3ff;
+  --sidebar-primary: #b78cff;
+  --sidebar-primary-foreground: #120d1e;
+  --sidebar-accent: #241937;
+  --sidebar-accent-foreground: #dbc4ff;
+  --sidebar-border: #432a66;
+  --sidebar-ring: #c797ff;
 }
 
 .dark {
-  --background: #0d0418;
-  --foreground: #f9f1ff;
-  --card: #16082a;
-  --card-foreground: #f9f1ff;
-  --popover: #16082a;
-  --popover-foreground: #f9f1ff;
-  --primary: #c84cff;
-  --primary-foreground: #11021f;
-  --secondary: #250e3c;
-  --secondary-foreground: #efd8ff;
-  --muted: #1d0c30;
-  --muted-foreground: #cfaeea;
-  --accent: #e756ff;
-  --accent-foreground: #120321;
+  --background: #0b0612;
+  --foreground: #f6eeff;
+  --card: #140f22;
+  --card-foreground: #f0e4ff;
+  --popover: #140f22;
+  --popover-foreground: #f0e4ff;
+  --primary: #c29bff;
+  --primary-foreground: #100b1a;
+  --secondary: #1d1430;
+  --secondary-foreground: #ead8ff;
+  --muted: #181025;
+  --muted-foreground: #ccb3ea;
+  --accent: #ddbaff;
+  --accent-foreground: #120d1e;
   --destructive: #ff5f93;
-  --border: #50237a;
-  --input: #3a1858;
-  --ring: #d16bff;
-  --chart-1: #e756ff;
-  --chart-2: #c84cff;
-  --chart-3: #9a38f0;
-  --chart-4: #7423cf;
-  --chart-5: #551497;
-  --sidebar: #120522;
-  --sidebar-foreground: #f9f1ff;
-  --sidebar-primary: #c84cff;
-  --sidebar-primary-foreground: #11021f;
-  --sidebar-accent: #2b1246;
-  --sidebar-accent-foreground: #f3dcff;
-  --sidebar-border: #50237a;
-  --sidebar-ring: #d16bff;
+  --border: #4a3070;
+  --input: #3b2756;
+  --ring: #d2a4ff;
+  --chart-1: #ddbaff;
+  --chart-2: #c29bff;
+  --chart-3: #a773ea;
+  --chart-4: #9157de;
+  --chart-5: #7a40cb;
+  --sidebar: #100b1a;
+  --sidebar-foreground: #f0e4ff;
+  --sidebar-primary: #c29bff;
+  --sidebar-primary-foreground: #100b1a;
+  --sidebar-accent: #211633;
+  --sidebar-accent-foreground: #dfc9ff;
+  --sidebar-border: #4a3070;
+  --sidebar-ring: #d2a4ff;
 }
 
 @layer base {
@@ -124,9 +124,9 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at 10% 10%, rgba(217, 70, 239, 0.35) 0%, transparent 32%),
-      radial-gradient(circle at 85% 15%, rgba(187, 53, 255, 0.3) 0%, transparent 38%),
-      radial-gradient(circle at 50% 100%, rgba(111, 29, 193, 0.2) 0%, transparent 45%);
+      radial-gradient(circle at 8% 10%, rgba(189, 117, 255, 0.24) 0%, transparent 35%),
+      radial-gradient(circle at 88% 16%, rgba(143, 92, 220, 0.22) 0%, transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(90, 44, 170, 0.2) 0%, transparent 48%);
   }
   html {
     @apply font-sans;
