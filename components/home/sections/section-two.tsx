@@ -34,7 +34,7 @@ function ServiceCardIcon({ icon }: { icon: HomepageSectionTwoCard["icon"] }) {
 
 function ServiceCardItem({ card }: { card: HomepageSectionTwoCard }) {
   return (
-    <article className="group overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-[0_16px_40px_rgba(0,0,0,0.35)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(0,0,0,0.5)]">
+    <article className="group overflow-hidden rounded-[2rem] border border-border/70 bg-card/90 shadow-[0_16px_40px_rgba(0,0,0,0.35)] transition-all hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(0,0,0,0.5)]">
       <div className="relative h-44 overflow-hidden">
         <Image
           src={card.image}
@@ -53,15 +53,12 @@ function ServiceCardItem({ card }: { card: HomepageSectionTwoCard }) {
         </div>
       </div>
 
-      <div className="flex min-h-[210px] flex-col px-6 py-7">
-        <h3 className="text-[2rem] font-extrabold leading-[1.1] text-[#efe3ff]">{card.title}</h3>
+      <div className="flex min-h-[230px] flex-col px-6 py-7">
+        <h3 className="text-[1.7rem] font-extrabold leading-[1.1] text-[#efe3ff]">{card.title}</h3>
         <div className="mt-4 h-[0.2rem] w-14 rounded-full bg-[#9d64ff]" />
-        <p className="mt-5 text-lg leading-[1.45] text-[#bca3e7]">{card.description}</p>
+        <p className="mt-5 text-base leading-[1.55] text-[#bca3e7]">{card.description}</p>
 
-        <Link
-          href={card.href}
-          className="mt-auto inline-flex items-center gap-3 pt-7 text-base font-extrabold text-primary"
-        >
+        <Link href={card.href} className="mt-auto inline-flex items-center gap-3 pt-7 text-base font-extrabold text-primary">
           Learn More <span aria-hidden="true">→</span>
         </Link>
       </div>
@@ -77,37 +74,40 @@ export function SectionTwoServices() {
   return (
     <section id="services" className="px-6 py-10 sm:px-10 lg:px-12">
       <div className="premium-section mb-8">
-        <div className="mb-8 flex items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Tailored services</p>
-          <h2 className="premium-title mt-3">Choose a premium care experience</h2>
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">Tailored services</p>
+            <h2 className="premium-title mt-3">Choose a premium care experience</h2>
+          </div>
+          <p className="max-w-md text-sm leading-relaxed text-[#bda5e9] sm:text-base">
+            Swipe through concierge-grade options designed to match your pet&apos;s rhythm, temperament, and routine.
+          </p>
         </div>
-      </div>
 
         <div className="flex items-center gap-6">
-        <button
-          type="button"
-          aria-label="Previous services"
-          onClick={() => setStartIndex((index) => (index - 1 + sectionTwo.cards.length) % sectionTwo.cards.length)}
-          className="hidden rounded-full border border-border/90 bg-card p-3 text-primary/70 transition-colors hover:bg-secondary lg:block"
-        >
-          <ChevronLeft className="h-8 w-8" />
-        </button>
+          <button
+            type="button"
+            aria-label="Previous services"
+            onClick={() => setStartIndex((index) => (index - 1 + sectionTwo.cards.length) % sectionTwo.cards.length)}
+            className="hidden rounded-full border border-border/90 bg-card p-3 text-primary/70 transition-colors hover:bg-secondary lg:block"
+          >
+            <ChevronLeft className="h-8 w-8" />
+          </button>
 
-        <div className="grid flex-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {visibleCards.map((card, index) => (
-            <ServiceCardItem key={`${card.title}-${index}`} card={card} />
-          ))}
-        </div>
+          <div className="grid flex-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {visibleCards.map((card, index) => (
+              <ServiceCardItem key={`${card.title}-${index}`} card={card} />
+            ))}
+          </div>
 
-        <button
-          type="button"
-          aria-label="Next services"
-          onClick={() => setStartIndex((index) => (index + 1) % sectionTwo.cards.length)}
-          className="hidden rounded-full border border-border/90 bg-card p-3 text-primary/70 transition-colors hover:bg-secondary lg:block"
-        >
-          <ChevronRight className="h-8 w-8" />
-        </button>
+          <button
+            type="button"
+            aria-label="Next services"
+            onClick={() => setStartIndex((index) => (index + 1) % sectionTwo.cards.length)}
+            className="hidden rounded-full border border-border/90 bg-card p-3 text-primary/70 transition-colors hover:bg-secondary lg:block"
+          >
+            <ChevronRight className="h-8 w-8" />
+          </button>
         </div>
       </div>
     </section>
