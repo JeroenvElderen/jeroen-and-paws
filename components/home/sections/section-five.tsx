@@ -15,8 +15,11 @@ export function SectionFiveTeam() {
 
         <div className="mt-14 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           {sectionFive.members.map((member) => (
-            <article key={member.name} className="rounded-3xl border border-white/20 bg-gradient-to-b from-[#2a1c46] to-[#1d1230] p-5 text-center shadow-[0_18px_45px_rgba(0,0,0,0.32)] transition-transform duration-300 hover:-translate-y-1.5">
-              <div className="mx-auto max-w-[24rem] rounded-[3rem] border border-white/15 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
+            <article
+              key={member.name}
+              className="dynamic-band text-center transition-transform duration-300 hover:-translate-y-2"
+            >
+              <div className="mx-auto max-w-[24rem] rounded-[3rem] border border-white/15 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.38)]">
                 <div
                   className="relative h-[22rem] overflow-hidden rounded-[2.4rem]"
                   style={{ backgroundColor: member.image.bgColor }}

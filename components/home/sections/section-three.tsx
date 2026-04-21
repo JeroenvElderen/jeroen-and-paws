@@ -21,7 +21,7 @@ export function SectionThreeImages() {
       <div className="premium-section playful-panel relative isolate space-y-20">
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute right-0 top-0 h-20 w-44" />
-        <article className="grid items-center gap-10 rounded-[2rem] border border-white/10 bg-white/[0.02] p-4 lg:grid-cols-2 lg:gap-16 lg:p-6">
+        <article className="dynamic-band grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
             <FramedImage src={firstVisual.image.src} alt={firstVisual.image.alt} />
           </div>
@@ -42,8 +42,8 @@ export function SectionThreeImages() {
           </div>
         </article>
 
-        <article className="grid items-center gap-10 rounded-[2rem] border border-white/10 bg-white/[0.02] p-4 lg:grid-cols-2 lg:gap-16 lg:p-6">
-          <div className="order-2 lg:order-1 rounded-3xl border border-white/20 bg-[#24183d]/70 p-8">
+        <article className="dynamic-band grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="order-2 lg:order-1 rounded-3xl border border-white/15 bg-[#24183d]/48 p-8 backdrop-blur-[2px]">
             <h2 className="premium-title">{secondVisual.title}</h2>
             <p className="mt-6 text-lg leading-relaxed text-[#e3cbff]">{secondVisual.intro}</p>
 
