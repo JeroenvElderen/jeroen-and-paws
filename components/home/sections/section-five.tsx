@@ -26,7 +26,7 @@ export function SectionFiveTeam() {
               </div>
 
               <h3 className="mt-7 text-[1.7rem] font-extrabold leading-tight text-[#fff4ff]">{member.name}</h3>
-              <p className="mt-2 text-[1.05rem] font-bold text-[#ff9ec9]">{member.role}</p>
+              <p className="mt-2 text-[1.05rem] font-bold text-[#a78bfa]">{member.role}</p>
               <p className="mt-4 text-left text-[1rem] leading-relaxed text-[#e3cbff]">&ldquo;{member.quote}&rdquo;</p>
             </article>
           ))}

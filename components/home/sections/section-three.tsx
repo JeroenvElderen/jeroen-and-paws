@@ -35,7 +35,7 @@ export function SectionThreeImages() {
             ))}
             <Link
               href={firstVisual.cta.href}
-              className="mt-8 inline-flex rounded-full border border-white/30 bg-gradient-to-r from-[#ff74b3] to-[#8f63ff] px-8 py-3 text-lg font-extrabold text-white transition-colors hover:from-[#ff63aa] hover:to-[#7f52f6]"
+              className="mt-8 inline-flex rounded-full border border-white/30 bg-gradient-to-r from-[#8b5cf6] to-[#8f63ff] px-8 py-3 text-lg font-extrabold text-white transition-colors hover:from-[#7c3aed] hover:to-[#7f52f6]"
             >
               {firstVisual.cta.label}
             </Link>
@@ -50,15 +50,15 @@ export function SectionThreeImages() {
             <ul className="mt-6 space-y-3 text-lg leading-relaxed text-[#e3cbff]">
               {secondVisual.highlights.map((highlight) => (
                 <li key={highlight} className="flex items-start gap-3">
-                  <span className="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-[#ff74b3]" aria-hidden="true" />
+                  <span className="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-[#8b5cf6]" aria-hidden="true" />
                   <span>{highlight}</span>
                 </li>
               ))}
             </ul>
 
             <p className="mt-8 text-lg italic text-[#d8beff]">
-              <span className="text-[#ff74b3]">*</span> {secondVisual.footerPrefix}{" "}
-              <span className="font-semibold text-[#ff9ec9]">{secondVisual.footerAccent}</span> {secondVisual.footerSuffix}
+              <span className="text-[#8b5cf6]">*</span> {secondVisual.footerPrefix}{" "}
+              <span className="font-semibold text-[#a78bfa]">{secondVisual.footerAccent}</span> {secondVisual.footerSuffix}
             </p>
           </div>
 
