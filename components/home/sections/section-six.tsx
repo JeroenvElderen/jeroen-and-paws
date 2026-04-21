@@ -11,7 +11,7 @@ export function SectionSixFaq() {
 
   return (
     <section id="faq" className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="premium-section playful-panel relative isolate grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
+      <div className="flow-section playful-panel relative isolate grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute right-0 top-0 h-24 w-44" />
         <div>

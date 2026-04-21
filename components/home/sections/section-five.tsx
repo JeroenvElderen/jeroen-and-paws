@@ -5,7 +5,7 @@ import { sectionFive } from "@/lib/data/homepage-data";
 export function SectionFiveTeam() {
   return (
     <section id="reviews" className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="premium-section playful-panel relative isolate">
+      <div className="flow-section playful-panel relative isolate">
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute left-0 top-0 h-24 w-44" />
         <div className="mx-auto max-w-3xl text-center">

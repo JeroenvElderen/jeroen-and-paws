@@ -6,7 +6,7 @@ import { sectionFour } from "@/lib/data/homepage-data";
 export function SectionFourContact() {
   return (
     <section className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="premium-section playful-panel relative isolate px-6 py-16 sm:px-10 lg:px-20 lg:py-20">
+      <div className="flow-section playful-panel relative isolate px-6 py-16 sm:px-10 lg:px-20 lg:py-20">
         <div className="absolute left-0 top-0 h-full w-full rounded-[2rem] bg-[radial-gradient(circle_at_18%_12%,rgba(255,116,179,0.2),transparent_34%)]" />
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute right-0 top-0 h-24 w-44" />

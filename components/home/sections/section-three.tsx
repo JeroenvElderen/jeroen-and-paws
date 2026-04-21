@@ -18,7 +18,7 @@ export function SectionThreeImages() {
 
   return (
     <section id="about" className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="premium-section playful-panel relative isolate space-y-20">
+      <div className="flow-section playful-panel relative isolate space-y-20">
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute right-0 top-0 h-20 w-44" />
         <article className="grid items-center gap-10 rounded-[2rem] border border-white/10 bg-white/[0.02] p-4 lg:grid-cols-2 lg:gap-16 lg:p-6">

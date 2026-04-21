@@ -8,7 +8,7 @@ import { sectionOne } from "@/lib/data/homepage-data";
 export function SectionOneHero() {
   return (
     <section className="px-4 pb-8 pt-10 sm:px-6 lg:px-8">
-      <div className="premium-section playful-panel relative isolate overflow-hidden">
+      <div className="flow-section playful-panel relative isolate overflow-hidden">
         <div className="pointer-events-none absolute -left-16 top-6 h-52 w-52 rounded-full bg-[#ff74b3]/25 blur-3xl" />
         <div className="pointer-events-none absolute -right-12 bottom-4 h-60 w-60 rounded-full bg-[#8c63ff]/30 blur-3xl" />
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-28" />
