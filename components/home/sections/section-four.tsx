@@ -1,40 +1,21 @@
 import Link from "next/link";
-import { Mail } from "lucide-react";
 
 import { sectionFour } from "@/lib/data/homepage-data";
 
 export function SectionFourContact() {
   return (
-    <section className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="premium-section playful-panel relative isolate px-6 py-16 sm:px-10 lg:px-20 lg:py-20">
-        <div className="absolute left-0 top-0 h-full w-full rounded-[2rem] bg-[radial-gradient(circle_at_18%_12%,rgba(255,116,179,0.2),transparent_34%)]" />
-        <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
-        <div className="playful-ribbons pointer-events-none absolute right-0 top-0 h-24 w-44" />
-        <div className="relative mx-auto flex max-w-3xl flex-col items-center rounded-[1.8rem] border border-white/10 bg-white/[0.02] px-6 py-8 text-center sm:px-8">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/30 text-[#ffc6e4]">
-            <Mail className="h-6 w-6" strokeWidth={1.8} />
-          </span>
-
-          <h2 className="mt-7 text-4xl font-extrabold leading-tight text-[#fff2ff] sm:text-5xl">{sectionFour.title}</h2>
-
-          <p className="mt-8 text-2xl font-semibold text-[#e7ceff] sm:text-3xl">
-            {sectionFour.phoneLabel} <span className="text-[#ff9ec9]">{sectionFour.phoneNumber}</span>
-          </p>
-
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href={sectionFour.primaryCta.href}
-              className="inline-flex rounded-full bg-gradient-to-r from-[#ff74b3] to-[#8f63ff] px-9 py-4 text-xl font-extrabold text-white transition-colors hover:from-[#ff63aa] hover:to-[#7f52f6]"
-            >
-              {sectionFour.primaryCta.label}
-            </Link>
-            <Link
-              href={sectionFour.secondaryCta.href}
-              className="inline-flex rounded-full border border-white/20 bg-[#302049] px-9 py-4 text-xl font-extrabold text-[#f7e9ff] transition-colors hover:bg-[#3f2b61]"
-            >
-              {sectionFour.secondaryCta.label}
-            </Link>
-          </div>
+    <section className="px-4 py-8 sm:px-8 lg:px-10">
+      <div className="mx-auto w-full max-w-7xl rounded-[2.5rem] border border-cyan-300/40 bg-gradient-to-r from-[#08203d]/90 via-[#1a1140]/90 to-[#221136]/90 p-8 text-center sm:p-12">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-100">Fast booking lane</p>
+        <h2 className="mt-4 text-4xl font-black text-white sm:text-6xl">{sectionFour.title}</h2>
+        <p className="mt-6 text-2xl font-bold text-fuchsia-100">{sectionFour.phoneLabel}: {sectionFour.phoneNumber}</p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link href={sectionFour.primaryCta.href} className="rounded-xl bg-cyan-300 px-6 py-3 font-black text-[#032033]">
+            {sectionFour.primaryCta.label}
+          </Link>
+          <Link href={sectionFour.secondaryCta.href} className="rounded-xl border border-fuchsia-200/60 px-6 py-3 font-black text-fuchsia-100">
+            {sectionFour.secondaryCta.label}
+          </Link>
         </div>
       </div>
     </section>

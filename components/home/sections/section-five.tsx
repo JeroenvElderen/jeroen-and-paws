@@ -4,33 +4,20 @@ import { sectionFive } from "@/lib/data/homepage-data";
 
 export function SectionFiveTeam() {
   return (
-    <section id="reviews" className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="premium-section playful-panel relative isolate">
-        <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
-        <div className="playful-ribbons pointer-events-none absolute left-0 top-0 h-24 w-44" />
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="premium-title">{sectionFive.title}</h2>
-          <p className="mt-6 text-lg leading-relaxed text-[#e3cbff] sm:text-[1.35rem]">{sectionFive.subtitle}</p>
-        </div>
+    <section id="reviews" className="px-4 py-8 sm:px-8 lg:px-10">
+      <div className="mx-auto w-full max-w-7xl rounded-[2.5rem] border border-white/20 bg-[#08172d]/70 p-6 backdrop-blur-xl lg:p-10">
+        <h2 className="text-center text-4xl font-black text-white sm:text-5xl">{sectionFive.title}</h2>
+        <p className="mx-auto mt-4 max-w-2xl text-center text-cyan-100/90">{sectionFive.subtitle}</p>
 
-        <div className="mt-14 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {sectionFive.members.map((member) => (
-            <article
-              key={member.name}
-              className="dynamic-band text-center transition-transform duration-300 hover:-translate-y-2"
-            >
-              <div className="mx-auto max-w-[24rem] rounded-[3rem] border border-white/15 p-2 shadow-[0_24px_60px_rgba(0,0,0,0.38)]">
-                <div
-                  className="relative h-[22rem] overflow-hidden rounded-[2.4rem]"
-                  style={{ backgroundColor: member.image.bgColor }}
-                >
-                  <Image src={member.image.src} alt={member.image.alt} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 33vw" />
-                </div>
+            <article key={member.name} className="rounded-3xl border border-white/20 bg-white/5 p-4">
+              <div className="relative h-72 overflow-hidden rounded-2xl">
+                <Image src={member.image.src} alt={member.image.alt} fill className="object-cover" />
               </div>
-
-              <h3 className="mt-7 text-[1.7rem] font-extrabold leading-tight text-[#fff4ff]">{member.name}</h3>
-              <p className="mt-2 text-[1.05rem] font-bold text-[#ff9ec9]">{member.role}</p>
-              <p className="mt-4 text-left text-[1rem] leading-relaxed text-[#e3cbff]">&ldquo;{member.quote}&rdquo;</p>
+              <h3 className="mt-4 text-2xl font-black text-white">{member.name}</h3>
+              <p className="text-fuchsia-200">{member.role}</p>
+              <p className="mt-3 text-cyan-100/90">“{member.quote}”</p>
             </article>
           ))}
         </div>

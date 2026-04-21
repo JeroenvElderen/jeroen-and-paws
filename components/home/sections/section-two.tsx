@@ -1,117 +1,49 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Footprints,
-  GraduationCap,
-  MoonStar,
-  Route,
-  Sparkles,
-  Sun,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { sectionTwo, type HomepageSectionTwoCard } from "@/lib/data/homepage-data";
+import { sectionTwo } from "@/lib/data/homepage-data";
 
-function getVisibleCards(cards: HomepageSectionTwoCard[], start: number, count: number) {
-  return Array.from({ length: count }, (_, offset) => cards[(start + offset) % cards.length]);
-}
-
-function ServiceCardIcon({ icon }: { icon: HomepageSectionTwoCard["icon"] }) {
-  const className = "h-6 w-6 text-white";
-
-  if (icon === "walk") return <Footprints className={className} strokeWidth={2.2} />;
-  if (icon === "day") return <Sun className={className} strokeWidth={2.2} />;
-  if (icon === "overnight") return <MoonStar className={className} strokeWidth={2.2} />;
-  if (icon === "training") return <GraduationCap className={className} strokeWidth={2.2} />;
-  if (icon === "custom") return <Sparkles className={className} strokeWidth={2.2} />;
-
-  return <Route className={className} strokeWidth={2.2} />;
-}
-
-function ServiceCardItem({ card }: { card: HomepageSectionTwoCard }) {
-  return (
-    <article className="group overflow-hidden rounded-[2rem] border border-white/20 bg-gradient-to-b from-[#2b1d47] to-[#211538] shadow-[0_20px_48px_rgba(0,0,0,0.38)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_65px_rgba(0,0,0,0.52)]">
-      <div className="relative h-44 overflow-hidden">
-        <Image
-          src={card.image}
-          alt={`${card.title} service`}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(24,13,40,0.9)] to-transparent" />
-        <div
-          className="absolute bottom-4 left-4 flex h-11 w-11 items-center justify-center rounded-full shadow-lg"
-          style={{ backgroundColor: card.iconBg }}
-          aria-hidden="true"
-        >
-          <ServiceCardIcon icon={card.icon} />
-        </div>
-      </div>
-
-      <div className="flex min-h-[230px] flex-col px-6 py-7">
-        <h3 className="text-[1.7rem] font-extrabold leading-[1.1] text-[#fff3ff]">{card.title}</h3>
-        <div className="mt-4 h-[0.2rem] w-14 rounded-full bg-gradient-to-r from-[#ff74b3] to-[#8f63ff]" />
-        <p className="mt-5 text-base leading-[1.55] text-[#dfc3ff]">{card.description}</p>
-
-        <Link href={card.href} className="mt-auto inline-flex items-center gap-3 pt-7 text-base font-extrabold text-[#ffd4ef]">
-          Learn More <span aria-hidden="true">→</span>
-        </Link>
-      </div>
-    </article>
-  );
+function visible(start: number, count: number) {
+  return Array.from({ length: count }, (_, i) => sectionTwo.cards[(start + i) % sectionTwo.cards.length]);
 }
 
 export function SectionTwoServices() {
-  const [startIndex, setStartIndex] = useState(0);
-
-  const visibleCards = useMemo(() => getVisibleCards(sectionTwo.cards, startIndex, 4), [startIndex]);
+  const [index, setIndex] = useState(0);
+  const cards = useMemo(() => visible(index, 4), [index]);
 
   return (
-    <section id="services" className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="premium-section playful-panel relative isolate mb-8">
-        <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
-        <div className="playful-ribbons pointer-events-none absolute left-0 top-0 h-24 w-48" />
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <section id="services" className="px-4 py-8 sm:px-8 lg:px-10">
+      <div className="mx-auto w-full max-w-7xl rounded-[2.5rem] border border-white/20 bg-[#0a1b33]/70 p-6 backdrop-blur-xl lg:p-10">
+        <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#f2d7ff]">Our Services</p>
-            <h2 className="premium-title mt-3">Care options built around your dog&apos;s needs</h2>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-fuchsia-200">Service menu</p>
+            <h2 className="mt-3 text-4xl font-black text-white sm:text-5xl">Mix-and-match care plans</h2>
           </div>
-          <p className="max-w-md text-sm leading-relaxed text-[#e3cbff] sm:text-base">
-            Explore walking, training, daycare, home check-ins, and boarding options with flexible support for every routine.
-          </p>
+          <div className="hidden gap-3 sm:flex">
+            <button onClick={() => setIndex((value) => (value - 1 + sectionTwo.cards.length) % sectionTwo.cards.length)} className="rounded-xl border border-white/20 p-3 text-white">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button onClick={() => setIndex((value) => (value + 1) % sectionTwo.cards.length)} className="rounded-xl border border-white/20 p-3 text-white">
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-6">
-          <button
-            type="button"
-            aria-label="Previous services"
-            onClick={() => setStartIndex((index) => (index - 1 + sectionTwo.cards.length) % sectionTwo.cards.length)}
-            className="rounded-full border border-white/30 bg-[#2b1f45] p-2 text-[#f8ddff] shadow-lg transition-colors hover:bg-[#3a2a5c] sm:p-3"
-          >
-            <ChevronLeft className="h-6 w-6 sm:h-8 sm:w-8" />
-          </button>
-
-          <div className="grid flex-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {visibleCards.map((card, index) => (
-              <ServiceCardItem key={`${card.title}-${index}`} card={card} />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            aria-label="Next services"
-            onClick={() => setStartIndex((index) => (index + 1) % sectionTwo.cards.length)}
-            className="rounded-full border border-white/30 bg-[#2b1f45] p-2 text-[#f8ddff] shadow-lg transition-colors hover:bg-[#3a2a5c] sm:p-3"
-          >
-            <ChevronRight className="h-6 w-6 sm:h-8 sm:w-8" />
-          </button>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {cards.map((card, i) => (
+            <article key={`${card.title}-${i}`} className="group flex h-full flex-col rounded-3xl border border-cyan-200/40 bg-gradient-to-b from-cyan-300/20 to-fuchsia-300/10 p-5">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-100">{String(i + 1).padStart(2, "0")}</p>
+              <h3 className="mt-4 text-2xl font-black text-white">{card.title}</h3>
+              <p className="mt-3 text-cyan-100/90">{card.description}</p>
+              <Link href={card.href} className="mt-auto pt-6 text-sm font-black uppercase tracking-[0.15em] text-fuchsia-200">
+                Explore package →
+              </Link>
+            </article>
+          ))}
         </div>
-        <p className="mt-5 text-sm text-[#ccafe9] sm:hidden">Tap arrows to browse all concierge services.</p>
       </div>
     </section>
   );
