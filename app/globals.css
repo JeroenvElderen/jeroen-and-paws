@@ -165,7 +165,7 @@
   .premium-shell {
     @apply relative overflow-x-clip;
     background-image:
-      radial-gradient(circle at 4% 4%, rgba(255, 116, 179, 0.18) 0%, transparent 32%),
+      radial-gradient(circle at 4% 4%, rgba(139, 92, 246, 0.18) 0%, transparent 32%),
       radial-gradient(circle at 92% 10%, rgba(130, 72, 213, 0.16) 0%, transparent 36%),
       linear-gradient(180deg, rgba(255, 255, 255, 0.024) 0%, rgba(255, 255, 255, 0) 100%);
   }
@@ -185,14 +185,14 @@
   .playful-panel {
     @apply relative overflow-hidden;
     background-image:
-      radial-gradient(circle at 16% 8%, rgba(255, 116, 179, 0.11) 0%, transparent 34%),
+      radial-gradient(circle at 16% 8%, rgba(139, 92, 246, 0.11) 0%, transparent 34%),
       radial-gradient(circle at 86% 12%, rgba(143, 99, 255, 0.11) 0%, transparent 38%),
       linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 26%);
   }
 
   .playful-waves {
     background-image:
-      radial-gradient(120% 55% at 18% 108%, rgba(255, 133, 187, 0.16) 0%, transparent 70%),
+      radial-gradient(120% 55% at 18% 108%, rgba(167, 139, 250, 0.16) 0%, transparent 70%),
       radial-gradient(110% 50% at 78% 110%, rgba(142, 101, 255, 0.14) 0%, transparent 70%);
     opacity: 0.7;
   }

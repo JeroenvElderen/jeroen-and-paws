@@ -9,16 +9,16 @@ export type HeroSectionOne = {
 };
 
 export const sectionOne: HeroSectionOne = {
-  eyebrow: "Trusted local dog care",
-  title: "Professional dog care with a personal touch",
+  eyebrow: "Trusted Pet Care",
+  title: "Best Pals for Your Paw Pals",
   subtitle:
-    "Walking, training, day care, and boarding services tailored to your companion's personality, routine, and confidence level.",
-  primaryCta: { label: "View Services", href: "/services" },
-  secondaryCta: { label: "Call Jeroen", href: "tel:+447000000000" },
+    "Your trusted partner in pet care, offering tailored services to ensure the health, happiness, and well-being of your beloved furry companions.",
+  primaryCta: { label: "Book Now", href: "/#contact" },
+  secondaryCta: { label: "Book Now", href: "/services" },
   stats: [
-    { label: "Satisfied pet owners", value: "100+" },
-    { label: "Walks and visits", value: "5k+" },
-    { label: "Hands-on experience", value: "7+ years" },
+    { label: "Happy families", value: "2k+" },
+    { label: "Pets cared for", value: "9k+" },
+    { label: "Years of experience", value: "10+" },
   ],
   heroImage: {
     src: "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80",
@@ -42,48 +42,48 @@ export type HomepageSectionTwo = {
 export const sectionTwo: HomepageSectionTwo = {
   cards: [
     {
-      title: "Daily strolls",
-      description: "Tailored daily walks matched to your dog's pace, routine, and personality.",
+      title: "Pet Training",
+      description: "We offer training classes to improve your pet's behavior and strengthen your bond.",
       icon: "walk",
       iconBg: "#c4b5fd",
       href: "/services",
       image: "https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=800&q=80",
     },
     {
-      title: "Group adventures",
-      description: "Friendly small-pack outings for social play, confidence, and safe exploration.",
+      title: "Veterinary Care",
+      description: "Our experienced vets provide top-notch medical care to keep your furry friend healthy.",
       icon: "day",
       iconBg: "#7c3aed",
       href: "/services",
       image: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=800&q=80",
     },
     {
-      title: "Solo journeys",
-      description: "One-to-one focused walks for companions who thrive with dedicated attention.",
+      title: "Pet Boarding",
+      description: "Leave your pet with us while you're away, knowing they'll receive love and attention.",
       icon: "overnight",
       iconBg: "#b794f6",
       href: "/services",
       image: "https://images.unsplash.com/photo-1494256997604-768d1f608cac?auto=format&fit=crop&w=800&q=80",
     },
     {
-      title: "Training help",
-      description: "Calm, supportive guidance for daily habits, confidence, and better behaviour.",
+      title: "Dog Walking",
+      description: "Our trained walkers ensure your dog gets the exercise they need to stay happy.",
       icon: "training",
       iconBg: "#a78bfa",
       href: "/services",
       image: "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=800&q=80",
     },
     {
-      title: "Home check-ins",
-      description: "Quick, reassuring home visits for feeding, toilet breaks, and companionship.",
+      title: "Grooming & Spa",
+      description: "Pamper your pet with our grooming services, leaving them looking and feeling their best.",
       icon: "custom",
       iconBg: "#b8a3e8",
       href: "/services",
       image: "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=800&q=80",
     },
     {
-      title: "Overnight stays",
-      description: "Safe and cosy overnight boarding in a calm, caring home environment.",
+      title: "Pet Sitting",
+      description: "Trust us to care for your pet in the comfort of their own home when you can't be there.",
       icon: "adventure",
       iconBg: "#9f7aea",
       href: "/services",
@@ -135,66 +135,46 @@ export type HomepageSectionFive = {
   members: HomepageSectionFiveMember[];
 };
 
-export type HomepageSectionSixFaqItem = {
-  question: string;
-  answer: string;
-};
-
 export type HomepageSectionSix = {
   title: string;
-  subtitle: string;
-  image: { src: string; alt: string };
-  items: HomepageSectionSixFaqItem[];
-};
-
-export type HomepageSectionSevenInfo = {
-  icon: "map" | "hours" | "contact";
-  iconColor: string;
-  title: string;
-  lines: string[];
-};
-
-export type HomepageSectionSevenFormField = {
-  name: string;
-  placeholder: string;
-  type: "text" | "tel";
+  logos: Array<{ src: string; alt: string }>;
 };
 
 export type HomepageSectionSeven = {
-  title: string;
-  subtitle: string;
-  info: HomepageSectionSevenInfo[];
-  formFields: HomepageSectionSevenFormField[];
-  submitLabel: string;
+  quickLinks: Array<{ label: string; href: string }>;
+  socialLinks: Array<{ label: string; href: string }>;
+  contactLines: string[];
+  newsletterTitle: string;
+  newsletterBody: string;
 };
 
 export const sectionThree: HomepageSectionThree = {
   visuals: [
     {
-      title: "Personalised care for every companion",
+      title: "We are Dedicated to the Well-Being of Your Beloved Pets",
       paragraphs: [
-        "From daily walks to overnight boarding, each service is matched to your dog's needs, temperament, and energy.",
-        "Care is calm, structured, and flexible so your companion feels safe whether they are at home or on an outing.",
-        "Updates, consistency, and trust are at the center of every booking.",
+        "PetPals is more than just a pet care center — we're a family of passionate animal lovers.",
+        "With years of experience, our team is committed to providing the highest quality care and services to your furry, feathered, or scaled companions.",
+        "Your pet's happiness and health are our top priorities, and we treat them with the same love and care as if they were our own.",
       ],
-      cta: { label: "Discover services", href: "/services" },
+      cta: { label: "About Us", href: "/#about" },
       image: {
         src: "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=1200&q=80",
         alt: "White dog smiling on a pink background",
       },
     },
     {
-      title: "Why local families choose Jeroen & Paws",
-      intro: "Owners choose Jeroen & Paws for dependable support, kind handling, and care that adapts to each dog:",
+      title: "Our Values",
+      intro: "WELCOME TO P E T P A L S, B U D D I E S !",
       highlights: [
-        "Daily walks, solo sessions, daycare, home check-ins, and overnight boarding in one place;",
-        "7+ years of practical experience supporting different breeds, ages, and confidence levels;",
-        "Clear communication with regular updates and photos throughout visits;",
-        "A meet-and-greet first approach to ensure comfort and trust from day one.",
+        "Compassion — We approach every pet with empathy and kindness, ensuring their comfort and well-being.",
+        "Excellence — We strive for excellence in all we do, from medical care to daily service.",
+        "Trust — Your trust is paramount, and we work tirelessly to maintain it.",
+        "Community — We're proud to support the local pet-loving community.",
       ],
-      footerPrefix: "Simple promise:",
-      footerAccent: "safe, caring, and consistent support",
-      footerSuffix: "for your companion every time.",
+      footerPrefix: "Our promise:",
+      footerAccent: "loving, reliable, and professional care",
+      footerSuffix: "for every pet every day.",
       image: {
         src: "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=1200&q=80",
         alt: "Rabbit on a blue background",
@@ -204,22 +184,21 @@ export const sectionThree: HomepageSectionThree = {
 };
 
 export const sectionFour: HomepageSectionFour = {
-  title: "Ready to book your pet's premium care plan?",
+  title: "Ready to Give Your Pet the Best Care? Contact Us Today!",
   phoneLabel: "Call us",
-  phoneNumber: "+ 1 (234) 567 89 00",
-  primaryCta: { label: "Contact Us", href: "/services" },
-  secondaryCta: { label: "Order Services", href: "/services" },
+  phoneNumber: "1-800-PET-CARE",
+  primaryCta: { label: "Call Us Now", href: "/#contact" },
+  secondaryCta: { label: "Call Us Now", href: "/#contact" },
 };
 
 export const sectionFive: HomepageSectionFive = {
-  title: "What clients say",
-  subtitle: "Feedback from local dog owners who trust Jeroen & Paws with regular care.",
+  title: "Real Stories from PetPals Families",
+  subtitle: "Feedback from families who trust us with their beloved companions.",
   members: [
     {
-      name: "Sophie",
-      role: "Pet owner",
-      quote:
-        "Jeroen takes our dogs out every weekday and sends photos. They are always excited when it's nearly time for their walk.",
+      name: "Sarah L.",
+      role: "Pet parent",
+      quote: "PetPals exceeded my expectations. Their pet sitting service was truly exceptional. Thanks to their dedicated care and attention.",
       image: {
         src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1000&q=80",
         alt: "Portrait of a smiling pet owner",
@@ -227,10 +206,10 @@ export const sectionFive: HomepageSectionFive = {
       },
     },
     {
-      name: "Michelle",
-      role: "Pet parent",
+      name: "Michael R.",
+      role: "Dog owner",
       quote:
-        "I felt at ease leaving Bonnie at home for two days. Jeroen was thoughtful from the start and I'd gladly book again.",
+        "I can't praise PetPals' grooming team enough. They transformed my dog into a furry superstar and made my pup feel truly pampered.",
       image: {
         src: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1000&q=80",
         alt: "Portrait of a happy dog owner",
@@ -238,10 +217,9 @@ export const sectionFive: HomepageSectionFive = {
       },
     },
     {
-      name: "Tom",
-      role: "Dog owner",
-      quote:
-        "Fantastic with our young Corgi. Great communication, fun walks, and exactly the right balance of play and calm.",
+      name: "Jennifer M.",
+      role: "Pet owner",
+      quote: "PetPals' veterinarians are absolute gems and showed immense compassion for my aging dog.",
       image: {
         src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1000&q=80",
         alt: "Portrait of a dog owner",
@@ -252,75 +230,29 @@ export const sectionFive: HomepageSectionFive = {
 };
 
 export const sectionSix: HomepageSectionSix = {
-  title: "Frequently Asked Questions",
-  subtitle: "Common questions from dog owners before their first booking.",
-  image: {
-    src: "https://images.unsplash.com/photo-1544923408-75c5cef46f14?auto=format&fit=crop&w=1200&q=80",
-    alt: "Blue parakeet standing on a skateboard in front of a yellow background",
-  },
-  items: [
-    {
-      question: "What services do you offer for dogs?",
-      answer:
-        "We provide walking, training, day care, home check-ins, and boarding services tailored to each companion's unique personality and needs.",
-    },
-    {
-      question: "How experienced are you with dog care?",
-      answer:
-        "With over seven years of hands-on experience and Animal Care certification, care is adapted to many temperaments and training styles.",
-    },
-    {
-      question: "What makes your approach different?",
-      answer:
-        "Each companion receives personal attention, calm communication, and routines designed to help them feel secure and understood.",
-    },
-    {
-      question: "Can you accommodate dogs with special requirements?",
-      answer:
-        "Yes. Care can be adapted for anxiety, mobility, medication, and behavior needs so each companion remains safe and comfortable.",
-    },
-    {
-      question: "Do you meet dogs before their first booking?",
-      answer:
-        "Yes. An introductory meet-and-greet helps build trust, align expectations, and gather important routine details before services begin.",
-    },
-    {
-      question: "How do you handle nervous or anxious dogs?",
-      answer:
-        "With patience and structured introductions. Sessions are paced gradually to build confidence in a calm, reassuring environment.",
-    },
+  title: "Our Partners",
+  logos: [
+    { src: "https://images.unsplash.com/photo-1601758125946-2e8d4a0a9a8f?auto=format&fit=crop&w=400&q=80", alt: "Partner logo one" },
+    { src: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=400&q=80", alt: "Partner logo two" },
+    { src: "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=400&q=80", alt: "Partner logo three" },
+    { src: "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=400&q=80", alt: "Partner logo four" },
   ],
 };
 
 export const sectionSeven: HomepageSectionSeven = {
-  title: "Let's plan your dog's routine",
-  subtitle: "Tell us what your companion needs and we'll recommend the right care plan.",
-  info: [
-    {
-      icon: "map",
-      iconColor: "#7c3aed",
-      title: "Service Area",
-      lines: ["Local neighbourhood routes", "And nearby parks"],
-    },
-    {
-      icon: "hours",
-      iconColor: "#a78bfa",
-      title: "Working Hours",
-      lines: ["Monday - Saturday: 8 AM - 7 PM", "Sunday: By request"],
-    },
-    {
-      icon: "contact",
-      iconColor: "#b794f6",
-      title: "Contact",
-      lines: ["hello@jeroenandpaws.com", "+44 7000 000000"],
-    },
+  quickLinks: [
+    { label: "Home", href: "/" },
+    { label: "Services", href: "/services" },
+    { label: "About Us", href: "/#about" },
+    { label: "Contact Us", href: "/#contact" },
   ],
-  formFields: [
-    { name: "name", placeholder: "Enter your full name*", type: "text" },
-    { name: "phone", placeholder: "Enter your phone number*", type: "tel" },
-    { name: "pet", placeholder: "Pet's name and age*", type: "text" },
-    { name: "service", placeholder: "Service*", type: "text" },
-    { name: "date", placeholder: "Choose date", type: "text" },
+  socialLinks: [
+    { label: "Facebook", href: "https://facebook.com" },
+    { label: "Instagram", href: "https://instagram.com" },
+    { label: "Twitter", href: "https://twitter.com" },
+    { label: "LinkedIn", href: "https://linkedin.com" },
   ],
-  submitLabel: "Send",
+  contactLines: ["123 PetCare Avenue, Cityville, USA", "1-800-PET-CARE", "Info@petpals.com"],
+  newsletterTitle: "Join Our Pet Loving Community",
+  newsletterBody: "Subscribe to Our Newsletter and Our Updates for Pet Tips and Care",
 };

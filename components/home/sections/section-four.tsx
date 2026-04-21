@@ -11,20 +11,20 @@ export function SectionFourContact() {
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-24" />
         <div className="playful-ribbons pointer-events-none absolute right-0 top-0 h-24 w-44" />
         <div className="relative mx-auto flex max-w-3xl flex-col items-center rounded-[1.8rem] border border-white/10 bg-white/[0.02] px-6 py-8 text-center sm:px-8">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/30 text-[#ffc6e4]">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/30 text-[#c4b5fd]">
             <Mail className="h-6 w-6" strokeWidth={1.8} />
           </span>
 
           <h2 className="mt-7 text-4xl font-extrabold leading-tight text-[#fff2ff] sm:text-5xl">{sectionFour.title}</h2>
 
           <p className="mt-8 text-2xl font-semibold text-[#e7ceff] sm:text-3xl">
-            {sectionFour.phoneLabel} <span className="text-[#ff9ec9]">{sectionFour.phoneNumber}</span>
+            {sectionFour.phoneLabel} <span className="text-[#a78bfa]">{sectionFour.phoneNumber}</span>
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
               href={sectionFour.primaryCta.href}
-              className="inline-flex rounded-full bg-gradient-to-r from-[#ff74b3] to-[#8f63ff] px-9 py-4 text-xl font-extrabold text-white transition-colors hover:from-[#ff63aa] hover:to-[#7f52f6]"
+              className="inline-flex rounded-full bg-gradient-to-r from-[#8b5cf6] to-[#8f63ff] px-9 py-4 text-xl font-extrabold text-white transition-colors hover:from-[#7c3aed] hover:to-[#7f52f6]"
             >
               {sectionFour.primaryCta.label}
             </Link>

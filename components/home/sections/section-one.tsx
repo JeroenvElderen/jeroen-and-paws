@@ -9,7 +9,7 @@ export function SectionOneHero() {
   return (
     <section className="px-4 pb-8 pt-10 sm:px-6 lg:px-8">
       <div className="premium-section playful-panel relative isolate overflow-hidden">
-        <div className="pointer-events-none absolute -left-16 top-6 h-52 w-52 rounded-full bg-[#ff74b3]/25 blur-3xl" />
+        <div className="pointer-events-none absolute -left-16 top-6 h-52 w-52 rounded-full bg-[#8b5cf6]/25 blur-3xl" />
         <div className="pointer-events-none absolute -right-12 bottom-4 h-60 w-60 rounded-full bg-[#8c63ff]/30 blur-3xl" />
         <div className="playful-waves pointer-events-none absolute inset-x-0 bottom-0 h-28" />
         <div className="playful-ribbons pointer-events-none absolute right-0 top-0 h-28 w-40" />
@@ -28,7 +28,7 @@ export function SectionOneHero() {
               <Button
                 asChild
                 size="lg"
-                className="h-14 rounded-full bg-gradient-to-r from-[#ff74b3] to-[#8f63ff] px-10 text-lg font-semibold text-white shadow-[0_16px_32px_rgba(255,116,179,0.3)] hover:from-[#ff63aa] hover:to-[#7f52f6]"
+                className="h-14 rounded-full bg-gradient-to-r from-[#8b5cf6] to-[#8f63ff] px-10 text-lg font-semibold text-white shadow-[0_16px_32px_rgba(139,92,246,0.3)] hover:from-[#7c3aed] hover:to-[#7f52f6]"
               >
                 <Link href={sectionOne.primaryCta.href}>{sectionOne.primaryCta.label} →</Link>
               </Button>
@@ -37,7 +37,7 @@ export function SectionOneHero() {
                 variant="link"
                 className="rounded-full border border-white/35 bg-[#2a1a45]/70 px-6 text-lg font-bold text-[#f7e8ff] no-underline"
               >
-                <Link href={sectionOne.secondaryCta.href}>☎ {sectionOne.secondaryCta.label}</Link>
+                <Link href={sectionOne.secondaryCta.href}>{sectionOne.secondaryCta.label}</Link>
               </Button>
             </div>
 
@@ -76,7 +76,7 @@ export function SectionOneHero() {
               <p className="text-sm font-semibold text-[#f9eaff]">Fully insured & verified sitters</p>
             </div>
 
-            <div className="absolute -right-4 top-6 flex items-center gap-2 rounded-full bg-[#ff74b3] px-4 py-2 text-sm font-semibold text-white shadow-lg">
+            <div className="absolute -right-4 top-6 flex items-center gap-2 rounded-full bg-[#8b5cf6] px-4 py-2 text-sm font-semibold text-white shadow-lg">
               <Star className="h-4 w-4 text-[#ffe3ff]" />
               Premium care
             </div>

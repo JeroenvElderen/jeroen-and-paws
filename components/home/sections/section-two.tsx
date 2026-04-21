@@ -55,10 +55,10 @@ function ServiceCardItem({ card }: { card: HomepageSectionTwoCard }) {
 
       <div className="flex min-h-[230px] flex-col px-6 py-7">
         <h3 className="text-[1.7rem] font-extrabold leading-[1.1] text-[#fff3ff]">{card.title}</h3>
-        <div className="mt-4 h-[0.2rem] w-14 rounded-full bg-gradient-to-r from-[#ff74b3] to-[#8f63ff]" />
+        <div className="mt-4 h-[0.2rem] w-14 rounded-full bg-gradient-to-r from-[#8b5cf6] to-[#8f63ff]" />
         <p className="mt-5 text-base leading-[1.55] text-[#dfc3ff]">{card.description}</p>
 
-        <Link href={card.href} className="mt-auto inline-flex items-center gap-3 pt-7 text-base font-extrabold text-[#ffd4ef]">
+        <Link href={card.href} className="mt-auto inline-flex items-center gap-3 pt-7 text-base font-extrabold text-[#ddd6fe]">
           Learn More <span aria-hidden="true">→</span>
         </Link>
       </div>
@@ -79,10 +79,10 @@ export function SectionTwoServices() {
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#f2d7ff]">Our Services</p>
-            <h2 className="premium-title mt-3">Care options built around your dog&apos;s needs</h2>
+            <h2 className="premium-title mt-3">Our Pet Care Solutions</h2>
           </div>
           <p className="max-w-md text-sm leading-relaxed text-[#e3cbff] sm:text-base">
-            Explore walking, training, daycare, home check-ins, and boarding options with flexible support for every routine.
+            Discover tailored services designed to keep your companion healthy, happy, and loved every day.
           </p>
         </div>
 
