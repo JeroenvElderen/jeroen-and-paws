@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { SiteMenu } from "@/components/layout/site-menu";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Jeroen & Paws | Premium Pet Concierge Care",
+  title: "Jeroen & Paws | Premium Dog Services",
   description:
-    "Luxury, dependable pet care with trusted professionals, transparent updates, and personalized routines for every companion.",
+    "Premium, dependable dog walking and in-home pet support with simple booking and personalized care.",
 };
 
 export default function RootLayout({
@@ -37,7 +36,6 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <SiteMenu />
         {children}
       </body>
     </html>

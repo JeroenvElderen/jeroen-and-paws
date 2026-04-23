@@ -49,162 +49,53 @@
 }
 
 :root {
-  --purple-bg-950: #080411;
-  --purple-bg-900: #0f0918;
-  --purple-bg-850: #171126;
-  --purple-bg-800: #211633;
-  --purple-bg-700: #382451;
-  --purple-bg-600: #432a66;
-  --purple-bg-500: #6f35c1;
-  --purple-bg-400: #9a5fe8;
-  --purple-bg-350: #b78cff;
-  --purple-bg-300: #c797ff;
-  --purple-bg-250: #d7b2ff;
-  --purple-fg-100: #efe3ff;
-  --purple-fg-200: #e6d4ff;
-  --purple-fg-300: #c9afe9;
-  --purple-accent-pink: #ff5f93;
-  --font-scale: clamp(0.9rem, 0.84rem + 0.35vw, 1.02rem);
-  --line-height-base: 1.6;
-  --background: var(--purple-bg-900);
-  --foreground: #f4ecff;
-  --card: var(--purple-bg-850);
-  --card-foreground: var(--purple-fg-100);
-  --popover: var(--purple-bg-850);
-  --popover-foreground: var(--purple-fg-100);
-  --primary: var(--purple-bg-350);
-  --primary-foreground: #120b1e;
-  --secondary: var(--purple-bg-800);
-  --secondary-foreground: var(--purple-fg-200);
-  --muted: #1b132b;
-  --muted-foreground: var(--purple-fg-300);
-  --accent: var(--purple-bg-250);
-  --accent-foreground: #120d1e;
-  --destructive: var(--purple-accent-pink);
-  --border: var(--purple-bg-600);
-  --input: var(--purple-bg-700);
-  --ring: var(--purple-bg-300);
-  --chart-1: var(--purple-bg-250);
-  --chart-2: var(--purple-bg-350);
-  --chart-3: var(--purple-bg-400);
-  --chart-4: #8248d5;
-  --chart-5: var(--purple-bg-500);
-  --radius: 0.625rem;
-  --sidebar: #120d1e;
-  --sidebar-foreground: var(--purple-fg-100);
-  --sidebar-primary: var(--purple-bg-350);
-  --sidebar-primary-foreground: #120d1e;
-  --sidebar-accent: #241937;
-  --sidebar-accent-foreground: #dbc4ff;
-  --sidebar-border: var(--purple-bg-600);
-  --sidebar-ring: var(--purple-bg-300);
-}
-
-.dark {
-  --background: var(--purple-bg-900);
-  --foreground: #f4ecff;
-  --card: var(--purple-bg-850);
-  --card-foreground: var(--purple-fg-100);
-  --popover: var(--purple-bg-850);
-  --popover-foreground: var(--purple-fg-100);
-  --primary: var(--purple-bg-350);
-  --primary-foreground: #120b1e;
-  --secondary: var(--purple-bg-800);
-  --secondary-foreground: var(--purple-fg-200);
-  --muted: #1b132b;
-  --muted-foreground: var(--purple-fg-300);
-  --accent: var(--purple-bg-250);
-  --accent-foreground: #120d1e;
-  --destructive: var(--purple-accent-pink);
-  --border: var(--purple-bg-600);
-  --input: var(--purple-bg-700);
-  --ring: var(--purple-bg-300);
-  --chart-1: var(--purple-bg-250);
-  --chart-2: var(--purple-bg-350);
-  --chart-3: var(--purple-bg-400);
-  --chart-4: #8248d5;
-  --chart-5: var(--purple-bg-500);
-  --sidebar: #120d1e;
-  --sidebar-foreground: var(--purple-fg-100);
-  --sidebar-primary: var(--purple-bg-350);
-  --sidebar-primary-foreground: #120d1e;
-  --sidebar-accent: #241937;
-  --sidebar-accent-foreground: #dbc4ff;
-  --sidebar-border: var(--purple-bg-600);
-  --sidebar-ring: var(--purple-bg-300);
+  --background: #f5f4f0;
+  --foreground: #1f2d26;
+  --card: #ffffff;
+  --card-foreground: #1f2d26;
+  --popover: #ffffff;
+  --popover-foreground: #1f2d26;
+  --primary: #172821;
+  --primary-foreground: #f4f0e8;
+  --secondary: #e9ebe5;
+  --secondary-foreground: #1f2d26;
+  --muted: #eceae4;
+  --muted-foreground: #5f655f;
+  --accent: #b47a57;
+  --accent-foreground: #ffffff;
+  --destructive: #d33b49;
+  --border: #dfdbd1;
+  --input: #e8e5dc;
+  --ring: #2a4a3a;
+  --chart-1: #172821;
+  --chart-2: #2a4a3a;
+  --chart-3: #b47a57;
+  --chart-4: #d4b298;
+  --chart-5: #7f998c;
+  --radius: 0.7rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1f2d26;
+  --sidebar-primary: #172821;
+  --sidebar-primary-foreground: #f4f0e8;
+  --sidebar-accent: #f3f2ed;
+  --sidebar-accent-foreground: #1f2d26;
+  --sidebar-border: #dfdbd1;
+  --sidebar-ring: #2a4a3a;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-    color-scheme: dark;
-    min-height: 100vh;
-    line-height: var(--line-height-base);
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    background-color: var(--purple-bg-950);
-    background-image:
-      radial-gradient(circle at 10% 8%, rgba(182, 120, 255, 0.22) 0%, transparent 34%),
-      radial-gradient(circle at 88% 10%, rgba(130, 72, 213, 0.18) 0%, transparent 36%),
-      radial-gradient(circle at 50% 78%, rgba(105, 56, 188, 0.14) 0%, transparent 46%),
-      linear-gradient(170deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 32%),
-      linear-gradient(180deg, #080411 0%, #10081f 100%);
-    background-attachment: fixed;
-  }
+
   html {
     @apply font-sans;
-    font-size: var(--font-scale);
-  }
-}
-
-
-@layer components {
-  .premium-shell {
-    @apply relative overflow-x-clip;
-    background-image:
-      radial-gradient(circle at 4% 4%, rgba(139, 92, 246, 0.18) 0%, transparent 32%),
-      radial-gradient(circle at 92% 10%, rgba(130, 72, 213, 0.16) 0%, transparent 36%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.024) 0%, rgba(255, 255, 255, 0) 100%);
   }
 
-  .premium-section {
-    @apply mx-auto w-full max-w-[92rem] rounded-[2.1rem] border border-white/12 bg-[#171126]/72 px-6 py-12 shadow-[0_26px_80px_rgba(0,0,0,0.3)] backdrop-blur-sm sm:px-10 lg:px-14;
-  }
-
-  .premium-title {
-    @apply text-4xl font-black leading-[1.05] text-[#fff2ff] sm:text-5xl;
-  }
-
-  .premium-subtitle {
-    @apply mt-4 text-lg leading-relaxed text-[#c6afea] sm:text-xl;
-  }
-
-  .playful-panel {
-    @apply relative overflow-hidden;
-    background-image:
-      radial-gradient(circle at 16% 8%, rgba(139, 92, 246, 0.11) 0%, transparent 34%),
-      radial-gradient(circle at 86% 12%, rgba(143, 99, 255, 0.11) 0%, transparent 38%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 26%);
-  }
-
-  .playful-waves {
-    background-image:
-      radial-gradient(120% 55% at 18% 108%, rgba(167, 139, 250, 0.16) 0%, transparent 70%),
-      radial-gradient(110% 50% at 78% 110%, rgba(142, 101, 255, 0.14) 0%, transparent 70%);
-    opacity: 0.7;
-  }
-
-  .playful-ribbons {
-    background-image:
-      repeating-linear-gradient(
-        -16deg,
-        rgba(255, 255, 255, 0.08) 0 2px,
-        rgba(255, 255, 255, 0) 2px 14px
-      );
-    mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
-    opacity: 0.14;
+  body {
+    @apply bg-background text-foreground;
+    min-height: 100vh;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 }
