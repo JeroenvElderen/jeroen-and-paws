@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Heart } from "lucide-react";
+import { Camera, GraduationCap, Heart, KeyRound, Route, ShieldCheck, UserRoundCheck, CalendarCheck2 } from "lucide-react";
 
 import { Navbar } from "@/components/home/navbar";
 
@@ -7,6 +7,40 @@ const stats = [
   { value: "500+", label: "Happy Pet Families" },
   { value: "15k+", label: "Walks Completed" },
   { value: "5.0", label: "Google Rating" },
+];
+
+const trustHighlights = [
+  {
+    title: "Insured & Bonded",
+    description:
+      "Every walker is fully insured, bonded, and background-checked. Your pet's safety is never a question mark.",
+    icon: UserRoundCheck,
+  },
+  {
+    title: "GPS-Tracked Walks",
+    description: "Get real-time updates and a map of every walk. You'll know exactly where your dog explored and for how long.",
+    icon: Route,
+  },
+  {
+    title: "Photo Updates",
+    description: "We send photos and a summary after every visit. Because you shouldn't have to wonder how your pet's day went.",
+    icon: Camera,
+  },
+  {
+    title: "Secure Key Storage",
+    description: "Keys are stored in a locked safe when not in use. We take access to your home as seriously as you do.",
+    icon: KeyRound,
+  },
+  {
+    title: "Pet First Aid Certified",
+    description: "All team members are trained in pet first aid and CPR. If something unexpected happens, we're ready.",
+    icon: GraduationCap,
+  },
+  {
+    title: "Consistent Walkers",
+    description: "Your dog gets the same walker every time. Familiarity builds trust, and trust makes for happier walks.",
+    icon: CalendarCheck2,
+  },
 ];
 
 export function Homepage() {
@@ -68,6 +102,35 @@ export function Homepage() {
             className="object-cover"
             priority
           />
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-[1240px] px-6 pb-16 pt-4 sm:px-10 lg:pb-20">
+        <div className="text-center">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.22em] text-[#0f7f45]">
+            <ShieldCheck className="h-4 w-4 fill-[#d8f0df] text-[#0f7f45]" />
+            Why Happy Trails
+          </p>
+          <h2 className="mt-5 text-[42px] font-bold tracking-tight text-[#0f172a] sm:text-[56px]">Pet Care You Can Count On</h2>
+          <p className="mx-auto mt-4 max-w-[840px] text-[21px] leading-relaxed text-[#3f4a5a] sm:text-[22px]">
+            We built this business because we saw too many dog walkers treat it like a side gig.
+            <span className="block">This is our full-time commitment to your pet&apos;s wellbeing.</span>
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {trustHighlights.map((highlight) => {
+            const Icon = highlight.icon;
+            return (
+              <article key={highlight.title} className="rounded-[18px] border border-[#d7dce2] bg-[#f6f8fb] px-8 pb-8 pt-9 text-center">
+                <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[#d6efde]">
+                  <Icon className="h-7 w-7 text-[#0f7f45]" />
+                </div>
+                <h3 className="mt-6 text-[24px] font-bold tracking-tight text-[#0f172a]">{highlight.title}</h3>
+                <p className="mt-4 text-[16px] leading-relaxed text-[#394456]">{highlight.description}</p>
+              </article>
+            );
+          })}
         </div>
       </section>
     </div>
