@@ -6,12 +6,17 @@ type ButtonLinkProps = ComponentProps<typeof Link> & {
 };
 
 const variants = {
-  primary: "bg-purple-700 text-white shadow-lg shadow-purple-900/10 hover:bg-purple-800",
-  outline: "border-2 border-purple-700 text-purple-800 hover:bg-purple-50",
-  light: "bg-white text-purple-800 hover:bg-purple-50",
+  primary:
+    "bg-[#d1a34d] text-[#080b10] shadow-lg shadow-black/25 hover:bg-[#e0b862]",
+  outline: "border-2 border-[#d1a34d] text-[#f6d184] hover:bg-[#1d1711]",
+  light: "bg-[#fff7e8] text-[#080b10] hover:bg-[#f2ddad]",
 };
 
-export function ButtonLink({ className = "", variant = "primary", ...props }: ButtonLinkProps) {
+export function ButtonLink({
+  className = "",
+  variant = "primary",
+  ...props
+}: ButtonLinkProps) {
   return (
     <Link
       className={`inline-flex items-center justify-center rounded-full px-7 py-3 text-base font-bold transition hover:-translate-y-0.5 ${variants[variant]} ${className}`}

@@ -2,17 +2,30 @@ import { PlaceholderImage } from "@/components/site/ui/placeholder-image";
 
 export function StorySection() {
   return (
-    <section className="bg-white px-6 py-20 sm:px-8">
+    <section className="bg-[#111821] px-6 py-20 sm:px-8">
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
-        <div className="relative min-h-[360px] overflow-hidden rounded-3xl shadow-xl shadow-purple-950/10">
+        <div className="relative min-h-[360px] overflow-hidden rounded-3xl shadow-xl shadow-black/35">
           <PlaceholderImage alt="Jeroen, founder of Jeroen & Paws, with his rescue dog Paws" />
         </div>
         <div>
-          <h2 className="text-4xl font-extrabold tracking-tight text-slate-950">It Started With a Rescue Named Paws</h2>
-          <div className="mt-6 space-y-5 text-lg leading-8 text-slate-600">
-            <p>In 2019, our founder Jeroen adopted a nervous rescue mutt named Paws. He needed daily exercise and socialization, but every dog walking service he tried felt impersonal.</p>
-            <p>Jeroen started walking Paws himself, then his neighbor&apos;s dog, then three more dogs on the block. Within six months, he&apos;d built a small community of pet owners who trusted him with their animals.</p>
-            <p>Today, we walk over 50 dogs a week across the area. But the philosophy hasn&apos;t changed: every pet gets the same attention and care that Paws got on that first walk.</p>
+          <h2 className="text-4xl font-extrabold tracking-tight text-[#fff7e8]">
+            About me
+          </h2>
+          <div className="mt-6 space-y-5 text-lg leading-8 text-[#b9aa99]">
+            <p>
+              Hi, I&apos;m Jeroen — a certified canine specialist with over
+              seven years of experience. I work with both companion and working
+              dogs using proven, ethical training methods.
+            </p>
+            <p>
+              I provide personalised training, thoughtful care, and a safe,
+              enriching environment for every dog I welcome, from customised
+              walks to structured day care and boarding.
+            </p>
+            <p>
+              Exceptional care doesn&apos;t just meet your dog&apos;s needs — it
+              helps them become their best self. That&apos;s what I deliver.
+            </p>
           </div>
         </div>
       </div>

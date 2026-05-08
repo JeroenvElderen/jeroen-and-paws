@@ -1,9 +1,9 @@
 import { ContactPageContent } from "@/components/site/pages/contact-page";
 
 export const metadata = {
-  title: "Contact - Jeroen & Paws | Book a Dog Walker",
+  title: "Contact - Jeroen & Paws",
   description:
-    "Book a free meet-and-greet with Jeroen & Paws for dog walking, pet sitting, overnight stays, puppy visits, and cat care in your neighborhood.",
+    "Contact Jeroen & Paws to talk about training, walks, day care, boarding, home check-ins, and personalised care for your dog.",
 };
 
 export default function ContactPage() {
