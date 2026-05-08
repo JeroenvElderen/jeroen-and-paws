@@ -28,7 +28,7 @@ export function AboutPageContent() {
           <TeamSection />
         </div>
       </section>
-      <section className="border-y border-[#d1a34d]/20 bg-[#0c1017] px-6 py-20 sm:px-8">
+      <section className="border-y border-[#8b5cf6]/20 bg-[#0c1017] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <SectionHeader
             icon={labels.values}

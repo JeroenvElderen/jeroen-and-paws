@@ -43,7 +43,7 @@ export function Footer() {
             <div className="inline-flex items-center gap-3 text-xl font-extrabold text-[#fff7e8]">
               <PawPrint
                 aria-hidden="true"
-                className="h-6 w-6 fill-[#d1a34d] text-[#d1a34d]"
+                className="h-6 w-6 fill-[#8b5cf6] text-[#8b5cf6]"
               />
               Jeroen & Paws
             </div>
@@ -56,7 +56,7 @@ export function Footer() {
                 <Link
                   key={index}
                   href="#"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#111821]/10 text-[#fff7e8] transition hover:bg-[#d1a34d]"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#111821]/10 text-[#fff7e8] transition hover:bg-[#8b5cf6]"
                   aria-label="Social profile"
                 >
                   <Icon aria-hidden="true" className="h-4 w-4" />
@@ -71,7 +71,7 @@ export function Footer() {
               <ul className="mt-4 space-y-3 text-sm">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="hover:text-[#f2ddad]">
+                    <Link href={link.href} className="hover:text-[#ddd6fe]">
                       {link.label}
                     </Link>
                   </li>
@@ -86,7 +86,7 @@ export function Footer() {
               <li>
                 <Link
                   href="tel:+353872473099"
-                  className="inline-flex gap-2 hover:text-[#f2ddad]"
+                  className="inline-flex gap-2 hover:text-[#ddd6fe]"
                 >
                   <Phone className="h-4 w-4" /> +353 87 247 3099
                 </Link>
@@ -94,7 +94,7 @@ export function Footer() {
               <li>
                 <Link
                   href="mailto:Jeroen@jeroenandpaws.com"
-                  className="inline-flex gap-2 hover:text-[#f2ddad]"
+                  className="inline-flex gap-2 hover:text-[#ddd6fe]"
                 >
                   <Mail className="h-4 w-4" /> Jeroen@jeroenandpaws.com
                 </Link>

@@ -25,12 +25,12 @@ export function ServicesPreview() {
             <p className="mt-3 leading-7 text-[#b9aa99]">
               {service.description}
             </p>
-            <p className="mt-5 text-lg font-extrabold text-[#d1a34d]">
+            <p className="mt-5 text-lg font-extrabold text-[#8b5cf6]">
               {service.price}
             </p>
             <Link
               href="/services"
-              className="mt-5 inline-flex items-center gap-2 font-extrabold text-[#d1a34d] hover:text-[#ffe4a6]"
+              className="mt-5 inline-flex items-center gap-2 font-extrabold text-[#8b5cf6] hover:text-[#ddd6fe]"
             >
               Learn more <ArrowRight aria-hidden="true" className="h-4 w-4" />
             </Link>

@@ -34,7 +34,7 @@ export function ContactForm() {
             id="service"
             name="service"
             defaultValue=""
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-[#0b1017] px-4 py-3 text-[#d8cab8] outline-none transition focus:border-[#d1a34d] focus:ring-4 focus:ring-[#d1a34d]/20"
+            className="mt-2 w-full rounded-2xl border border-white/10 bg-[#0b1017] px-4 py-3 text-[#d8cab8] outline-none transition focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/20"
           >
             <option value="" disabled>
               Select a service
@@ -59,7 +59,7 @@ export function ContactForm() {
         />
         <button
           type="submit"
-          className="w-full rounded-full bg-[#d1a34d] px-7 py-3 font-extrabold text-[#080b10] transition hover:bg-[#e0b862]"
+          className="w-full rounded-full bg-[#8b5cf6] px-7 py-3 font-extrabold text-[#080b10] transition hover:bg-[#a78bfa]"
         >
           Send Message
         </button>
@@ -89,7 +89,7 @@ function Field({
         name={id}
         type={type}
         placeholder={placeholder}
-        className="mt-2 w-full rounded-2xl border border-white/10 bg-[#0b1017] px-4 py-3 text-[#d8cab8] outline-none transition placeholder:text-[#7f7366] focus:border-[#d1a34d] focus:ring-4 focus:ring-[#d1a34d]/20"
+        className="mt-2 w-full rounded-2xl border border-white/10 bg-[#0b1017] px-4 py-3 text-[#d8cab8] outline-none transition placeholder:text-[#7f7366] focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/20"
       />
     </div>
   );
@@ -113,7 +113,7 @@ function Textarea({
         id={id}
         name={id}
         placeholder={placeholder}
-        className="mt-2 min-h-28 w-full rounded-2xl border border-white/10 bg-[#0b1017] px-4 py-3 text-[#d8cab8] outline-none transition placeholder:text-[#7f7366] focus:border-[#d1a34d] focus:ring-4 focus:ring-[#d1a34d]/20"
+        className="mt-2 min-h-28 w-full rounded-2xl border border-white/10 bg-[#0b1017] px-4 py-3 text-[#d8cab8] outline-none transition placeholder:text-[#7f7366] focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/20"
       />
     </div>
   );

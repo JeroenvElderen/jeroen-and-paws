@@ -10,14 +10,14 @@ export function ContactInfo() {
           key={title}
           className="flex gap-4 rounded-3xl bg-[#111821] p-6 shadow-sm ring-1 ring-white/10"
         >
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#2a2118] text-[#d1a34d]">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#24163f] text-[#8b5cf6]">
             <Icon aria-hidden="true" className="h-5 w-5" />
           </div>
           <div>
             <h3 className="text-xl font-extrabold text-[#fff7e8]">{title}</h3>
             <p className="mt-1 font-bold text-[#d8cab8]">
               {href ? (
-                <Link href={href} className="hover:text-[#d1a34d]">
+                <Link href={href} className="hover:text-[#8b5cf6]">
                   {body}
                 </Link>
               ) : (

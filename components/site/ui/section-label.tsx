@@ -11,7 +11,7 @@ export function SectionLabel({
 }) {
   return (
     <p
-      className={`mb-3 inline-flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.12em] ${light ? "text-[#f2ddad]" : "text-[#d1a34d]"}`}
+      className={`mb-3 inline-flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.12em] ${light ? "text-[#ddd6fe]" : "text-[#8b5cf6]"}`}
     >
       <Icon aria-hidden="true" className="h-4 w-4" />
       {children}
