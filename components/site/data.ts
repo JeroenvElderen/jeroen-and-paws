@@ -41,6 +41,8 @@ export type PricingPlan = {
   icon: LucideIcon;
   features: string[];
   featured?: boolean;
+  pricePrefix?: string;
+  priceNote?: string;
 };
 
 export const navItems: Array<{ label: string; href: string; page: PageName }> =
@@ -180,100 +182,284 @@ export const values: IconCard[] = [
   },
 ];
 
-export const walkPlans: PricingPlan[] = [
+export const dailyStrollPlans: PricingPlan[] = [
   {
-    title: "Daily strolls",
+    title: "Standard stroll",
     description:
-      "Personalised walks matched to your companion's pace and routine.",
+      "A refreshing 30-minute stroll — ideal for movement, fresh air, and a little enrichment during the day.",
     price: "€18",
-    unit: "/ walk",
+    unit: "/ visit",
     icon: Timer,
     features: [
-      "Solo walks",
-      "Routine friendly",
+      "30 minutes",
+      "Recurring available",
+      "Fresh air and enrichment",
       "Photo updates",
-      "Matched to pace",
-      "Reliable daily care",
+      "Matched to routine",
     ],
   },
   {
-    title: "Solo journeys",
+    title: "Extended stroll",
     description:
-      "One-to-one walks that provide calm, focused attention just for your companion.",
-    price: "€70",
-    unit: "/ journey",
-    icon: Route,
+      "A longer outing with extra time for sniffing, exploring, and enjoying the neighbourhood — perfect for companions who love a fuller adventure.",
+    price: "€28",
+    unit: "/ visit",
+    icon: Dog,
     featured: true,
     features: [
-      "1-to-1 care",
-      "Confidence building",
-      "Calm pace",
-      "Dedicated attention",
-      "Tailored route",
-    ],
-  },
-  {
-    title: "Group adventures",
-    description:
-      "Fun, confidence-building outings where companions explore and play together.",
-    price: "€45",
-    unit: "/ outing",
-    icon: Users,
-    features: [
-      "Social play",
-      "Safe packs",
-      "Adventure routes",
-      "Temperament matching",
-      "Small groups",
+      "60 minutes",
+      "Recurring available",
+      "Extra sniffing time",
+      "Neighbourhood exploring",
+      "Photo updates",
     ],
   },
 ];
 
-export const sittingPlans: PricingPlan[] = [
+export const homeVisitPlans: PricingPlan[] = [
   {
-    title: "Home check-ins",
+    title: "Essential Home Visit",
     description:
-      "Comforting drop-ins that keep your companion relaxed and well looked after.",
+      "Fresh water, feeding if required, outdoor break, and calm interaction.",
     price: "€18",
     unit: "/ visit",
     icon: HandHeart,
     features: [
-      "Feeding",
+      "30 minutes",
+      "Recurring available",
       "Fresh water",
-      "Home comfort",
-      "Medication support",
+      "Feeding if required",
+      "Outdoor break",
+    ],
+  },
+  {
+    title: "Extended Home Visit",
+    description:
+      "A longer, unhurried visit offering additional time and reassurance.",
+    price: "€28",
+    unit: "/ visit",
+    icon: Home,
+    featured: true,
+    features: [
+      "60 minutes",
+      "Recurring available",
+      "Additional reassurance",
+      "Calm interaction",
+      "Photo updates",
+    ],
+  },
+];
+
+export const daytimeCarePlans: PricingPlan[] = [
+  {
+    title: "Half-day stay",
+    description:
+      "A relaxed daytime stay — ideal for companions who need a few hours of gentle activity, rest, and attention before heading home.",
+    price: "€25",
+    unit: "/ day",
+    icon: CloudSun,
+    features: [
+      "4 hours",
+      "Recurring available",
+      "Gentle activity",
+      "Rest and attention",
+      "Calm supervision",
+    ],
+  },
+  {
+    title: "Full-day care",
+    description:
+      "A complete day of calm supervision, enrichment, and rest — perfect when you’re at work or occupied and want your companion genuinely supported throughout the day.",
+    price: "€40",
+    unit: "/ day",
+    icon: CalendarCheck,
+    featured: true,
+    features: [
+      "8 hours",
+      "Recurring available",
+      "Enrichment and rest",
+      "Calm supervision",
+      "Regular updates",
+    ],
+  },
+];
+
+export const overnightSupportPlans: PricingPlan[] = [
+  {
+    title: "Standard Overnight Stay",
+    description: "Overnight care in a calm home setting.",
+    price: "€70",
+    unit: "/ night",
+    icon: Moon,
+    featured: true,
+    features: [
+      "Overnight support",
+      "Calm home setting",
+      "Familiar routines",
+      "24-hour duration",
+      "Peace of mind",
+    ],
+  },
+];
+
+export const groupAdventurePlans: PricingPlan[] = [
+  {
+    title: "2-Hour Adventure",
+    description:
+      "An extended group outing with time for movement and gentle social engagement.",
+    price: "€45",
+    unit: "",
+    icon: Users,
+    features: [
+      "2 hours",
+      "Guided activity",
+      "Gentle social engagement",
+      "Movement and play",
+      "Small-group care",
+    ],
+  },
+  {
+    title: "Half-Day Adventure",
+    description:
+      "Additional time outdoors for steady interaction, relaxed walks, and restful pauses.",
+    price: "€75",
+    unit: "",
+    icon: Route,
+    featured: true,
+    features: [
+      "4 hours",
+      "Relaxed walks",
+      "Restful pauses",
+      "Steady interaction",
+      "Guided group outing",
+    ],
+  },
+  {
+    title: "Full-Day Adventure",
+    description:
+      "A full day of guided activity — varied walks, purposeful play, and downtime.",
+    price: "€120",
+    unit: "",
+    icon: CloudSun,
+    features: [
+      "8 hours",
+      "Varied walks",
+      "Purposeful play",
+      "Downtime included",
+      "Guided activity",
+    ],
+  },
+];
+
+export const soloJourneyPlans: PricingPlan[] = [
+  {
+    title: "Half-Day Solo Journey",
+    description: "A half-day outing paced around your companion.",
+    price: "€70",
+    unit: "/ journey",
+    icon: Route,
+    features: [
+      "3 hours",
+      "One-to-one care",
+      "Paced around your dog",
+      "Focused attention",
       "Photo updates",
     ],
   },
   {
-    title: "Daytime care",
-    description:
-      "Stimulating, reassuring days perfect for companions who love company.",
-    price: "€25",
-    unit: "/ day",
+    title: "Full-Day Solo Journey",
+    description: "A full day exploring together — unhurried and engaging.",
+    price: "€120",
+    unit: "/ journey",
     icon: CloudSun,
     featured: true,
     features: [
-      "Playtime",
-      "Rest breaks",
-      "Structured day",
-      "Warm care",
-      "Regular updates",
+      "6 hours",
+      "One-to-one care",
+      "Unhurried exploring",
+      "Engaging activities",
+      "Multi-day support available",
+    ],
+  },
+];
+
+export const trainingPlans: PricingPlan[] = [
+  {
+    title: "Introductory Training Session",
+    description: "A short, focused training session.",
+    price: "€35",
+    unit: "/ session",
+    icon: GraduationCap,
+    features: [
+      "30 minutes",
+      "Focused support",
+      "Multi-day support available",
+      "Foundational guidance",
+      "Clear next steps",
     ],
   },
   {
-    title: "Overnight stays",
-    description:
-      "A homely stay where your companion rests comfortably and feels safe.",
-    price: "€70",
-    unit: "/ night",
-    icon: Moon,
+    title: "Standard Training Session",
+    description: "A structured session to reinforce behaviours.",
+    price: "€60",
+    unit: "/ session",
+    icon: Dog,
+    featured: true,
     features: [
-      "Overnight care",
-      "Cosy spaces",
-      "24/7 presence",
-      "Familiar routines",
-      "Peace of mind",
+      "60 minutes",
+      "Recurring available",
+      "Behaviour reinforcement",
+      "Structured session",
+      "Multi-day support available",
+    ],
+  },
+  {
+    title: "Puppy training",
+    description:
+      "One-to-one puppy training focused on socialisation, potty routines, and foundational cues like sit, stay, and leash manners.",
+    price: "€65",
+    unit: "",
+    icon: PawPrint,
+    features: [
+      "60 minutes",
+      "Recurring available",
+      "Socialisation",
+      "Potty routines",
+      "Foundational cues",
+    ],
+  },
+  {
+    title: "Extended Training Session",
+    description: "An extended session for slower pacing.",
+    price: "€100",
+    unit: "/ session",
+    icon: Timer,
+    features: [
+      "120 minutes",
+      "Recurring available",
+      "Slower pacing",
+      "More practice time",
+      "Multi-day support available",
+    ],
+  },
+];
+
+export const customCarePlans: PricingPlan[] = [
+  {
+    title: "Custom & tailored care",
+    description:
+      "One flexible option for unique schedules, preferred routes, multiple visits, medication, late pickup, extra nights, behavioural goals, specialist support, and bespoke care plans.",
+    price: "Custom",
+    unit: "",
+    icon: ShieldCheck,
+    featured: true,
+    priceNote: "Quoted around your companion’s routine, goals, and care requirements.",
+    features: [
+      "One card for all custom and tailored services",
+      "Walking, home, daytime, overnight, adventure, and training support",
+      "Behaviour consultations and specialist support",
+      "Medical or unique care needs",
+      "Multi-day support available",
     ],
   },
 ];
@@ -388,7 +574,14 @@ export const labels = {
   team: Users,
   values: Heart,
   dog: Dog,
+  homeVisit: HandHeart,
+  daytimeCare: CloudSun,
+  overnight: Moon,
+  groupAdventure: Users,
+  soloJourney: Route,
   sitting: Home,
+  training: GraduationCap,
+  customCare: ShieldCheck,
   process: MessageCircleHeart,
   area: MapPin,
   faq: CircleQuestionMark,
