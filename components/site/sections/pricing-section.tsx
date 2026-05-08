@@ -33,7 +33,7 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
             </h3>
             <p className="mt-3 leading-7 text-[#b9aa99]">{description}</p>
             <p className="mt-6 text-4xl font-extrabold text-[#8b5cf6]">
-              {price}{" "}
+              <span className="text-base font-bold text-[#988b7b]">From </span>{price}{" "}
               <span className="text-base font-bold text-[#988b7b]">{unit}</span>
             </p>
             <ul className="mt-6 space-y-3 text-sm text-[#d8cab8]">
