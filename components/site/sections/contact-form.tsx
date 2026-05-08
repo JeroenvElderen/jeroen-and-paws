@@ -13,7 +13,7 @@ export function ContactForm() {
         </div>
         <div>
           <label htmlFor="service" className="text-sm font-extrabold text-slate-700">Service Interested In</label>
-          <select id="service" name="service" defaultValue="" className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none transition focus:border-emerald-700 focus:ring-4 focus:ring-emerald-100">
+          <select id="service" name="service" defaultValue="" className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none transition focus:border-purple-700 focus:ring-4 focus:ring-purple-100">
             <option value="" disabled>Select a service</option>
             <option value="dog-walk">Dog Walking ($22+)</option>
             <option value="drop-in">Drop-In Visit ($25)</option>
@@ -25,7 +25,7 @@ export function ContactForm() {
         </div>
         <Textarea label="Tell Us About Your Pet" id="pet-info" placeholder="Pet name, breed, age, any special needs or behavioral notes..." />
         <Textarea label="Anything Else?" id="message" placeholder="Questions, scheduling preferences, neighborhood..." />
-        <button type="submit" className="w-full rounded-full bg-emerald-700 px-7 py-3 font-extrabold text-white transition hover:bg-emerald-800">Send Message</button>
+        <button type="submit" className="w-full rounded-full bg-purple-700 px-7 py-3 font-extrabold text-white transition hover:bg-purple-800">Send Message</button>
       </form>
     </div>
   );
@@ -35,7 +35,7 @@ function Field({ label, id, placeholder, type = "text" }: { label: string; id: s
   return (
     <div>
       <label htmlFor={id} className="text-sm font-extrabold text-slate-700">{label}</label>
-      <input id={id} name={id} type={type} placeholder={placeholder} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-emerald-700 focus:ring-4 focus:ring-emerald-100" />
+      <input id={id} name={id} type={type} placeholder={placeholder} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-purple-700 focus:ring-4 focus:ring-purple-100" />
     </div>
   );
 }
@@ -44,7 +44,7 @@ function Textarea({ label, id, placeholder }: { label: string; id: string; place
   return (
     <div>
       <label htmlFor={id} className="text-sm font-extrabold text-slate-700">{label}</label>
-      <textarea id={id} name={id} placeholder={placeholder} className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-emerald-700 focus:ring-4 focus:ring-emerald-100" />
+      <textarea id={id} name={id} placeholder={placeholder} className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-purple-700 focus:ring-4 focus:ring-purple-100" />
     </div>
   );
 }

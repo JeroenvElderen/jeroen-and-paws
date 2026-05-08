@@ -17,7 +17,7 @@ export function ServicesPageContent() {
           <PricingCards plans={walkPlans} />
         </div>
       </section>
-      <section className="bg-[#fefce8] px-6 py-20 sm:px-8">
+      <section className="bg-[#f8f3ff] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <SectionHeader icon={labels.sitting} label="Pet Sitting" title="In-Home Pet Care" text="Your pet stays comfortable at home while we handle the rest. Perfect for travel, long work days, or recovery periods." />
           <PricingCards plans={sittingPlans} />
@@ -30,7 +30,7 @@ export function ServicesPageContent() {
           <ProcessSection />
         </div>
       </section>
-      <section className="bg-[#fefce8] px-6 py-20 sm:px-8">
+      <section className="bg-[#f8f3ff] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <SectionHeader icon={labels.area} label="Service Area" title="Where We Walk" text="We serve local neighborhoods and nearby parks. Don't see your area? Ask us anyway—we may be able to help." />
           <ServiceArea />

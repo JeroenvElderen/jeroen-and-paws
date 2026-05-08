@@ -7,18 +7,18 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
   return (
     <div className="grid gap-7 lg:grid-cols-3">
       {plans.map(({ title, description, price, unit, icon: Icon, features, featured }) => (
-        <article key={title} className={`relative rounded-3xl bg-white p-8 shadow-sm ring-1 ${featured ? "ring-4 ring-emerald-600" : "ring-slate-200"}`}>
+        <article key={title} className={`relative rounded-3xl bg-white p-8 shadow-sm ring-1 ${featured ? "ring-4 ring-purple-600" : "ring-slate-200"}`}>
           {featured ? <div className="absolute right-6 top-6 rounded-full bg-amber-100 px-4 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-800">Popular</div> : null}
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-100 text-purple-700">
             <Icon aria-hidden="true" className="h-6 w-6" />
           </div>
           <h3 className="mt-6 text-2xl font-extrabold text-slate-950">{title}</h3>
           <p className="mt-3 leading-7 text-slate-600">{description}</p>
-          <p className="mt-6 text-4xl font-extrabold text-emerald-700">{price} <span className="text-base font-bold text-slate-500">{unit}</span></p>
+          <p className="mt-6 text-4xl font-extrabold text-purple-700">{price} <span className="text-base font-bold text-slate-500">{unit}</span></p>
           <ul className="mt-6 space-y-3 text-sm text-slate-700">
             {features.map((feature) => (
               <li key={feature} className="flex gap-2">
-                <Check aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
+                <Check aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-purple-700" />
                 {feature}
               </li>
             ))}

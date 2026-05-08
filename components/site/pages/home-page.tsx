@@ -17,7 +17,7 @@ export function HomePage() {
           <FeatureGrid />
         </div>
       </section>
-      <section className="bg-[#fefce8] px-6 py-20 sm:px-8">
+      <section className="bg-[#f8f3ff] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <SectionHeader icon={labels.services} label="What We Offer" title="Services for Every Pet" text="From daily walks to overnight stays, we have the right care plan for your pet's needs and your schedule." />
           <ServicesPreview />

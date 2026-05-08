@@ -11,7 +11,7 @@ export function TeamSection() {
           </div>
           <div className="p-7">
             <h3 className="text-2xl font-extrabold text-slate-950">{member.name}</h3>
-            <p className="mt-1 font-extrabold text-emerald-700">{member.role}</p>
+            <p className="mt-1 font-extrabold text-purple-700">{member.role}</p>
             <p className="mt-4 leading-7 text-slate-600">{member.bio}</p>
           </div>
         </article>

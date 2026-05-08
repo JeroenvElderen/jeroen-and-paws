@@ -17,7 +17,7 @@ export function ContactPageContent() {
           <ContactInfo />
         </div>
       </section>
-      <section className="bg-[#fefce8] px-6 py-20 sm:px-8">
+      <section className="bg-[#f8f3ff] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <SectionHeader icon={labels.faq} label="FAQ" title="Common Questions" text="Quick answers to things pet owners ask most. Don't see your question? Reach out and we'll help." />
           <FaqSection />
