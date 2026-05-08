@@ -15,6 +15,8 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
           icon: Icon,
           features,
           featured,
+          pricePrefix = "",
+          priceNote,
         }) => (
           <article
             key={title}
@@ -33,9 +35,26 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
             </h3>
             <p className="mt-3 leading-7 text-[#b9aa99]">{description}</p>
             <p className="mt-6 text-4xl font-extrabold text-[#8b5cf6]">
-              <span className="text-base font-bold text-[#988b7b]">From </span>{price}{" "}
-              <span className="text-base font-bold text-[#988b7b]">{unit}</span>
+              {pricePrefix ? (
+                <span className="text-base font-bold text-[#988b7b]">
+                  {pricePrefix}
+                </span>
+              ) : null}
+              {price}
+              {unit ? (
+                <>
+                  {" "}
+                  <span className="text-base font-bold text-[#988b7b]">
+                    {unit}
+                  </span>
+                </>
+              ) : null}
             </p>
+            {priceNote ? (
+              <p className="mt-2 text-sm font-semibold leading-6 text-[#988b7b]">
+                {priceNote}
+              </p>
+            ) : null}
             <ul className="mt-6 space-y-3 text-sm text-[#d8cab8]">
               {features.map((feature) => (
                 <li key={feature} className="flex gap-2">
