@@ -10,21 +10,40 @@ import { ValuesSection } from "@/components/site/sections/values-section";
 export function AboutPageContent() {
   return (
     <SiteShell activePage="about">
-      <PageHero icon={labels.story} label="Our Story" title="Built by Pet People, for Pet People" text="We started Jeroen & Paws because we couldn't find the kind of pet care we'd trust with our own animals. So we built it ourselves." />
+      <PageHero
+        icon={labels.story}
+        label="About me"
+        title="Certified care shaped around your dog"
+        text="Hi, I'm Jeroen — a certified canine specialist with over seven years of experience, providing personalised training, thoughtful care, and a safe, enriching environment."
+      />
       <StorySection />
-      <section className="bg-[#f8f3ff] px-6 py-20 sm:px-8">
+      <section className="bg-[#080b10] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
-          <SectionHeader icon={labels.team} label="The Team" title="Meet Your Pet's New Best Friends" text="Every walker and sitter on our team is pet first aid certified, background-checked, and genuinely loves animals. No exceptions." />
+          <SectionHeader
+            icon={labels.team}
+            label="Why work with me"
+            title="Expert care that helps dogs thrive"
+            text="From customised walks to structured day care and boarding, your dog receives the same consistency, dedication, and care Jeroen gives his own."
+          />
           <TeamSection />
         </div>
       </section>
-      <section className="bg-purple-700 px-6 py-20 sm:px-8">
+      <section className="border-y border-[#d1a34d]/20 bg-[#0c1017] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
-          <SectionHeader icon={labels.values} label="What We Stand For" title="Our Values" text="These aren't just words on a wall. They shape every decision we make, from who we hire to how we walk your dog." light />
+          <SectionHeader
+            icon={labels.values}
+            label="What We Stand For"
+            title="Why dogs feel supported"
+            text="Training and care are built on experience, calm structure, and clear communication so every companion can feel safe and understood."
+            light
+          />
           <ValuesSection />
         </div>
       </section>
-      <CtaSection title="Want to Join the Pack?" text="Schedule a free meet-and-greet so we can get to know your pet. No commitment, no pressure." />
+      <CtaSection
+        title="Exceptional care starts with understanding"
+        text="Book an appointment so Jeroen can learn your dog’s needs and help them feel happy, relaxed, and thriving."
+      />
     </SiteShell>
   );
 }

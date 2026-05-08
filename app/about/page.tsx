@@ -1,9 +1,9 @@
 import { AboutPageContent } from "@/components/site/pages/about-page";
 
 export const metadata = {
-  title: "About Us - Jeroen & Paws | Dog Walking",
+  title: "About me - Jeroen & Paws",
   description:
-    "Meet the Jeroen & Paws team. We're insured, pet first aid certified, and passionate about giving local pets the best walks and care possible.",
+    "Meet Jeroen, a certified canine specialist providing personalised training, thoughtful care, and a safe, enriching environment for every dog.",
 };
 
 export default function AboutPage() {
