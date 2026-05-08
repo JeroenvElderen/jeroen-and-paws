@@ -1,9 +1,9 @@
 import { ServicesPageContent } from "@/components/site/pages/services-page";
 
 export const metadata = {
-  title: "Services & Pricing - Jeroen & Paws | Dog Walking",
+  title: "Services & Pricing - Jeroen & Paws | Dog Care",
   description:
-    "Explore Jeroen & Paws dog walking, pet sitting, overnight stay, puppy, and cat care services with simple transparent pricing.",
+    "Explore Jeroen & Paws daily strolls, solo journeys, group adventures, home check-ins, daytime care, overnight stays, training help, and custom care solutions.",
 };
 
 export default function ServicesPage() {

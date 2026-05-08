@@ -6,9 +6,9 @@ type ButtonLinkProps = ComponentProps<typeof Link> & {
 };
 
 const variants = {
-  primary: "bg-purple-700 text-white shadow-lg shadow-purple-900/10 hover:bg-purple-800",
-  outline: "border-2 border-purple-700 text-purple-800 hover:bg-purple-50",
-  light: "bg-white text-purple-800 hover:bg-purple-50",
+  primary: "bg-violet-700 text-white shadow-lg shadow-black/25 hover:bg-violet-800",
+  outline: "border-2 border-violet-400 text-violet-100 hover:bg-violet-950",
+  light: "bg-slate-900 text-violet-100 hover:bg-violet-950",
 };
 
 export function ButtonLink({ className = "", variant = "primary", ...props }: ButtonLinkProps) {

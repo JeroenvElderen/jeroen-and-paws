@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Jeroen & Paws | Dog Walking & Pet Sitting",
+  title: "Jeroen & Paws | Dog Walking, Training, Day Care & Boarding",
   description:
-    "Jeroen & Paws offers professional dog walking, pet sitting, and overnight stays with warm, dependable care.",
+    "Jeroen & Paws offers personalised dog walking, training, day care, boarding, and home check-ins with attentive care by certified canine specialist Jeroen.",
 };
 
 export default function RootLayout({

@@ -11,25 +11,25 @@ export function HomePage() {
   return (
     <SiteShell activePage="home">
       <HomeHero />
-      <section className="bg-white px-6 py-20 sm:px-8">
+      <section className="bg-slate-900 px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
-          <SectionHeader icon={labels.trust} label="Why Jeroen & Paws" title="Pet Care You Can Count On" text="We built this business because we saw too many dog walkers treat it like a side gig. This is our full-time commitment to your pet's wellbeing." />
+          <SectionHeader icon={labels.comfort} label="Where comfort comes first" title="Thoughtful care for your companion" text="Reliable walks, enriching daycare, personalised training, and safe overnight stays — everything your companion needs to feel supported, happy, and secure." />
           <FeatureGrid />
         </div>
       </section>
-      <section className="bg-[#f8f3ff] px-6 py-20 sm:px-8">
+      <section className="bg-slate-950 px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
-          <SectionHeader icon={labels.services} label="What We Offer" title="Services for Every Pet" text="From daily walks to overnight stays, we have the right care plan for your pet's needs and your schedule." />
+          <SectionHeader icon={labels.services} label="Complete care" title="Services for every companion" text="From energising walks to reassuring overnight stays, care is shaped around your companion’s routine and personality." />
           <ServicesPreview />
         </div>
       </section>
-      <section className="bg-white px-6 py-20 sm:px-8">
+      <section className="bg-slate-900 px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
-          <SectionHeader icon={labels.testimonials} label="Happy Clients" title="Pet Parents Love Us" text="Our clients count on us for dependable, thoughtful care every week." />
+          <SectionHeader icon={labels.testimonials} label="What clients say" title="Care you can trust" text="Discover how personalised dog care services have made a difference for pet owners just like you." />
           <Testimonials />
         </div>
       </section>
-      <CtaSection title="Ready to Give Your Pet the Best?" text="Book a free meet-and-greet and see why hundreds of local families trust Jeroen & Paws with their pets." />
+      <CtaSection title="Caring for your companion like family" text="Personalised training, dependable daily walks, and safe boarding/day care are ready when your companion needs them." />
     </SiteShell>
   );
 }
