@@ -13,13 +13,13 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.25fr_0.75fr_0.75fr_1.15fr]">
           <div>
             <div className="inline-flex items-center gap-3 text-xl font-extrabold text-white">
-              <PawPrint aria-hidden="true" className="h-6 w-6 fill-emerald-400 text-emerald-400" />
+              <PawPrint aria-hidden="true" className="h-6 w-6 fill-purple-400 text-purple-400" />
               Jeroen & Paws
             </div>
             <p className="mt-4 max-w-sm leading-7 text-slate-400">Professional dog walking and pet sitting in your area. Insured, bonded, and committed to giving your pet the care they deserve.</p>
             <div className="mt-6 flex gap-3">
               {[Star, Camera, Home].map((Icon, index) => (
-                <Link key={index} href="#" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-emerald-600" aria-label="Social profile">
+                <Link key={index} href="#" className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-purple-600" aria-label="Social profile">
                   <Icon aria-hidden="true" className="h-4 w-4" />
                 </Link>
               ))}
@@ -32,7 +32,7 @@ export function Footer() {
               <ul className="mt-4 space-y-3 text-sm">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="hover:text-emerald-300">{link.label}</Link>
+                    <Link href={link.href} className="hover:text-purple-300">{link.label}</Link>
                   </li>
                 ))}
               </ul>
@@ -42,8 +42,8 @@ export function Footer() {
           <div>
             <h3 className="font-bold text-white">Contact</h3>
             <ul className="mt-4 space-y-3 text-sm">
-              <li><Link href="tel:+13035551234" className="inline-flex gap-2 hover:text-emerald-300"><Phone className="h-4 w-4" /> (303) 555-1234</Link></li>
-              <li><Link href="mailto:hello@jeroenandpaws.com" className="inline-flex gap-2 hover:text-emerald-300"><Mail className="h-4 w-4" /> hello@jeroenandpaws.com</Link></li>
+              <li><Link href="tel:+13035551234" className="inline-flex gap-2 hover:text-purple-300"><Phone className="h-4 w-4" /> (303) 555-1234</Link></li>
+              <li><Link href="mailto:hello@jeroenandpaws.com" className="inline-flex gap-2 hover:text-purple-300"><Mail className="h-4 w-4" /> hello@jeroenandpaws.com</Link></li>
               <li className="flex gap-2"><MapPin className="h-4 w-4 shrink-0" /> By appointment in your area</li>
               <li className="flex gap-2"><Clock className="h-4 w-4 shrink-0" /> Mon-Sun 7am-7pm</li>
             </ul>

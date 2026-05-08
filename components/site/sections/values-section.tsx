@@ -5,9 +5,9 @@ export function ValuesSection() {
     <div className="grid gap-6 md:grid-cols-3">
       {values.map(({ title, description, icon: Icon }) => (
         <article key={title} className="rounded-3xl bg-white/10 p-8 text-center ring-1 ring-white/15">
-          <Icon aria-hidden="true" className="mx-auto h-8 w-8 text-emerald-100" />
+          <Icon aria-hidden="true" className="mx-auto h-8 w-8 text-purple-100" />
           <h3 className="mt-5 text-2xl font-extrabold text-white">{title}</h3>
-          <p className="mt-4 leading-7 text-emerald-50">{description}</p>
+          <p className="mt-4 leading-7 text-purple-50">{description}</p>
         </article>
       ))}
     </div>

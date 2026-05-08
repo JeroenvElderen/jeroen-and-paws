@@ -4,7 +4,7 @@ export function StorySection() {
   return (
     <section className="bg-white px-6 py-20 sm:px-8">
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
-        <div className="relative min-h-[360px] overflow-hidden rounded-3xl shadow-xl shadow-emerald-950/10">
+        <div className="relative min-h-[360px] overflow-hidden rounded-3xl shadow-xl shadow-purple-950/10">
           <PlaceholderImage alt="Jeroen, founder of Jeroen & Paws, with his rescue dog Paws" />
         </div>
         <div>

@@ -15,8 +15,8 @@ export function ServicesPreview() {
           <div className="p-7">
             <h3 className="text-2xl font-extrabold text-slate-950">{service.title}</h3>
             <p className="mt-3 leading-7 text-slate-600">{service.description}</p>
-            <p className="mt-5 text-lg font-extrabold text-emerald-700">{service.price}</p>
-            <Link href="/services" className="mt-5 inline-flex items-center gap-2 font-extrabold text-emerald-700 hover:text-emerald-900">
+            <p className="mt-5 text-lg font-extrabold text-purple-700">{service.price}</p>
+            <Link href="/services" className="mt-5 inline-flex items-center gap-2 font-extrabold text-purple-700 hover:text-purple-900">
               Learn more <ArrowRight aria-hidden="true" className="h-4 w-4" />
             </Link>
           </div>
