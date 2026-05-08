@@ -8,7 +8,7 @@ export function ProcessSection() {
           key={step.title}
           className="rounded-3xl border border-white/10 bg-[#111821] p-8 text-center shadow-sm"
         >
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#d1a34d] text-2xl font-extrabold text-[#fff7e8]">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#8b5cf6] text-2xl font-extrabold text-[#fff7e8]">
             {index + 1}
           </div>
           <h3 className="mt-6 text-2xl font-extrabold text-[#fff7e8]">

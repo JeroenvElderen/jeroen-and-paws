@@ -11,11 +11,11 @@ export function Header({ activePage }: { activePage: PageName }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#d1a34d]/15 bg-[#080b10]/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-[#8b5cf6]/15 bg-[#080b10]/95 backdrop-blur">
       <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center justify-between px-6 sm:px-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-3 text-xl font-extrabold text-[#d1a34d]"
+          className="inline-flex items-center gap-3 text-xl font-extrabold text-[#8b5cf6]"
           onClick={() => setIsOpen(false)}
         >
           <PawPrint aria-hidden="true" className="h-6 w-6 fill-current" />
@@ -24,7 +24,7 @@ export function Header({ activePage }: { activePage: PageName }) {
 
         <button
           type="button"
-          className="inline-flex rounded-full border border-[#d1a34d]/15 p-2 text-[#f6d184] md:hidden"
+          className="inline-flex rounded-full border border-[#8b5cf6]/15 p-2 text-[#c4b5fd] md:hidden"
           aria-label="Toggle menu"
           aria-expanded={isOpen}
           onClick={() => setIsOpen((open) => !open)}
@@ -44,7 +44,7 @@ export function Header({ activePage }: { activePage: PageName }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-full px-5 py-2 text-sm font-bold transition ${activePage === item.page ? "bg-[#2a2118] text-[#f6d184]" : "text-[#b9aa99] hover:bg-[#111821] hover:text-[#f6d184]"}`}
+              className={`rounded-full px-5 py-2 text-sm font-bold transition ${activePage === item.page ? "bg-[#24163f] text-[#c4b5fd]" : "text-[#b9aa99] hover:bg-[#111821] hover:text-[#c4b5fd]"}`}
             >
               {item.label}
             </Link>
@@ -58,7 +58,7 @@ export function Header({ activePage }: { activePage: PageName }) {
 
       {isOpen ? (
         <nav
-          className="border-t border-[#d1a34d]/15 bg-[#080b10] px-6 pb-6 md:hidden"
+          className="border-t border-[#8b5cf6]/15 bg-[#080b10] px-6 pb-6 md:hidden"
           aria-label="Mobile navigation"
         >
           <div className="mx-auto flex max-w-6xl flex-col gap-2 pt-4">
@@ -66,7 +66,7 @@ export function Header({ activePage }: { activePage: PageName }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-2xl px-4 py-3 font-bold ${activePage === item.page ? "bg-[#2a2118] text-[#f6d184]" : "text-[#b9aa99]"}`}
+                className={`rounded-2xl px-4 py-3 font-bold ${activePage === item.page ? "bg-[#24163f] text-[#c4b5fd]" : "text-[#b9aa99]"}`}
                 onClick={() => setIsOpen(false)}
               >
                 {item.label}

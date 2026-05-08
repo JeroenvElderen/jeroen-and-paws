@@ -11,7 +11,7 @@ export function Testimonials() {
           key={testimonial.name}
           className="rounded-3xl bg-[#111821] p-7 shadow-sm ring-1 ring-white/10"
         >
-          <div className="flex gap-1 text-amber-500">
+          <div className="flex gap-1 text-[#8b5cf6]">
             {Array.from({ length: 5 }).map((_, index) => (
               <Star
                 key={index}
