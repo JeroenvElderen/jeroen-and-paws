@@ -1,13 +1,20 @@
 import { labels } from "@/components/site/data";
 import { SiteShell } from "@/components/site/layout/site-shell";
-import { ContactForm } from "@/components/site/sections/contact-form";
+import {
+  ContactForm,
+  type SelectedServiceDetails,
+} from "@/components/site/sections/contact-form";
 import { ContactInfo } from "@/components/site/sections/contact-info";
 import { CtaSection } from "@/components/site/sections/cta-section";
 import { FaqSection } from "@/components/site/sections/faq-section";
 import { PageHero } from "@/components/site/sections/page-hero";
 import { SectionHeader } from "@/components/site/sections/section-header";
 
-export function ContactPageContent() {
+export function ContactPageContent({
+  selectedService,
+}: {
+  selectedService?: SelectedServiceDetails;
+}) {
   return (
     <SiteShell activePage="contact">
       <PageHero
@@ -18,7 +25,7 @@ export function ContactPageContent() {
       />
       <section className="bg-[#111821] px-6 py-20 sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-          <ContactForm />
+          <ContactForm selectedService={selectedService} />
           <ContactInfo />
         </div>
       </section>
