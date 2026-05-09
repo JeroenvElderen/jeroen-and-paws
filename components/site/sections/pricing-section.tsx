@@ -1,7 +1,7 @@
 import { Check, ShieldCheck } from "lucide-react";
 
 import type { PricingPlan } from "@/components/site/data";
-import { ButtonLink } from "@/components/site/ui/button-link";
+import { ServiceBookingActions } from "@/components/site/sections/service-booking-actions";
 
 export function PricingCards({ plans }: { plans: PricingPlan[] }) {
   return (
@@ -66,13 +66,16 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
                 </li>
               ))}
             </ul>
-            <ButtonLink
-              href="/contact"
-              variant={featured ? "primary" : "outline"}
-              className="mt-7 w-full"
-            >
-              Book Now
-            </ButtonLink>
+            <ServiceBookingActions
+              plan={{
+                title,
+                description,
+                price,
+                unit,
+                features,
+                featured,
+              }}
+            />
           </article>
         ),
       )}
