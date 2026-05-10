@@ -14,7 +14,7 @@ export function HomeHero() {
               aria-hidden="true"
               className="h-4 w-4 fill-[#8b5cf6] text-[#8b5cf6]"
             />
-            Welcome to a place where your companion is understood
+            Dog care by appointment for local families in Ireland
           </div>
           <h1 className="mt-7 text-5xl font-extrabold leading-tight tracking-tight text-[#fff7e8] sm:text-6xl">
             Exceptional care for the{" "}
@@ -25,10 +25,11 @@ export function HomeHero() {
             From engaging walks and reassuring home check-ins to enriching
             daycare, boarding, and personalised training, every service is
             designed so your companion feels safe, stimulated, and truly at
-            home.
+            home. Share your location when you enquire so Jeroen can confirm
+            local availability.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <ButtonLink href="/contact">Begin your journey</ButtonLink>
+            <ButtonLink href="/contact">Book a Free Meet & Greet</ButtonLink>
             <ButtonLink href="/services" variant="outline">
               Discover more
             </ButtonLink>
@@ -51,6 +52,7 @@ export function HomeHero() {
             alt="Lakta enjoying a happy outdoor moment"
             sizes="(min-width: 1024px) 48vw, 100vw"
             src="/images/dogs/lakta/lakta1.jpg"
+            priority
           />
         </div>
       </div>

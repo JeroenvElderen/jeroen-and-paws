@@ -8,6 +8,7 @@ import {
   overnightSupportPlans,
   soloJourneyPlans,
   trainingPlans,
+  bookingPolicies,
 } from "@/components/site/data";
 import { SiteShell } from "@/components/site/layout/site-shell";
 import { CtaSection } from "@/components/site/sections/cta-section";
@@ -22,6 +23,7 @@ import { ServiceArea } from "@/components/site/sections/service-area";
 
 const serviceSections = [
   {
+    id: "daily-strolls",
     icon: labels.dog,
     label: "Daily Strolls",
     title: "Daily strolls from 30 to 60 minutes",
@@ -30,6 +32,7 @@ const serviceSections = [
     background: "bg-[#111821]",
   },
   {
+    id: "home-visits",
     icon: labels.homeVisit,
     label: "Home Visits",
     title: "Essential and extended home visits",
@@ -38,6 +41,7 @@ const serviceSections = [
     background: "bg-[#080b10]",
   },
   {
+    id: "daytime-care",
     icon: labels.daytimeCare,
     label: "Daytime Care",
     title: "Half-day and full-day daytime care",
@@ -46,6 +50,7 @@ const serviceSections = [
     background: "bg-[#111821]",
   },
   {
+    id: "overnight-support",
     icon: labels.overnight,
     label: "Overnight Support",
     title: "Calm overnight stays",
@@ -54,6 +59,7 @@ const serviceSections = [
     background: "bg-[#080b10]",
   },
   {
+    id: "group-adventures",
     icon: labels.groupAdventure,
     label: "Group Adventures",
     title: "2-hour, half-day, and full-day adventures",
@@ -62,6 +68,7 @@ const serviceSections = [
     background: "bg-[#111821]",
   },
   {
+    id: "solo-journeys",
     icon: labels.soloJourney,
     label: "Solo Journeys",
     title: "Half-day and full-day solo journeys",
@@ -70,6 +77,7 @@ const serviceSections = [
     background: "bg-[#080b10]",
   },
   {
+    id: "training",
     icon: labels.training,
     label: "Training",
     title: "Introductory, standard, puppy, and extended training",
@@ -78,9 +86,10 @@ const serviceSections = [
     background: "bg-[#111821]",
   },
   {
+    id: "custom-care",
     icon: labels.customCare,
     label: "Custom Care",
-    title: "One custom and tailored care card",
+    title: "Flexible care for unique needs",
     text: "All custom and tailored requests are grouped into one flexible option for unique routines, specialist needs, behaviour support, and bespoke plans.",
     plans: customCarePlans,
     background: "bg-[#080b10]",
@@ -94,18 +103,46 @@ export function ServicesPageContent() {
         icon={labels.services}
         label="Our services"
         title="Pick the perfect fit"
-        text="Explore fixed Jeroen & Paws services as individual cards, with one flexible custom and tailored care card for unique routines, goals, and specialist needs."
+        text="Explore dog walking, home check-ins, day care, boarding, adventures, training, and custom care options, then start with a free meet-and-greet."
       />
-      {serviceSections.map(({ icon, label, title, text, plans, background }) => (
-        <section key={label} className={`${background} px-6 py-20 sm:px-8`}>
-          <div className="mx-auto max-w-6xl">
-            <SectionHeader icon={icon} label={label} title={title} text={text} />
-            <PricingCards plans={plans} />
-          </div>
-        </section>
-      ))}
+      {serviceSections.map(
+        ({ id, icon, label, title, text, plans, background }) => (
+          <section
+            key={label}
+            id={id}
+            className={`${background} scroll-mt-24 px-6 py-20 sm:px-8`}
+          >
+            <div className="mx-auto max-w-6xl">
+              <SectionHeader
+                icon={icon}
+                label={label}
+                title={title}
+                text={text}
+              />
+              <PricingCards plans={plans} />
+            </div>
+          </section>
+        ),
+      )}
       <section className="bg-[#111821] px-6 py-16 sm:px-8">
         <GuaranteeBanner />
+      </section>
+      <section id="policies" className="bg-[#111821] px-6 py-16 sm:px-8">
+        <div className="mx-auto max-w-4xl rounded-3xl bg-[#0b1017] p-7 ring-1 ring-[#8b5cf6]/25">
+          <SectionHeader
+            icon={labels.faq}
+            label="Booking notes"
+            title="Clear expectations before care begins"
+            text="A few practical details help every booking stay safe, fair, and calm for you and your companion."
+          />
+          <ul className="mt-8 space-y-3 text-[#d8cab8]">
+            {bookingPolicies.map((policy) => (
+              <li key={policy} className="rounded-2xl bg-[#111821] px-5 py-4">
+                {policy}
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
       <section className="bg-[#111821] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
@@ -123,8 +160,8 @@ export function ServicesPageContent() {
           <SectionHeader
             icon={labels.area}
             label="Service Area"
-            title="Complete care for your companion"
-            text="From energising walks to reassuring overnight stays, each service is shaped around your companion’s routine and personality."
+            title="Care by appointment for local dog families"
+            text="Share your location during your enquiry and Jeroen will confirm whether your route, home visit, day care, boarding, or training request can be supported."
           />
           <ServiceArea />
         </div>

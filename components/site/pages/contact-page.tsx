@@ -29,7 +29,7 @@ export function ContactPageContent({
           <ContactInfo />
         </div>
       </section>
-      <section className="bg-[#080b10] px-6 py-20 sm:px-8">
+      <section id="faq" className="bg-[#080b10] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <SectionHeader
             icon={labels.faq}

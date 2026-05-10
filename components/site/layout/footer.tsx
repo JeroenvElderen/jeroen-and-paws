@@ -1,27 +1,31 @@
-import { Camera, Clock, Home, Mail, MapPin, Phone, Star } from "lucide-react";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
+import { businessInfo } from "@/components/site/data";
 
 const footerSections = [
   {
     title: "Our services",
     links: [
-      "Daily strolls",
-      "Solo journeys",
-      "Group adventures",
-      "Daytime care",
-      "Home check-ins",
-      "Overnight stays",
-      "Training",
-      "Custom solutions",
-    ].map((label) => ({ label, href: "/services" })),
+      { label: "Daily strolls", href: "/services#daily-strolls" },
+      { label: "Solo journeys", href: "/services#solo-journeys" },
+      { label: "Group adventures", href: "/services#group-adventures" },
+      { label: "Daytime care", href: "/services#daytime-care" },
+      { label: "Home check-ins", href: "/services#home-visits" },
+      { label: "Overnight stays", href: "/services#overnight-support" },
+      { label: "Training", href: "/services#training" },
+      { label: "Custom solutions", href: "/services#custom-care" },
+    ],
   },
   {
     title: "Company info",
     links: [
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
-      { label: "FAQ", href: "/contact" },
+      { label: "FAQ", href: "/contact#faq" },
+      { label: "Policies", href: "/terms" },
+      { label: "Privacy", href: "/privacy" },
     ],
   },
 ];
@@ -43,18 +47,9 @@ export function Footer() {
               Personalised dog walking, training, day care, boarding, and home
               check-ins where every companion is understood and cared for.
             </p>
-            <div className="mt-6 flex gap-3">
-              {[Star, Camera, Home].map((Icon, index) => (
-                <Link
-                  key={index}
-                  href="#"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#111821]/10 text-[#fff7e8] transition hover:bg-[#8b5cf6]"
-                  aria-label="Social profile"
-                >
-                  <Icon aria-hidden="true" className="h-4 w-4" />
-                </Link>
-              ))}
-            </div>
+            <p className="mt-5 text-sm font-semibold text-[#c4b5fd]">
+              {businessInfo.responseTime}
+            </p>
           </div>
 
           {footerSections.map((section) => (
@@ -77,36 +72,36 @@ export function Footer() {
             <ul className="mt-4 space-y-3 text-sm">
               <li>
                 <Link
-                  href="tel:+353872473099"
+                  href={`tel:${businessInfo.phoneHref}`}
                   className="inline-flex gap-2 hover:text-[#ddd6fe]"
                 >
-                  <Phone className="h-4 w-4" /> +353 87 247 3099
+                  <Phone className="h-4 w-4" /> {businessInfo.phoneDisplay}
                 </Link>
               </li>
               <li>
                 <Link
-                  href="mailto:Jeroen@jeroenandpaws.com"
+                  href={`mailto:${businessInfo.email}`}
                   className="inline-flex gap-2 hover:text-[#ddd6fe]"
                 >
-                  <Mail className="h-4 w-4" /> Jeroen@jeroenandpaws.com
+                  <Mail className="h-4 w-4" /> {businessInfo.email}
                 </Link>
               </li>
               <li className="flex gap-2">
-                <MapPin className="h-4 w-4 shrink-0" /> By appointment for your
-                companion
+                <MapPin className="h-4 w-4 shrink-0" /> By appointment for local
+                companions
               </li>
               <li className="flex gap-2">
-                <Clock className="h-4 w-4 shrink-0" /> Mon-Sun 8am-10pm
+                <Clock className="h-4 w-4 shrink-0" /> {businessInfo.hours}
               </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-[#988b7b] sm:flex-row sm:items-center sm:justify-between">
-          <p>All rights reserved © 2025 Jeroen & Paws</p>
+          <p>All rights reserved © 2026 Jeroen & Paws</p>
           <div className="flex gap-4">
-            <Link href="#">Privacy Policy</Link>
-            <Link href="#">Terms of Service</Link>
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms of Service</Link>
           </div>
         </div>
       </div>

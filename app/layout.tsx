@@ -1,11 +1,47 @@
 import type { Metadata } from "next";
 
+import { businessInfo } from "@/components/site/data";
+import { StructuredData } from "@/components/site/structured-data";
+
 import "./globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || businessInfo.siteUrl;
+
 export const metadata: Metadata = {
-  title: "Jeroen & Paws | Personalised Dog Care & Training",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Jeroen & Paws | Personalised Dog Care & Training",
+    template: "%s | Jeroen & Paws",
+  },
   description:
-    "Jeroen & Paws offers personalised dog walking, training, day care, home check-ins, and boarding with warm, dependable care.",
+    "Jeroen & Paws offers personalised dog walking, training, day care, home check-ins, and boarding with warm, dependable care by appointment in Ireland.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Jeroen & Paws | Personalised Dog Care & Training",
+    description:
+      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Ireland.",
+    url: siteUrl,
+    siteName: businessInfo.name,
+    images: [
+      {
+        url: "/images/dogs/lakta/lakta1.jpg",
+        width: 1200,
+        height: 630,
+        alt: "A happy dog enjoying Jeroen & Paws care",
+      },
+    ],
+    locale: "en_IE",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Jeroen & Paws | Personalised Dog Care & Training",
+    description:
+      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Ireland.",
+    images: ["/images/dogs/lakta/lakta1.jpg"],
+  },
 };
 
 export default function RootLayout({
@@ -22,6 +58,7 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+        <StructuredData />
         {children}
       </body>
     </html>

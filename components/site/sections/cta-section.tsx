@@ -11,7 +11,7 @@ export function CtaSection({ title, text }: { title: string; text: string }) {
           {text}
         </p>
         <ButtonLink href="/contact" variant="light" className="mt-8">
-          Book a Walk
+          Book a Free Meet &amp; Greet
         </ButtonLink>
       </div>
     </section>
