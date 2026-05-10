@@ -15,6 +15,7 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
           icon: Icon,
           features,
           featured,
+          badge,
           pricePrefix = "",
           priceNote,
         }) => (
@@ -24,7 +25,7 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
           >
             {featured ? (
               <div className="absolute right-6 top-6 rounded-full bg-[#3a2915] px-4 py-1 text-xs font-extrabold uppercase tracking-wide text-[#a78bfa]">
-                Popular
+                {badge || "Recommended"}
               </div>
             ) : null}
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#24163f] text-[#8b5cf6]">
@@ -74,6 +75,7 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
                 unit,
                 features,
                 featured,
+                badge,
               }}
             />
           </article>

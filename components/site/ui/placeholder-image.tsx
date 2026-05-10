@@ -5,11 +5,13 @@ export function PlaceholderImage({
   className = "object-cover",
   sizes = "(min-width: 768px) 50vw, 100vw",
   src = "/images/placeholder.jpg",
+  priority = false,
 }: {
   alt: string;
   className?: string;
   sizes?: string;
   src?: string;
+  priority?: boolean;
 }) {
   return (
     <Image
@@ -18,6 +20,8 @@ export function PlaceholderImage({
       fill
       sizes={sizes}
       className={className}
+      placeholder="empty"
+      priority={priority}
     />
   );
 }

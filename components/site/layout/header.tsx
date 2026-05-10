@@ -59,7 +59,7 @@ export function Header({ activePage }: { activePage: PageName }) {
         </nav>
 
         <ButtonLink href="/contact" className="hidden md:inline-flex">
-          Book a Walk
+          Book a Free Meet & Greet
         </ButtonLink>
       </div>
 
@@ -84,7 +84,7 @@ export function Header({ activePage }: { activePage: PageName }) {
               className="mt-2"
               onClick={() => setIsOpen(false)}
             >
-              Book a Walk
+              Book a Free Meet & Greet
             </ButtonLink>
           </div>
         </nav>

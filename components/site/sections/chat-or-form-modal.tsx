@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 export type BookingService = {
   title: string;
@@ -17,16 +18,80 @@ type ChatOrFormModalProps = {
   onClose: () => void;
 };
 
+const focusableSelector = [
+  "a[href]",
+  "button:not([disabled])",
+  "textarea:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
+
 export function ChatOrFormModal({ service, onClose }: ChatOrFormModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previouslyFocusedElement = useRef<Element | null>(null);
+
+  useEffect(() => {
+    previouslyFocusedElement.current = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab" || !dialogRef.current) return;
+
+      const focusableElements = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(focusableSelector),
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (!firstElement || !lastElement) return;
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+
+      if (previouslyFocusedElement.current instanceof HTMLElement) {
+        previouslyFocusedElement.current.focus();
+      }
+    };
+  }, [onClose]);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-[#080b10]/85 px-5 py-8 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-choice-heading"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
     >
-      <div className="relative w-full max-w-xl rounded-3xl bg-[#111821] p-8 shadow-2xl ring-1 ring-[#8b5cf6]/40">
+      <div
+        ref={dialogRef}
+        className="relative w-full max-w-xl rounded-3xl bg-[#111821] p-8 shadow-2xl ring-1 ring-[#8b5cf6]/40"
+      >
         <button
+          ref={closeButtonRef}
           className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-2xl font-bold text-[#d8cab8] transition hover:border-[#8b5cf6] hover:text-[#fff7e8]"
           aria-label="Close booking options"
           onClick={onClose}

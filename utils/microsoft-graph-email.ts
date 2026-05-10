@@ -15,6 +15,7 @@ type SendMicrosoftGraphEmailInput = {
 
 type MicrosoftTokenResponse = {
   access_token?: string;
+  expires_in?: number;
   error?: string;
   error_description?: string;
 };
@@ -27,21 +28,50 @@ type MicrosoftGraphErrorResponse = {
 };
 
 const MICROSOFT_GRAPH_SCOPE = "https://graph.microsoft.com/.default";
+const FETCH_TIMEOUT_MS = 12000;
+const TOKEN_EXPIRY_BUFFER_MS = 60_000;
 
-const getAccessToken = async ({
-  tenantId,
-  clientId,
-  clientSecret,
-}: MicrosoftGraphEmailConfig) => {
+let cachedToken:
+  | {
+      key: string;
+      accessToken: string;
+      expiresAt: number;
+    }
+  | undefined;
+
+const fetchWithTimeout = async (url: string, init: RequestInit) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
+const getCacheKey = ({ tenantId, clientId }: MicrosoftGraphEmailConfig) =>
+  `${tenantId}:${clientId}`;
+
+const getAccessToken = async (config: MicrosoftGraphEmailConfig) => {
+  const cacheKey = getCacheKey(config);
+
+  if (
+    cachedToken?.key === cacheKey &&
+    cachedToken.expiresAt - TOKEN_EXPIRY_BUFFER_MS > Date.now()
+  ) {
+    return cachedToken.accessToken;
+  }
+
   const body = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
+    client_id: config.clientId,
+    client_secret: config.clientSecret,
     grant_type: "client_credentials",
     scope: MICROSOFT_GRAPH_SCOPE,
   });
 
-  const response = await fetch(
-    `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+  const response = await fetchWithTimeout(
+    `https://login.microsoftonline.com/${config.tenantId}/oauth2/v2.0/token`,
     {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -57,6 +87,12 @@ const getAccessToken = async ({
         "Could not get a Microsoft Graph access token.",
     );
   }
+
+  cachedToken = {
+    key: cacheKey,
+    accessToken: result.access_token,
+    expiresAt: Date.now() + (result.expires_in || 3600) * 1000,
+  };
 
   return result.access_token;
 };
@@ -75,7 +111,7 @@ export async function sendMicrosoftGraphEmail(
   input: SendMicrosoftGraphEmailInput,
 ) {
   const accessToken = await getAccessToken(config);
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(
       config.senderEmail,
     )}/sendMail`,
@@ -115,6 +151,8 @@ export async function sendMicrosoftGraphEmail(
 
   if (!response.ok) {
     const graphMessage = await getGraphErrorMessage(response);
-    throw new Error(graphMessage || "Microsoft Graph could not send the email.");
+    throw new Error(
+      graphMessage || "Microsoft Graph could not send the email.",
+    );
   }
 }

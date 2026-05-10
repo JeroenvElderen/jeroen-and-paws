@@ -41,9 +41,40 @@ export type PricingPlan = {
   icon: LucideIcon;
   features: string[];
   featured?: boolean;
+  badge?: string;
   pricePrefix?: string;
   priceNote?: string;
 };
+
+export const businessInfo = {
+  name: "Jeroen & Paws",
+  email: "Jeroen@jeroenandpaws.com",
+  phoneDisplay: "+353 87 247 3099",
+  phoneHref: "+353872473099",
+  whatsappNumber: "00353872473099",
+  siteUrl: "https://jeroenandpaws.com",
+  serviceAreaSummary:
+    "Dog walking, training, day care, boarding, and home check-ins by appointment for local dog families in Ireland.",
+  responseTime: "Jeroen aims to reply within 24 hours.",
+  hours: "Monday - Sunday: 8:00 AM - 10:00 PM",
+};
+
+export const serviceAreas = [
+  "Local dog walking routes",
+  "Home visits by appointment",
+  "Day care and boarding clients",
+  "Training meet-and-greets",
+  "Nearby custom care plans",
+  "Ireland-based enquiries",
+];
+
+export const bookingPolicies = [
+  "Free meet-and-greet before new recurring care, boarding, or training plans.",
+  "Final pricing depends on location, number of dogs, dates, routine, and specialist care needs.",
+  "Holiday, late pickup, extra-dog, medication, or extended-travel requests may be quoted separately.",
+  "Please share cancellations or changes as early as possible so care plans can be adjusted calmly.",
+  "Emergency veterinary instructions, medication notes, and behaviour triggers should be shared before care begins.",
+];
 
 export const navItems: Array<{ label: string; href: string; page: PageName }> =
   [
@@ -51,12 +82,13 @@ export const navItems: Array<{ label: string; href: string; page: PageName }> =
     { label: "Services", href: "/services", page: "services" },
     { label: "About me", href: "/about", page: "about" },
     { label: "Contact", href: "/contact", page: "contact" },
+    { label: "Policies", href: "/terms", page: "contact" },
   ];
 
 export const stats = [
-  { value: "100+", label: "Satisfied pet owners" },
-  { value: "5k+", label: "Walks and visits" },
-  { value: "7+", label: "Years of experience" },
+  { value: "100+", label: "Pet families supported" },
+  { value: "5k+", label: "Walks and care visits" },
+  { value: "7+", label: "Years hands-on" },
 ];
 
 export const trustHighlights: IconCard[] = [
@@ -154,7 +186,7 @@ export const teamMembers = [
   {
     name: "Compass",
     role: "Alaskan Husky",
-    alt: "Aslan, an Alaskan Husky companion",
+    alt: "Compass, an Alaskan Husky companion",
     imageSrc: "/images/dogs/aslan/aslan.jpg",
     bio: "Compass is part of the Jeroen & Paws family and reflects the structured, active, companion-first care every dog receives.",
   },
@@ -314,7 +346,7 @@ export const groupAdventurePlans: PricingPlan[] = [
     description:
       "An extended group outing with time for movement and gentle social engagement.",
     price: "€45",
-    unit: "",
+    unit: "/ outing",
     icon: Users,
     features: [
       "2 hours",
@@ -329,7 +361,7 @@ export const groupAdventurePlans: PricingPlan[] = [
     description:
       "Additional time outdoors for steady interaction, relaxed walks, and restful pauses.",
     price: "€75",
-    unit: "",
+    unit: "/ outing",
     icon: Route,
     featured: true,
     features: [
@@ -345,7 +377,7 @@ export const groupAdventurePlans: PricingPlan[] = [
     description:
       "A full day of guided activity — varied walks, purposeful play, and downtime.",
     price: "€120",
-    unit: "",
+    unit: "/ outing",
     icon: CloudSun,
     features: [
       "8 hours",
@@ -424,7 +456,7 @@ export const trainingPlans: PricingPlan[] = [
     description:
       "One-to-one puppy training focused on socialisation, potty routines, and foundational cues like sit, stay, and leash manners.",
     price: "€65",
-    unit: "",
+    unit: "/ session",
     icon: PawPrint,
     features: [
       "60 minutes",
@@ -459,7 +491,8 @@ export const customCarePlans: PricingPlan[] = [
     unit: "",
     icon: ShieldCheck,
     featured: true,
-    priceNote: "Quoted around your companion’s routine, goals, and care requirements.",
+    priceNote:
+      "Quoted around your companion’s routine, goals, and care requirements.",
     features: [
       "One card for all custom and tailored services",
       "Walking, home, daytime, overnight, adventure, and training support",
@@ -488,32 +521,23 @@ export const processSteps = [
   },
 ];
 
-export const neighborhoods = [
-  "Daily strolls",
-  "Solo journeys",
-  "Group adventures",
-  "Daytime care",
-  "Home check-ins",
-  "Overnight stays",
-  "Training help",
-  "Custom solutions",
-];
+export const neighborhoods = serviceAreas;
 
 export const contactCards = [
   {
     title: "Call or Text",
-    body: "+353 87 247 3099",
+    body: businessInfo.phoneDisplay,
     detail:
       "Prefer a quick hello? Call any time and Jeroen will respond within 24 hours.",
-    href: "tel:+353872473099",
+    href: `tel:${businessInfo.phoneHref}`,
     icon: Phone,
   },
   {
     title: "Email",
-    body: "Jeroen@jeroenandpaws.com",
+    body: businessInfo.email,
     detail:
       "Send a note about training, walks, day care, or boarding and Jeroen will help you explore the right options.",
-    href: "mailto:Jeroen@jeroenandpaws.com",
+    href: `mailto:${businessInfo.email}`,
     icon: Mail,
   },
   {
@@ -525,7 +549,7 @@ export const contactCards = [
   },
   {
     title: "Hours",
-    body: "Monday - Sunday: 8:00 AM - 10:00 PM",
+    body: businessInfo.hours,
     detail:
       "Overnight stays and boarding are arranged around your companion's care plan.",
     icon: Clock,

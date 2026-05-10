@@ -12,7 +12,13 @@ import { getPreferredChatUrl } from "@/utils/chat-links";
 type ServiceBookingActionsProps = {
   plan: Pick<
     PricingPlan,
-    "title" | "description" | "price" | "unit" | "features" | "featured"
+    | "title"
+    | "description"
+    | "price"
+    | "unit"
+    | "features"
+    | "featured"
+    | "badge"
   >;
 };
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
+import Link from "next/link";
 
 export type SelectedServiceDetails = {
   service?: string;
@@ -81,6 +82,7 @@ const getServiceSummary = (selectedService?: SelectedServiceDetails) => {
 };
 
 export function ContactForm({ selectedService }: ContactFormProps) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState<{
     type: "success" | "error";
     message: string;
@@ -104,11 +106,15 @@ export function ContactForm({ selectedService }: ContactFormProps) {
       petInfo: String(formData.get("pet-info") || ""),
       message: String(formData.get("message") || ""),
       company: String(formData.get("company") || ""),
-      selectedServiceName: selectedService?.service || "",
-      selectedServicePrice: selectedService?.price || "",
-      selectedServiceUnit: selectedService?.unit || "",
-      selectedServiceDescription: selectedService?.description || "",
-      selectedServiceFeatures: selectedService?.features || "",
+      selectedServiceName: String(formData.get("selectedServiceName") || ""),
+      selectedServicePrice: String(formData.get("selectedServicePrice") || ""),
+      selectedServiceUnit: String(formData.get("selectedServiceUnit") || ""),
+      selectedServiceDescription: String(
+        formData.get("selectedServiceDescription") || "",
+      ),
+      selectedServiceFeatures: String(
+        formData.get("selectedServiceFeatures") || "",
+      ),
     };
 
     try {
@@ -119,18 +125,25 @@ export function ContactForm({ selectedService }: ContactFormProps) {
       });
       const result = (await response.json()) as { message?: string };
 
+      const isSuccess = response.ok;
+
       setStatus({
-        type: response.ok ? "success" : "error",
+        type: isSuccess ? "success" : "error",
         message:
           result.message ||
-          (response.ok
+          (isSuccess
             ? "Thanks, your message has been sent."
-            : "Sorry, we could not send your message right now."),
+            : "Sorry, we could not send your message right now. Please call, WhatsApp, or email Jeroen directly."),
       });
+
+      if (isSuccess) {
+        formRef.current?.reset();
+      }
     } catch {
       setStatus({
         type: "error",
-        message: "Sorry, we could not send your message right now.",
+        message:
+          "Sorry, we could not send your message right now. Please call, WhatsApp, or email Jeroen directly.",
       });
     } finally {
       setIsSubmitting(false);
@@ -147,7 +160,18 @@ export function ContactForm({ selectedService }: ContactFormProps) {
           Request form prefilled for {selectedService.service}.
         </p>
       ) : null}
-      <form className="mt-7 space-y-5" onSubmit={handleSubmit}>
+      <ol className="mt-6 grid gap-3 text-sm font-semibold text-[#d8cab8] sm:grid-cols-3">
+        <li className="rounded-2xl bg-[#0b1017] px-4 py-3">
+          1. Send your details
+        </li>
+        <li className="rounded-2xl bg-[#0b1017] px-4 py-3">
+          2. Get a reply within 24 hours
+        </li>
+        <li className="rounded-2xl bg-[#0b1017] px-4 py-3">
+          3. Arrange a calm meet-and-greet
+        </li>
+      </ol>
+      <form ref={formRef} className="mt-7 space-y-5" onSubmit={handleSubmit}>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Your Name" id="name" placeholder="Jane Doe" required />
           <Field label="Pet's Name" id="pet-name" placeholder="Kaiser" />
@@ -189,7 +213,9 @@ export function ContactForm({ selectedService }: ContactFormProps) {
               </option>
             ))}
             {hasCustomSelectedOption ? (
-              <option value="selected-service">{selectedService?.service}</option>
+              <option value="selected-service">
+                {selectedService?.service}
+              </option>
             ) : null}
           </select>
         </div>
@@ -206,6 +232,31 @@ export function ContactForm({ selectedService }: ContactFormProps) {
           required
         />
         <input
+          type="hidden"
+          name="selectedServiceName"
+          value={selectedService?.service || ""}
+        />
+        <input
+          type="hidden"
+          name="selectedServicePrice"
+          value={selectedService?.price || ""}
+        />
+        <input
+          type="hidden"
+          name="selectedServiceUnit"
+          value={selectedService?.unit || ""}
+        />
+        <input
+          type="hidden"
+          name="selectedServiceDescription"
+          value={selectedService?.description || ""}
+        />
+        <input
+          type="hidden"
+          name="selectedServiceFeatures"
+          value={selectedService?.features || ""}
+        />
+        <input
           type="text"
           name="company"
           tabIndex={-1}
@@ -215,6 +266,8 @@ export function ContactForm({ selectedService }: ContactFormProps) {
         />
         {status ? (
           <p
+            role={status.type === "success" ? "status" : "alert"}
+            aria-live={status.type === "success" ? "polite" : "assertive"}
             className={`rounded-2xl px-4 py-3 text-sm font-semibold ${
               status.type === "success"
                 ? "bg-[#12271c] text-[#b7f7c8] ring-1 ring-[#49d17d]/30"
@@ -224,6 +277,17 @@ export function ContactForm({ selectedService }: ContactFormProps) {
             {status.message}
           </p>
         ) : null}
+        <p className="text-sm leading-6 text-[#988b7b]">
+          By submitting, you agree that Jeroen & Paws may use your details to
+          respond to your enquiry and prepare a safe care plan. Read the{" "}
+          <Link
+            href="/privacy"
+            className="font-bold text-[#c4b5fd] hover:text-[#ddd6fe]"
+          >
+            privacy policy
+          </Link>
+          .
+        </p>
         <button
           type="submit"
           disabled={isSubmitting}
