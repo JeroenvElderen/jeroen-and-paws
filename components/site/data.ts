@@ -104,21 +104,24 @@ export const servicePreviews = [
     description:
       "Personalised walks matched to your companion's pace and routine.",
     price: "From €18",
-    alt: "Dog enjoying a neighborhood walk",
+    alt: "Lola enjoying a neighbourhood walk",
+    imageSrc: "/images/dogs/lola/lola1.jpeg",
   },
   {
     title: "Home check-ins",
     description:
       "Comforting drop-ins that keep your companion relaxed and well looked after.",
     price: "From €18",
-    alt: "Person greeting a dog inside a home",
+    alt: "Nola relaxing during a home check-in",
+    imageSrc: "/images/dogs/Nola/Nola-1.jpg",
   },
   {
     title: "Overnight stays",
     description:
       "A homely stay where your companion rests comfortably and feels safe.",
     price: "From €70/night",
-    alt: "Dog resting comfortably indoors",
+    alt: "Pancho resting comfortably indoors",
+    imageSrc: "/images/dogs/pancho/pancho1.jpeg",
   },
 ];
 
@@ -144,19 +147,22 @@ export const teamMembers = [
   {
     name: "Jeroen",
     role: "Certified canine specialist",
-    alt: "Jeroen's profile",
+    alt: "Johnny enjoying Jeroen & Paws care",
+    imageSrc: "/images/dogs/Johnny/Johnny.jpeg",
     bio: "Certified in Animal Care with over seven years of hands-on experience, Jeroen works with companion and working dogs using proven, ethical training methods.",
   },
   {
     name: "Compass",
     role: "Alaskan Husky",
-    alt: "Compass - Alaskan Husky",
+    alt: "Aslan, an Alaskan Husky companion",
+    imageSrc: "/images/dogs/aslan/aslan.jpg",
     bio: "Compass is part of the Jeroen & Paws family and reflects the structured, active, companion-first care every dog receives.",
   },
   {
     name: "Your companion",
     role: "Welcomed like family",
-    alt: "Happy companion enjoying personalised care",
+    alt: "Kaiser enjoying personalised care",
+    imageSrc: "/images/dogs/kaiser/kaiser1.jpeg",
     bio: "From customised walks to day care and boarding, every dog receives consistency, dedication, safety, emotional wellbeing, and clear communication.",
   },
 ];

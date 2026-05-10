@@ -13,6 +13,7 @@ export function TeamSection() {
             <PlaceholderImage
               alt={member.alt}
               sizes="(min-width: 768px) 33vw, 100vw"
+              src={member.imageSrc}
             />
           </div>
           <div className="p-7">

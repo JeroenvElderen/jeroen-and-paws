@@ -1,6 +1,7 @@
 "use client";
 
-import { Menu, PawPrint, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -15,11 +16,17 @@ export function Header({ activePage }: { activePage: PageName }) {
       <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center justify-between px-6 sm:px-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-3 text-xl font-extrabold text-[#8b5cf6]"
+          className="inline-flex items-center"
           onClick={() => setIsOpen(false)}
         >
-          <PawPrint aria-hidden="true" className="h-6 w-6 fill-current" />
-          Jeroen & Paws
+          <Image
+            src="/logo3.svg"
+            alt="Jeroen & Paws"
+            width={152}
+            height={90}
+            priority
+            className="h-14 w-auto"
+          />
         </Link>
 
         <button

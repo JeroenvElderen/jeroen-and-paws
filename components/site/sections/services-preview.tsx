@@ -16,6 +16,7 @@ export function ServicesPreview() {
             <PlaceholderImage
               alt={service.alt}
               sizes="(min-width: 768px) 33vw, 100vw"
+              src={service.imageSrc}
             />
           </div>
           <div className="p-7">
