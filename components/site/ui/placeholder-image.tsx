@@ -4,14 +4,16 @@ export function PlaceholderImage({
   alt,
   className = "object-cover",
   sizes = "(min-width: 768px) 50vw, 100vw",
+  src = "/images/placeholder.jpg",
 }: {
   alt: string;
   className?: string;
   sizes?: string;
+  src?: string;
 }) {
   return (
     <Image
-      src="/images/placeholder.jpg"
+      src={src}
       alt={alt}
       fill
       sizes={sizes}

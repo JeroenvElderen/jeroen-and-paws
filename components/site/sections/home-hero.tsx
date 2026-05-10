@@ -48,8 +48,9 @@ export function HomeHero() {
         </div>
         <div className="relative min-h-[320px] overflow-hidden rounded-[2rem] shadow-2xl shadow-black/40 sm:min-h-[420px]">
           <PlaceholderImage
-            alt="Professional dog walker with three happy dogs at a local park"
+            alt="Lakta enjoying a happy outdoor moment"
             sizes="(min-width: 1024px) 48vw, 100vw"
+            src="/images/dogs/lakta/lakta1.jpg"
           />
         </div>
       </div>

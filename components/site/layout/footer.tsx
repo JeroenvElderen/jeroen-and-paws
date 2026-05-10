@@ -1,13 +1,5 @@
-import {
-  Camera,
-  Clock,
-  Home,
-  Mail,
-  MapPin,
-  PawPrint,
-  Phone,
-  Star,
-} from "lucide-react";
+import { Camera, Clock, Home, Mail, MapPin, Phone, Star } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const footerSections = [
@@ -40,13 +32,13 @@ export function Footer() {
       <div className="mx-auto w-full max-w-6xl px-6 py-14 sm:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.25fr_0.75fr_0.75fr_1.15fr]">
           <div>
-            <div className="inline-flex items-center gap-3 text-xl font-extrabold text-[#fff7e8]">
-              <PawPrint
-                aria-hidden="true"
-                className="h-6 w-6 fill-[#8b5cf6] text-[#8b5cf6]"
-              />
-              Jeroen & Paws
-            </div>
+            <Image
+              src="/logo3.svg"
+              alt="Jeroen & Paws"
+              width={152}
+              height={90}
+              className="h-16 w-auto"
+            />
             <p className="mt-4 max-w-sm leading-7 text-[#a99b8b]">
               Personalised dog walking, training, day care, boarding, and home
               check-ins where every companion is understood and cared for.

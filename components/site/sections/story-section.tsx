@@ -5,7 +5,10 @@ export function StorySection() {
     <section className="bg-[#111821] px-6 py-20 sm:px-8">
       <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
         <div className="relative min-h-[360px] overflow-hidden rounded-3xl shadow-xl shadow-black/35">
-          <PlaceholderImage alt="Jeroen, founder of Jeroen & Paws, with his rescue dog Paws" />
+          <PlaceholderImage
+            alt="Ollie enjoying attentive Jeroen & Paws care"
+            src="/images/dogs/ollie/ollie1.jpeg"
+          />
         </div>
         <div>
           <h2 className="text-4xl font-extrabold tracking-tight text-[#fff7e8]">
