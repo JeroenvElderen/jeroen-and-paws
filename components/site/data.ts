@@ -421,6 +421,16 @@ export const soloJourneyPlans: PricingPlan[] = [
   },
 ];
 
+export const walksAndSoloAdventurePlans: PricingPlan[] = [
+  ...dailyStrollPlans,
+  ...soloJourneyPlans,
+];
+
+export const dayCareAndOvernightPlans: PricingPlan[] = [
+  ...daytimeCarePlans,
+  ...overnightSupportPlans,
+];
+
 export const trainingPlans: PricingPlan[] = [
   {
     title: "Introductory Training Session",

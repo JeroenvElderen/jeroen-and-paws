@@ -17,9 +17,9 @@ type ContactFormProps = {
 
 const serviceOptions = [
   {
-    value: "daily-strolls",
-    label: "Daily strolls (from €18)",
-    matches: ["stroll"],
+    value: "walks-and-solo-adventures",
+    label: "Walks & solo adventures (from €18)",
+    matches: ["stroll", "journey"],
   },
   {
     value: "home-check-ins",
@@ -27,19 +27,14 @@ const serviceOptions = [
     matches: ["home visit", "check-in"],
   },
   {
-    value: "overnight",
-    label: "Overnight stays (from €70/night)",
-    matches: ["overnight"],
+    value: "day-care-and-overnight-stays",
+    label: "Day care & overnight stays (from €25)",
+    matches: ["overnight", "day", "care", "stay"],
   },
   {
     value: "other",
     label: "Not sure yet",
-    matches: ["adventure", "custom", "journey", "tailored"],
-  },
-  {
-    value: "daytime-care",
-    label: "Daytime care (from €25)",
-    matches: ["day", "care", "stay"],
+    matches: ["adventure", "custom", "tailored"],
   },
   {
     value: "training",

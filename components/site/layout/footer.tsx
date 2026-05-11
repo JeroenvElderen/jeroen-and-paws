@@ -8,12 +8,16 @@ const footerSections = [
   {
     title: "Our services",
     links: [
-      { label: "Daily strolls", href: "/services#daily-strolls" },
-      { label: "Solo journeys", href: "/services#solo-journeys" },
-      { label: "Group adventures", href: "/services#group-adventures" },
-      { label: "Daytime care", href: "/services#daytime-care" },
+      {
+        label: "Walks & solo adventures",
+        href: "/services#walks-and-solo-adventures",
+      },
       { label: "Home check-ins", href: "/services#home-visits" },
-      { label: "Overnight stays", href: "/services#overnight-support" },
+      {
+        label: "Day care & overnight stays",
+        href: "/services#day-care-and-overnight-stays",
+      },
+      { label: "Group adventures", href: "/services#group-adventures" },
       { label: "Training", href: "/services#training" },
       { label: "Custom solutions", href: "/services#custom-care" },
     ],

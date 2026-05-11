@@ -1,12 +1,10 @@
 import {
   customCarePlans,
-  dailyStrollPlans,
-  daytimeCarePlans,
+  dayCareAndOvernightPlans,
   groupAdventurePlans,
   homeVisitPlans,
   labels,
-  overnightSupportPlans,
-  soloJourneyPlans,
+  walksAndSoloAdventurePlans,
   trainingPlans,
   bookingPolicies,
 } from "@/components/site/data";
@@ -23,13 +21,14 @@ import { ServiceArea } from "@/components/site/sections/service-area";
 
 const serviceSections = [
   {
-    id: "daily-strolls",
+    id: "walks-and-solo-adventures",
     icon: labels.dog,
-    label: "Daily Strolls",
-    title: "Daily strolls from 30 to 60 minutes",
-    text: "Choose a standard 30-minute stroll or an extended 60-minute stroll for movement, enrichment, and neighbourhood exploring.",
-    plans: dailyStrollPlans,
+    label: "Walks & Solo Adventures",
+    title: "One-to-one walks and solo journeys",
+    text: "Choose a focused neighbourhood stroll or a longer solo journey, all paced around your companion with individual attention and photo updates.",
+    plans: walksAndSoloAdventurePlans,
     background: "bg-[#111821]",
+    aliases: ["daily-strolls", "solo-journeys"],
   },
   {
     id: "home-visits",
@@ -41,22 +40,14 @@ const serviceSections = [
     background: "bg-[#080b10]",
   },
   {
-    id: "daytime-care",
+    id: "day-care-and-overnight-stays",
     icon: labels.daytimeCare,
-    label: "Daytime Care",
-    title: "Half-day and full-day daytime care",
-    text: "Relaxed daytime stays with gentle activity, enrichment, rest, attention, and calm supervision.",
-    plans: daytimeCarePlans,
+    label: "Day Care & Overnight Stays",
+    title: "Daytime care and calm overnight stays",
+    text: "Pick relaxed daytime support or overnight care in a calm home setting, with gentle activity, rest, familiar routines, and reassuring updates.",
+    plans: dayCareAndOvernightPlans,
     background: "bg-[#111821]",
-  },
-  {
-    id: "overnight-support",
-    icon: labels.overnight,
-    label: "Overnight Support",
-    title: "Calm overnight stays",
-    text: "Overnight care in a calm home setting with familiar routines, cosy spaces, and peace of mind.",
-    plans: overnightSupportPlans,
-    background: "bg-[#080b10]",
+    aliases: ["daytime-care", "overnight-support"],
   },
   {
     id: "group-adventures",
@@ -65,15 +56,6 @@ const serviceSections = [
     title: "2-hour, half-day, and full-day adventures",
     text: "Guided group outings with movement, gentle social engagement, purposeful play, varied walks, and downtime.",
     plans: groupAdventurePlans,
-    background: "bg-[#111821]",
-  },
-  {
-    id: "solo-journeys",
-    icon: labels.soloJourney,
-    label: "Solo Journeys",
-    title: "Half-day and full-day solo journeys",
-    text: "One-to-one journeys paced around your companion, from half-day outings to full-day exploring.",
-    plans: soloJourneyPlans,
     background: "bg-[#080b10]",
   },
   {
@@ -103,15 +85,18 @@ export function ServicesPageContent() {
         icon={labels.services}
         label="Our services"
         title="Pick the perfect fit"
-        text="Explore dog walking, home check-ins, day care, boarding, adventures, training, and custom care options, then start with a free meet-and-greet."
+        text="Explore one-to-one walks and solo adventures, home check-ins, day care, boarding, group adventures, training, and custom care options, then start with a free meet-and-greet."
       />
       {serviceSections.map(
-        ({ id, icon, label, title, text, plans, background }) => (
+        ({ id, icon, label, title, text, plans, background, aliases }) => (
           <section
             key={label}
             id={id}
             className={`${background} scroll-mt-24 px-6 py-20 sm:px-8`}
           >
+            {aliases?.map((alias) => (
+              <span key={alias} id={alias} className="block scroll-mt-24" />
+            ))}
             <div className="mx-auto max-w-6xl">
               <SectionHeader
                 icon={icon}
