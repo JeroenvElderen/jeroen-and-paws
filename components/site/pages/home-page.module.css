@@ -22,7 +22,8 @@
 
 .hero {
   position: relative;
-  min-height: 815px;
+  min-height: max(815px, 100vh);
+  min-height: max(815px, 100svh);
   overflow: hidden;
   background: #201927;
   color: #fff;
@@ -31,16 +32,30 @@
 .heroImage {
   object-fit: cover;
   object-position: center top;
-  transform: scale(1.015);
 }
 
 .heroOverlay {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 84% 12%, rgba(255, 209, 170, 0.36), transparent 31%),
-    linear-gradient(90deg, rgba(12, 10, 15, 0.91) 0%, rgba(17, 12, 22, 0.68) 35%, rgba(17, 12, 22, 0.21) 69%, rgba(17, 12, 22, 0.32) 100%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.36) 0%, rgba(0, 0, 0, 0.12) 42%, rgba(0, 0, 0, 0.5) 100%);
+    radial-gradient(
+      circle at 84% 12%,
+      rgba(255, 209, 170, 0.36),
+      transparent 31%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(12, 10, 15, 0.91) 0%,
+      rgba(17, 12, 22, 0.68) 35%,
+      rgba(17, 12, 22, 0.21) 69%,
+      rgba(17, 12, 22, 0.32) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.36) 0%,
+      rgba(0, 0, 0, 0.12) 42%,
+      rgba(0, 0, 0, 0.5) 100%
+    );
 }
 
 .header {
@@ -273,7 +288,11 @@
 .portfolioSection {
   padding: 64px 0 76px;
   background:
-    radial-gradient(circle at 92% 10%, rgba(96, 50, 138, 0.25), transparent 25%),
+    radial-gradient(
+      circle at 92% 10%,
+      rgba(96, 50, 138, 0.25),
+      transparent 25%
+    ),
     linear-gradient(135deg, #1b0c2e 0%, #11071d 100%);
   color: #fff;
 }
@@ -310,7 +329,11 @@
 .cardShade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04) 20%, rgba(0, 0, 0, 0.68) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.04) 20%,
+    rgba(0, 0, 0, 0.68) 100%
+  );
 }
 
 .cardText {
@@ -432,7 +455,13 @@
   inset: 0;
   background:
     radial-gradient(circle at 70% 50%, rgba(72, 39, 93, 0.08), transparent 31%),
-    linear-gradient(90deg, #150920 0%, rgba(21, 9, 32, 0.94) 36%, rgba(21, 9, 32, 0.42) 68%, rgba(21, 9, 32, 0.1) 100%);
+    linear-gradient(
+      90deg,
+      #150920 0%,
+      rgba(21, 9, 32, 0.94) 36%,
+      rgba(21, 9, 32, 0.42) 68%,
+      rgba(21, 9, 32, 0.1) 100%
+    );
 }
 
 .testimonialContent {
@@ -496,7 +525,8 @@
 .footerLogo {
   width: 98px;
   height: auto;
-  filter: invert(38%) sepia(40%) saturate(1300%) hue-rotate(237deg) brightness(82%) contrast(92%);
+  filter: invert(38%) sepia(40%) saturate(1300%) hue-rotate(237deg)
+    brightness(82%) contrast(92%);
 }
 
 .footerBrand p {
@@ -587,7 +617,8 @@
 
 @media (max-width: 720px) {
   .hero {
-    min-height: 690px;
+    min-height: max(690px, 100vh);
+    min-height: max(690px, 100svh);
   }
 
   .headerButton,
@@ -645,5 +676,380 @@
 
   .testimonialContent blockquote {
     font-size: 24px;
+  }
+}
+
+.aboutHero {
+  position: relative;
+  min-height: 760px;
+  overflow: hidden;
+  background: #171019;
+  color: #fff;
+}
+
+.aboutHeroImage {
+  object-fit: cover;
+  object-position: 68% center;
+  transform: scale(1.03);
+}
+
+.aboutHeroOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 82% 16%,
+      rgba(245, 196, 158, 0.32),
+      transparent 28%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(10, 8, 12, 0.94) 0%,
+      rgba(16, 12, 20, 0.77) 35%,
+      rgba(18, 12, 20, 0.24) 65%,
+      rgba(18, 12, 20, 0.4) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.32) 0%,
+      rgba(0, 0, 0, 0.1) 44%,
+      rgba(0, 0, 0, 0.46) 100%
+    );
+}
+
+.aboutHeroContent {
+  position: relative;
+  z-index: 2;
+  width: min(100% - 112px, 1260px);
+  margin: 0 auto;
+  padding-top: 145px;
+}
+
+.aboutHeroContent h1 {
+  max-width: 700px;
+  color: #fff;
+  font-size: clamp(2.65rem, 4.6vw, 5rem);
+  line-height: 1.14;
+  text-shadow: 0 5px 28px rgba(0, 0, 0, 0.34);
+}
+
+.aboutHeroContent h1 span,
+.aboutStoryCopy h2 span,
+.aboutValuesIntro h2 span,
+.aboutFinalContent h2 span {
+  color: var(--purple-bright);
+}
+
+.aboutHeroContent > p:not(.darkKicker) {
+  width: min(100%, 510px);
+  margin-top: 28px;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.aboutHeroContent .primaryButton {
+  margin-top: 37px;
+}
+
+.aboutStorySection {
+  position: relative;
+  overflow: hidden;
+  padding: 70px 0 68px;
+  background: #fbfaf8;
+}
+
+.aboutStoryGrid,
+.aboutValuesGrid,
+.aboutPersonalGrid,
+.aboutFinalContent {
+  width: min(100% - 112px, 1260px);
+  margin: 0 auto;
+}
+
+.aboutStoryGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(410px, 0.95fr);
+  align-items: center;
+  gap: 82px;
+}
+
+.aboutStoryPhoto,
+.aboutPersonalPhoto {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #ded8d2;
+  box-shadow: 0 14px 36px rgba(31, 23, 32, 0.08);
+}
+
+.aboutStoryPhoto {
+  min-height: 430px;
+}
+
+.aboutStoryPhoto img,
+.aboutPersonalPhoto img,
+.aboutFinalImage {
+  object-fit: cover;
+}
+
+.aboutStoryCopy h2,
+.aboutValuesIntro h2,
+.aboutPersonalIntro h2,
+.aboutFinalContent h2 {
+  font-size: clamp(2.2rem, 3.5vw, 3.45rem);
+  line-height: 1.06;
+}
+
+.aboutStoryCopy p:not(.sectionKicker),
+.aboutPersonalIntro p {
+  max-width: 520px;
+  margin-top: 26px;
+  color: #272231;
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.aboutStoryPaw {
+  position: absolute;
+  right: 88px;
+  bottom: 48px;
+  width: 116px;
+  height: 116px;
+  color: #ede4f2;
+  transform: rotate(10deg);
+}
+
+.aboutValuesSection {
+  padding: 72px 0 78px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(108, 65, 145, 0.2), transparent 36%),
+    linear-gradient(135deg, #130b20 0%, #090512 100%);
+  color: #fff;
+}
+
+.aboutValuesGrid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.7fr;
+  align-items: center;
+  gap: 76px;
+}
+
+.aboutValuesIntro p:not(.darkKicker) {
+  max-width: 430px;
+  margin-top: 28px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.aboutValueCards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.aboutValueCard {
+  min-height: 210px;
+  padding: 20px 42px 10px;
+  text-align: center;
+}
+
+.aboutValueCard + .aboutValueCard {
+  border-left: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.aboutValueCard svg {
+  width: 47px;
+  height: 47px;
+  margin: 0 auto 24px;
+  color: var(--purple-bright);
+}
+
+.aboutValueCard h3,
+.aboutPersonalMeta h3 {
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.aboutValueCard p {
+  margin-top: 15px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.aboutPersonalSection {
+  padding: 68px 0 72px;
+  background: #fff;
+}
+
+.aboutPersonalGrid {
+  display: grid;
+  grid-template-columns: 0.95fr repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 30px;
+}
+
+.aboutPersonalIntro {
+  padding-right: 42px;
+}
+
+.aboutPersonalIntro p + p {
+  margin-top: 22px;
+}
+
+.aboutPersonalIntro .secondaryButton {
+  margin-top: 31px;
+}
+
+.aboutPersonalPhoto {
+  height: 250px;
+}
+
+.aboutPersonalMeta {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 18px;
+  margin-top: 30px;
+  align-items: start;
+}
+
+.aboutPersonalMeta span {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--purple-soft);
+  color: var(--purple);
+}
+
+.aboutPersonalMeta svg {
+  width: 27px;
+  height: 27px;
+}
+
+.aboutPersonalMeta p {
+  margin-top: 13px;
+  color: #3a3444;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.aboutFinalCta {
+  position: relative;
+  min-height: 320px;
+  overflow: hidden;
+  background: var(--purple-dark);
+  color: #fff;
+}
+
+.aboutFinalImage {
+  object-position: 74% center;
+}
+
+.aboutFinalOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(18, 10, 26, 0.98) 0%,
+    rgba(18, 10, 26, 0.76) 38%,
+    rgba(18, 10, 26, 0.22) 100%
+  );
+}
+
+.aboutFinalContent {
+  position: relative;
+  z-index: 1;
+  padding-top: 60px;
+}
+
+.aboutFinalContent p {
+  width: min(100%, 390px);
+  margin-top: 24px;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.aboutFinalContent .primaryButton {
+  margin-top: 29px;
+}
+
+@media (max-width: 1024px) {
+  .aboutHeroContent,
+  .aboutStoryGrid,
+  .aboutValuesGrid,
+  .aboutPersonalGrid,
+  .aboutFinalContent {
+    width: min(100% - 48px, 760px);
+  }
+
+  .aboutStoryGrid,
+  .aboutValuesGrid,
+  .aboutPersonalGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .aboutValueCards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .aboutPersonalIntro {
+    padding-right: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .aboutHero {
+    min-height: 720px;
+  }
+
+  .aboutHeroContent,
+  .aboutStoryGrid,
+  .aboutValuesGrid,
+  .aboutPersonalGrid,
+  .aboutFinalContent {
+    width: min(100% - 32px, 520px);
+  }
+
+  .aboutHeroContent {
+    padding-top: 110px;
+  }
+
+  .aboutStorySection,
+  .aboutValuesSection,
+  .aboutPersonalSection {
+    padding-top: 54px;
+    padding-bottom: 54px;
+  }
+
+  .aboutStoryPhoto {
+    min-height: 320px;
+  }
+
+  .aboutValueCards {
+    grid-template-columns: 1fr;
+  }
+
+  .aboutValueCard {
+    padding: 28px 10px;
+  }
+
+  .aboutValueCard + .aboutValueCard {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.22);
+  }
+
+  .aboutStoryPaw {
+    display: none;
+  }
+
+  .aboutFinalCta {
+    min-height: 420px;
   }
 }

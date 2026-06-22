@@ -1,9 +1,9 @@
 import { AboutPageContent } from "@/components/site/pages/about-page";
 
 export const metadata = {
-  title: "About Jeroen",
+  title: "About Jeroen | Dog Trainer, Walker & Boarding",
   description:
-    "Meet Jeroen, a certified canine specialist providing personalised training, thoughtful care, and a safe, enriching environment for every dog.",
+    "Meet Jeroen, a dog trainer, walker, and boarding provider offering calm, personalised care for dogs and their families.",
 };
 
 export default function AboutPage() {
