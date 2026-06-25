@@ -13,7 +13,7 @@ export function Header({ activePage }: { activePage: PageName }) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#8b5cf6]/15 bg-[#080b10]/95 backdrop-blur">
-      <div className="mx-auto flex min-h-20 w-full max-w-6xl items-center justify-between px-6 sm:px-8">
+      <div className="mx-auto flex min-h-16 w-full max-w-6xl items-center justify-between px-4 sm:min-h-20 sm:px-8">
         <Link
           href="/"
           className="inline-flex items-center"
@@ -25,7 +25,7 @@ export function Header({ activePage }: { activePage: PageName }) {
             width={152}
             height={90}
             priority
-            className="h-14 w-auto"
+            className="h-12 w-auto sm:h-14"
           />
         </Link>
 
@@ -65,7 +65,7 @@ export function Header({ activePage }: { activePage: PageName }) {
 
       {isOpen ? (
         <nav
-          className="border-t border-[#8b5cf6]/15 bg-[#080b10] px-6 pb-6 md:hidden"
+          className="border-t border-[#8b5cf6]/15 bg-[#080b10] px-4 pb-6 md:hidden"
           aria-label="Mobile navigation"
         >
           <div className="mx-auto flex max-w-6xl flex-col gap-2 pt-4">

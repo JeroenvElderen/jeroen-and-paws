@@ -78,7 +78,7 @@ export function ChatOrFormModal({ service, onClose }: ChatOrFormModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#080b10]/85 px-5 py-8 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#080b10]/85 px-4 py-4 sm:px-5 sm:py-8 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="booking-choice-heading"
@@ -88,7 +88,7 @@ export function ChatOrFormModal({ service, onClose }: ChatOrFormModalProps) {
     >
       <div
         ref={dialogRef}
-        className="relative w-full max-w-xl rounded-3xl bg-[#111821] p-8 shadow-2xl ring-1 ring-[#8b5cf6]/40"
+        className="relative w-full max-w-xl rounded-3xl bg-[#111821] p-5 sm:p-8 shadow-2xl ring-1 ring-[#8b5cf6]/40"
       >
         <button
           ref={closeButtonRef}
@@ -105,7 +105,7 @@ export function ChatOrFormModal({ service, onClose }: ChatOrFormModalProps) {
           </p>
           <h3
             id="booking-choice-heading"
-            className="mt-3 text-3xl font-extrabold text-[#fff7e8]"
+            className="mt-3 text-2xl sm:text-3xl font-extrabold text-[#fff7e8]"
           >
             {service.title}
           </h3>

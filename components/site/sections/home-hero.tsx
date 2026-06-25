@@ -6,35 +6,35 @@ import { PlaceholderImage } from "@/components/site/ui/placeholder-image";
 
 export function HomeHero() {
   return (
-    <section className="bg-[#080b10] px-6 py-14 sm:px-8 lg:py-20">
+    <section className="bg-[#080b10] px-4 py-10 sm:px-8 sm:py-14 lg:py-20">
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.95fr] lg:items-center">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#111821] px-5 py-3 text-sm font-extrabold text-[#8b5cf6] shadow-sm">
+          <div className="inline-flex max-w-full items-center gap-2 rounded-full bg-[#111821] px-4 py-2.5 text-xs sm:px-5 sm:py-3 sm:text-sm font-extrabold text-[#8b5cf6] shadow-sm">
             <Heart
               aria-hidden="true"
               className="h-4 w-4 fill-[#8b5cf6] text-[#8b5cf6]"
             />
             Dog care by appointment for local families in Ireland
           </div>
-          <h1 className="mt-7 text-5xl font-extrabold leading-tight tracking-tight text-[#fff7e8] sm:text-6xl">
+          <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-[#fff7e8] sm:text-6xl">
             Exceptional care for the{" "}
             <span className="block text-[#8b5cf6]">companion you love</span>
           </h1>
-          <div className="mt-5 h-1 w-72 rounded-full bg-[#8b5cf6]/70" />
-          <p className="mt-7 max-w-2xl text-xl leading-9 text-[#d8cab8]">
+          <div className="mt-5 h-1 w-32 sm:w-72 rounded-full bg-[#8b5cf6]/70" />
+          <p className="mt-7 max-w-2xl text-base leading-8 sm:text-xl sm:leading-9 text-[#d8cab8]">
             From engaging walks and reassuring home check-ins to enriching
             daycare, boarding, and personalised training, every service is
             designed so your companion feels safe, stimulated, and truly at
             home. Share your location when you enquire so Jeroen can confirm
             local availability.
           </p>
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
             <ButtonLink href="/contact">Book a Free Meet & Greet</ButtonLink>
             <ButtonLink href="/services" variant="outline">
               Discover more
             </ButtonLink>
           </div>
-          <dl className="mt-10 grid grid-cols-3 gap-5 border-t border-[#8b5cf6]/15 pt-6">
+          <dl className="mt-10 grid grid-cols-1 gap-4 sm:gap-5 border-t border-[#8b5cf6]/15 pt-6">
             {stats.map((stat) => (
               <div key={stat.label}>
                 <dt className="text-3xl font-extrabold text-[#8b5cf6] sm:text-4xl">
@@ -47,7 +47,7 @@ export function HomeHero() {
             ))}
           </dl>
         </div>
-        <div className="relative min-h-[320px] overflow-hidden rounded-[2rem] shadow-2xl shadow-black/40 sm:min-h-[420px]">
+        <div className="relative min-h-[260px] sm:min-h-[320px] overflow-hidden rounded-[2rem] shadow-2xl shadow-black/40 sm:min-h-[420px]">
           <PlaceholderImage
             alt="Lakta enjoying a happy outdoor moment"
             sizes="(min-width: 1024px) 48vw, 100vw"
