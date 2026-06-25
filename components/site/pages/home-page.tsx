@@ -37,10 +37,10 @@ export function HomePage() {
             Jeroen &amp; Paws
           </p>
           <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight text-[#fff7e8] sm:text-5xl lg:text-6xl">
-            Exceptional care, tailored to your dog.
+            Premium dog care for calmer days and happier tails.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-[#f5e9d5] sm:text-lg sm:leading-8">
-            Professional dog walking, home visits, day care, boarding, and training—thoughtfully tailored to your dog&apos;s personality, routine, and individual needs.
+            A boutique dog walking, home visit, day care, boarding, and training service shaped around your dog&apos;s character, comfort, and routine—with thoughtful updates every step of the way.
           </p>
           <div className="mt-7 flex flex-wrap gap-3 sm:gap-4">
             <ButtonLink href="/contact">Book a Complimentary Meet &amp; Greet</ButtonLink>
@@ -75,10 +75,10 @@ export function HomePage() {
               THE JEROEN & PAWS DIFFERENCE
             </p>
             <h2 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">
-              Personalised care built around your dog&apos;s needs.
+              Considered care, designed around your dog&apos;s world.
             </h2>
             <p className="mt-6 leading-8 text-[#4f4857]">
-              Every dog is unique, and their care should be too. That&apos;s why every walk, home visit, day care stay, boarding experience, and training session is thoughtfully tailored to your dog&apos;s personality, routine, and individual needs—giving you complete peace of mind while they&apos;re in trusted hands.
+              Every detail matters: the route we choose, the pace we set, the way your dog prefers to be greeted, and the updates you receive afterwards. Jeroen & Paws offers calm, premium care for dogs who deserve more than a standard service—and for owners who want complete confidence while they&apos;re away.
             </p>
             <ButtonLink href="/about" className="mt-8">
               Meet Jeroen
@@ -95,7 +95,7 @@ export function HomePage() {
                 SERVICES
               </p>
               <h2 className="mt-3 text-4xl font-semibold text-[#fff7e8] sm:text-5xl">
-                Thoughtfully tailored services for every dog.
+                Boutique services for every kind of care day.
               </h2>
             </div>
             <ButtonLink href="/services" variant="outline">
@@ -114,7 +114,7 @@ export function HomePage() {
             How it works
           </p>
           <h2 className="mt-3 text-4xl font-semibold">
-            Simple booking, calm care, regular updates.
+            Simple booking, elevated care, thoughtful updates.
           </h2>
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             {steps.map(([Icon, number, title, text]) => (
@@ -138,7 +138,7 @@ export function HomePage() {
               Trusted by dog owners
             </p>
             <h2 className="mt-3 text-4xl font-semibold text-[#fff7e8] sm:text-5xl">
-              Trusted by dogs. Valued by their owners.
+              Trusted by dogs. Recommended by discerning owners.
             </h2>
           </div>
           <div className="mt-10">

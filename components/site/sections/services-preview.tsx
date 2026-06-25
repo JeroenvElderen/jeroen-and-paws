@@ -30,7 +30,7 @@ export function ServicesPreview() {
               {service.price}
             </p>
             <Link
-              href="/services"
+              href={service.href}
               className="mt-5 inline-flex items-center gap-2 font-extrabold text-[#8b5cf6] hover:text-[#ddd6fe]"
             >
               Learn more <ArrowRight aria-hidden="true" className="h-4 w-4" />
