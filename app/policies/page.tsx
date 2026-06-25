@@ -15,7 +15,7 @@ export const metadata = {
 export default function PoliciesPage() {
   return (
     <SiteShell activePage="policies">
-      <section className="relative isolate min-h-[560px] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:py-32">
+      <section className="relative isolate min-h-[calc(100svh-5rem)] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:py-32">
         <Image
           src="/images/dogs/Nola/nola2.jpg"
           alt="Happy dog in a warm outdoor setting"
@@ -25,7 +25,7 @@ export default function PoliciesPage() {
           className="-z-20 object-cover object-center opacity-55"
         />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(8,11,16,0.96)_0%,rgba(8,11,16,0.82)_36%,rgba(8,11,16,0.34)_70%,rgba(8,11,16,0.72)_100%)]" />
-        <div className="mx-auto flex min-h-[360px] max-w-6xl items-center">
+        <div className="mx-auto flex min-h-[calc(100svh-17rem)] max-w-6xl items-center">
           <div className="max-w-xl">
             <p className="text-sm font-extrabold uppercase tracking-[0.28em] text-[#a78bfa]">
               Policies

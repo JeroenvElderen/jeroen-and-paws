@@ -62,7 +62,7 @@ const faqs = [
 export function ExperiencePageContent() {
   return (
     <SiteShell activePage="experience">
-      <section className="relative isolate min-h-[620px] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:py-32">
+      <section className="relative isolate min-h-[calc(100svh-5rem)] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:py-32">
         <Image src="/images/dogs/kaiser/kaiser1.jpeg" alt="A happy dog during a Jeroen and Paws outdoor experience" fill priority className="object-cover opacity-55" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
         <div className="relative mx-auto max-w-6xl pt-8">

@@ -99,3 +99,26 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+@keyframes scroll-cue-bounce {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(0.65rem);
+  }
+}
+
+.scroll-cue-bounce {
+  animation: scroll-cue-bounce 1.35s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-bounce {
+    animation: none;
+  }
+}

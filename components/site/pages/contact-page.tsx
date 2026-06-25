@@ -47,7 +47,7 @@ export function ContactPageContent({
 }) {
   return (
     <SiteShell activePage="contact">
-      <section className="relative isolate min-h-[620px] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:flex lg:items-center lg:py-28">
+      <section className="relative isolate min-h-[calc(100svh-5rem)] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:flex lg:items-center lg:py-28">
         <Image
           src="/images/dogs/Johnny/Johnny.jpeg"
           alt="Happy dog enjoying a calm outdoor session with Jeroen & Paws"

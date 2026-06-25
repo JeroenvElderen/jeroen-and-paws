@@ -1,5 +1,6 @@
 import { Footer } from "@/components/site/layout/footer";
 import { Header } from "@/components/site/layout/header";
+import { ScrollCue } from "@/components/site/ui/scroll-cue";
 import type { PageName } from "@/components/site/data";
 
 export function SiteShell({
@@ -14,6 +15,7 @@ export function SiteShell({
       <Header activePage={activePage} />
       <main id="main-content">{children}</main>
       <Footer />
+      <ScrollCue />
     </>
   );
 }

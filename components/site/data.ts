@@ -86,8 +86,8 @@ export const bookingPolicies = [
 export const navItems: Array<{ label: string; href: string; page: PageName }> =
   [
     { label: "Home", href: "/", page: "home" },
-    { label: "Services", href: "/services", page: "services" },
     { label: "About me", href: "/about", page: "about" },
+    { label: "Services", href: "/services", page: "services" },
     { label: "Experience", href: "/experience", page: "experience" },
     { label: "Contact", href: "/contact", page: "contact" },
     { label: "Policies", href: "/policies", page: "policies" },
@@ -220,28 +220,28 @@ export const trustHighlights: IconCard[] = [
 
 export const servicePreviews = [
   {
-    title: "Daily strolls",
+    title: "Dog Walking",
     description:
-      "Personalised walks matched to your companion's pace and routine.",
+      "Calm, enriching walks tailored to your dog's pace, personality, and routine.",
     price: "From €18",
     alt: "Lola enjoying a neighbourhood walk",
-    imageSrc: "/images/dogs/lola/lola1.jpeg",
+    imageSrc: "/images/dogs/leia.jpg",
   },
   {
     title: "Home check-ins",
     description:
-      "Comforting drop-ins that keep your companion relaxed and well looked after.",
+      "Reassuring visits that keep your dog comfortable, settled, and cared for while you're away.",
     price: "From €18",
     alt: "Nola relaxing during a home check-in",
-    imageSrc: "/images/dogs/Nola/Nola-1.jpg",
+    imageSrc: "/images/dogs/kaiser.jpg",
   },
   {
     title: "Overnight stays",
     description:
-      "A homely stay where your companion rests comfortably and feels safe.",
-    price: "From €70/night",
+      "A calm home-from-home experience where your dog feels safe, relaxed, and part of the family.",
+    price: "From €50/night",
     alt: "Pancho resting comfortably indoors",
-    imageSrc: "/images/dogs/pancho/pancho1.jpeg",
+    imageSrc: "/images/dogs/rufus.jpg",
   },
 ];
 
@@ -399,7 +399,7 @@ export const daytimeCarePlans: PricingPlan[] = [
     price: "€40",
     unit: "/ day",
     icon: CalendarCheck,
-    featured: true,
+    featured: false,
     features: [
       "8 hours",
       "Recurring available",
@@ -414,7 +414,7 @@ export const overnightSupportPlans: PricingPlan[] = [
   {
     title: "Standard Overnight Stay",
     description: "Overnight care in a calm home setting.",
-    price: "€70",
+    price: "€50",
     unit: "/ night",
     icon: Moon,
     featured: true,
@@ -498,7 +498,7 @@ export const soloJourneyPlans: PricingPlan[] = [
     price: "€120",
     unit: "/ journey",
     icon: CloudSun,
-    featured: true,
+    featured: false,
     features: [
       "6 hours",
       "One-to-one care",

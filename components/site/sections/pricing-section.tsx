@@ -94,12 +94,10 @@ export function GuaranteeBanner() {
       />
       <div>
         <h3 className="text-2xl font-extrabold text-[#fff7e8]">
-          Safety-first care promise
+          Safety comes first
         </h3>
         <p className="mt-2 leading-7 text-[#b9aa99]">
-          Every walk, play session, and stay uses secure equipment, attentive
-          supervision, and calm introductions so your companion feels protected
-          and confident.
+          Every service begins with thoughtful introductions, secure handling, and careful supervision. I adapt every outing to your dog&apos;s confidence, experience, and comfort, so they always feel safe, relaxed, and well cared for.
         </p>
       </div>
     </div>
