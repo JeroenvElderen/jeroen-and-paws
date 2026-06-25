@@ -8,6 +8,7 @@ import {
   PawPrint,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import {
   customCarePlans,
@@ -27,6 +28,7 @@ import { ButtonLink } from "@/components/site/ui/button-link";
 const serviceCards = [
   {
     title: "Dog Walking",
+    slug: "dog-walking",
     text: "Calm, enriching walks tailored to your dog's personality, routine, and energy.",
     note: "Solo walks • Photo updates • Tailored routines",
     src: "/images/dogs/Nola/Nola-1.jpg",
@@ -34,6 +36,7 @@ const serviceCards = [
   },
   {
     title: "Home check-ins",
+    slug: "home-check-ins",
     text: "Reassuring home visits to keep your dog comfortable, settled, and cared for while you're away.",
     note: "Flexible visits • Feeding • Regular updates",
     src: "/images/dogs/lola/lola1.jpeg",
@@ -41,6 +44,7 @@ const serviceCards = [
   },
   {
     title: "Dog Training",
+    slug: "dog-training",
     text: "Positive, personalised training that builds confidence, communication, and lasting habits.",
     note: "Positive methods • Owner coaching • Behaviour support",
     src: "/images/dogs/kaiser/kaiser1.jpeg",
@@ -48,6 +52,7 @@ const serviceCards = [
   },
   {
     title: "Group Walks",
+    slug: "group-walks",
     text: "Carefully matched group walks that encourage socialisation, confidence, and plenty of exploration.",
     note: "Carefully matched groups • Enrichment • Photo updates",
     src: "/images/dogs/Johnny/Johnny.jpeg",
@@ -55,6 +60,7 @@ const serviceCards = [
   },
   {
     title: "Daytime care",
+    slug: "daytime-care-overnight-stays",
     text: "A calm, structured day filled with play, rest, enrichment, and plenty of individual attention.",
     note: "Play • Rest • Enrichment",
     src: "/images/dogs/lakta/lakta1.jpg",
@@ -62,6 +68,7 @@ const serviceCards = [
   },
   {
     title: "Overnight stays",
+    slug: "daytime-care-overnight-stays",
     text: "A calm home-from-home stay where your dog can relax, settle, and feel part of the family.",
     note: "Home environment • Familiar routines • Daily updates",
     src: "/images/dogs/pancho/pancho1.jpeg",
@@ -194,9 +201,10 @@ export function ServicesPageContent() {
               const Icon = card.icon;
 
               return (
-                <article
+                <Link
                   key={card.title}
-                  className="overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
+                  href={`/services/${card.slug}`}
+                  className="group overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5 transition hover:-translate-y-1 hover:shadow-2xl"
                 >
                   <div className="relative h-48">
                     <Image
@@ -219,7 +227,7 @@ export function ServicesPageContent() {
                       {card.note}
                     </p>
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>

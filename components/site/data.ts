@@ -226,6 +226,7 @@ export const servicePreviews = [
     price: "From €18",
     alt: "Lola enjoying a neighbourhood walk",
     imageSrc: "/images/dogs/leia.jpg",
+    href: "/services/dog-walking",
   },
   {
     title: "Home check-ins",
@@ -234,6 +235,7 @@ export const servicePreviews = [
     price: "From €18",
     alt: "Nola relaxing during a home check-in",
     imageSrc: "/images/dogs/kaiser.jpg",
+    href: "/services/home-check-ins",
   },
   {
     title: "Overnight stays",
@@ -242,6 +244,7 @@ export const servicePreviews = [
     price: "From €50/night",
     alt: "Pancho resting comfortably indoors",
     imageSrc: "/images/dogs/rufus.jpg",
+    href: "/services/daytime-care-overnight-stays",
   },
 ];
 

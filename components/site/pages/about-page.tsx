@@ -62,10 +62,10 @@ export function AboutPageContent() {
           </p>
           <h1 className="mt-5 max-w-3xl text-5xl font-semibold leading-tight text-[#fff7e8] sm:text-7xl">
             Hi, I’m <span className="text-[#a78bfa]">Jeroen</span>.
-            Personalised care starts with getting to know every dog.
+            Premium care starts with truly knowing every dog.
           </h1>
           <p className="mt-7 max-w-xl text-lg leading-8 text-[#f5e9d5]">
-            Building trust takes time, and every dog deserves that time. I take a calm, personalised approach to every walk, visit, training session, and stay, creating an experience where dogs feel safe, understood, and genuinely cared for.
+            Premium care is not rushed. I take the time to understand each dog&apos;s personality, routine, confidence, and comfort cues, then create a calm experience where they feel safe, understood, and genuinely cared for.
           </p>
           <ButtonLink href="/contact" className="mt-9">
             Book a Complimentary Meet &amp; Greet
@@ -89,14 +89,14 @@ export function AboutPageContent() {
               My story
             </p>
             <h2 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">
-              Every dog needs care built on{" "}
+              Every dog deserves care built on{" "}
               <span className="text-[#7c3aed]">trust.</span>
             </h2>
             <p className="mt-6 leading-8 text-[#4f4857]">
-              My journey with dogs began with a simple belief: every dog deserves to feel safe, understood, and genuinely at ease. That belief led me to learn how trust is built—through patience, consistency, and understanding every dog&apos;s individual personality.
+              My work with dogs began with a simple belief: excellent care should feel personal. Dogs relax when they are understood, and owners relax when communication is clear, considered, and honest. That belief continues to guide every service I offer.
             </p>
             <p className="mt-4 leading-8 text-[#4f4857]">
-              Today, those values shape everything I do. Whether we&apos;re out on a walk, working through training, or spending time together during day care or boarding, every experience is tailored to the dog in front of me.
+              Today, those values shape every walk, check-in, training session, day care day, and overnight stay. I look at the dog in front of me—their energy, confidence, habits, and needs—and tailor the experience with patience and attention to detail.
             </p>
           </div>
         </div>
@@ -109,11 +109,11 @@ export function AboutPageContent() {
               MY APPROACH
             </p>
             <h2 className="mt-3 text-4xl font-semibold leading-tight text-[#fff7e8] sm:text-5xl">
-              More than a service. It&apos;s about {" "}
+              Premium service, grounded in {" "}
               <span className="text-[#a78bfa]">trust.</span>
             </h2>
             <p className="mt-6 leading-8 text-[#d8cab8]">
-              Great care begins with trust. When dogs feel safe and understood, owners can leave with complete confidence. Every walk, training session, and stay is calm, consistent, and centred around your dog&apos;s wellbeing.
+              Great care should feel effortless from the outside and deeply considered behind the scenes. When dogs feel safe and understood, owners can leave with complete confidence. Every walk, training session, and stay is calm, consistent, and centred around your dog&apos;s wellbeing.
             </p>
           </div>
           <div className="grid gap-5 sm:grid-cols-3">
@@ -138,7 +138,7 @@ export function AboutPageContent() {
               Beyond the leash
             </p>
             <h2 className="mt-3 text-4xl font-semibold">
-              The person behind <span className="text-[#7c3aed]">Jeroen & Paws.</span>
+              A calm presence behind <span className="text-[#7c3aed]">Jeroen & Paws.</span>
             </h2>
             <p className="mx-auto mt-5 max-w-2xl leading-8 text-[#4f4857]">
               When I&apos;m not caring for clients&apos; dogs, I&apos;m usually out exploring the Wicklow trails with my own dog. It&apos;s where I recharge—and where I&apos;m reminded why calm, enriching time outdoors matters so much to dogs.
@@ -187,7 +187,7 @@ export function AboutPageContent() {
             <span className="text-[#c4b5fd]">together.</span>
           </h2>
           <p className="mt-6 max-w-xl leading-8 text-[#f5e9d5]">
-            Every great relationship starts with a conversation. Let&apos;s talk about your dog&apos;s personality, routine, and needs, and find the care that&apos;s right for them.
+            Every premium care plan starts with a thoughtful conversation. Let&apos;s talk about your dog&apos;s personality, routine, preferences, and needs, then find the service that feels right for them.
           </p>
           <ButtonLink href="/contact" className="mt-8">
             Book a Complimentary Meet &amp; Greet
