@@ -122,3 +122,95 @@
     animation: none;
   }
 }
+@layer base {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+}
+
+@layer utilities {
+  @media (max-width: 639px) {
+    .text-7xl,
+    .sm\:text-7xl,
+    .lg\:text-7xl {
+      font-size: clamp(2.5rem, 14vw, 3.35rem) !important;
+      line-height: 1.04 !important;
+    }
+
+    .text-6xl,
+    .sm\:text-6xl,
+    .lg\:text-6xl {
+      font-size: clamp(2.35rem, 12vw, 3rem) !important;
+      line-height: 1.08 !important;
+    }
+
+    .text-5xl,
+    .sm\:text-5xl {
+      font-size: clamp(2rem, 9.8vw, 2.65rem) !important;
+      line-height: 1.12 !important;
+    }
+
+    .text-4xl,
+    .sm\:text-4xl {
+      font-size: clamp(1.75rem, 8vw, 2.15rem) !important;
+      line-height: 1.16 !important;
+    }
+
+    .text-3xl {
+      font-size: clamp(1.45rem, 6.5vw, 1.85rem) !important;
+      line-height: 1.2 !important;
+    }
+
+    .px-6 {
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+    }
+
+    .py-20,
+    .py-24,
+    .py-32 {
+      padding-top: 3.5rem !important;
+      padding-bottom: 3.5rem !important;
+    }
+
+    .min-h-\[calc\(100svh-5rem\)\] {
+      min-height: auto !important;
+    }
+
+    .min-h-\[440px\],
+    .min-h-\[420px\],
+    .min-h-\[360px\],
+    .min-h-\[350px\] {
+      min-height: 18rem !important;
+    }
+
+    .tracking-\[0\.35em\],
+    .tracking-\[0\.25em\] {
+      letter-spacing: 0.16em !important;
+    }
+
+    .p-8,
+    .p-10,
+    .p-12 {
+      padding: 1.25rem !important;
+    }
+
+    .rounded-3xl,
+    .rounded-\[2rem\] {
+      border-radius: 1.25rem !important;
+    }
+
+    .leading-9 {
+      line-height: 1.75rem !important;
+    }
+  }
+}
