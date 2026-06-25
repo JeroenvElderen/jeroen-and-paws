@@ -28,7 +28,7 @@ const footerSections = [
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
       { label: "FAQ", href: "/contact#faq" },
-      { label: "Policies", href: "/terms" },
+      { label: "Policies", href: "/policies" },
       { label: "Privacy", href: "/privacy" },
     ],
   },
@@ -105,7 +105,7 @@ export function Footer() {
           <p>All rights reserved © 2026 Jeroen & Paws</p>
           <div className="flex gap-4">
             <Link href="/privacy">Privacy Policy</Link>
-            <Link href="/terms">Terms of Service</Link>
+            <Link href="/policies">Policies</Link>
           </div>
         </div>
       </div>

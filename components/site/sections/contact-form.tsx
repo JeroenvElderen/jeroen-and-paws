@@ -146,61 +146,45 @@ export function ContactForm({ selectedService }: ContactFormProps) {
   };
 
   return (
-    <div className="rounded-3xl bg-[#111821] p-8 shadow-sm ring-1 ring-white/10">
-      <h2 className="text-3xl font-extrabold text-[#fff7e8]">
-        Book a Free Meet &amp; Greet
+    <div>
+      <p className="text-xs font-extrabold uppercase tracking-[0.25em] text-[#7c3aed]">
+        Send a message
+      </p>
+      <h2 className="mt-4 text-4xl font-semibold leading-tight tracking-[-0.03em] text-[#2a2040] sm:text-5xl">
+        How can I help <span className="text-[#7c3aed]">you?</span>
       </h2>
+      <p className="mt-6 max-w-md text-base leading-8 text-[#3b314f]">
+        Fill out the form below and I’ll get back to you as soon as possible
+        (usually within 24 hours).
+      </p>
       {selectedService?.service ? (
         <p className="mt-3 rounded-2xl bg-[#0b1017] px-4 py-3 text-sm font-semibold text-[#d8cab8] ring-1 ring-[#8b5cf6]/25">
           Request form prefilled for {selectedService.service}.
         </p>
       ) : null}
-      <ol className="mt-6 grid gap-3 text-sm font-semibold text-[#d8cab8] sm:grid-cols-3">
-        <li className="rounded-2xl bg-[#0b1017] px-4 py-3">
-          1. Send your details
-        </li>
-        <li className="rounded-2xl bg-[#0b1017] px-4 py-3">
-          2. Get a reply within 24 hours
-        </li>
-        <li className="rounded-2xl bg-[#0b1017] px-4 py-3">
-          3. Arrange a calm meet-and-greet
-        </li>
-      </ol>
-      <form ref={formRef} className="mt-7 space-y-5" onSubmit={handleSubmit}>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Your Name" id="name" placeholder="Jane Doe" required />
-          <Field label="Pet's Name" id="pet-name" placeholder="Kaiser" />
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2">
+      <form ref={formRef} className="mt-8 space-y-4" onSubmit={handleSubmit}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Your Name" id="name" placeholder="Your Name" required />
           <Field
-            label="Email"
+            label="Email Address"
             id="email"
             type="email"
-            placeholder="jane@example.com"
+            placeholder="Email Address"
             required
-          />
-          <Field
-            label="Phone"
-            id="phone"
-            type="tel"
-            placeholder="+353 87 247 3099"
           />
         </div>
         <div>
-          <label
-            htmlFor="service"
-            className="text-sm font-extrabold text-[#d8cab8]"
-          >
+          <label htmlFor="service" className="sr-only">
             Service Interested In
           </label>
           <select
             id="service"
             name="service"
             defaultValue={selectedServiceValue}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-[#0b1017] px-4 py-3 text-[#d8cab8] outline-none transition focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/20"
+            className="w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-4 text-sm text-[#3b314f] outline-none transition focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
           >
             <option value="" disabled>
-              Select a service
+              What are you interested in?
             </option>
             {serviceOptions.map(({ value, label }) => (
               <option key={value} value={value}>
@@ -215,14 +199,14 @@ export function ContactForm({ selectedService }: ContactFormProps) {
           </select>
         </div>
         <Textarea
-          label="Tell Us About Your Pet"
+          label="Tell me about your dog(s)"
           id="pet-info"
-          placeholder="Pet name, breed, age, any special needs or behavioral notes..."
+          placeholder="Tell me about your dog(s)"
         />
         <Textarea
-          label="Anything Else?"
+          label="Preferred location (if you have one)"
           id="message"
-          placeholder="Questions, scheduling preferences, routines..."
+          placeholder="Preferred location (if you have one)"
           defaultValue={getServiceSummary(selectedService)}
           required
         />
@@ -272,12 +256,12 @@ export function ContactForm({ selectedService }: ContactFormProps) {
             {status.message}
           </p>
         ) : null}
-        <p className="text-sm leading-6 text-[#988b7b]">
+        <p className="text-sm leading-6 text-[#6b6277]">
           By submitting, you agree that Jeroen & Paws may use your details to
           respond to your enquiry and prepare a safe care plan. Read the{" "}
           <Link
             href="/privacy"
-            className="font-bold text-[#c4b5fd] hover:text-[#ddd6fe]"
+            className="font-bold text-[#7c3aed] hover:text-[#5b21b6]"
           >
             privacy policy
           </Link>
@@ -286,9 +270,9 @@ export function ContactForm({ selectedService }: ContactFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-full bg-[#8b5cf6] px-7 py-3 font-extrabold text-[#080b10] transition hover:bg-[#a78bfa] disabled:cursor-not-allowed disabled:opacity-70"
+          className="rounded-md bg-[#6d3fa0] px-8 py-4 text-xs font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-[#7c3aed] disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isSubmitting ? "Sending..." : "Send Message"}
+          {isSubmitting ? "Sending..." : "Send Your Message"}
         </button>
       </form>
     </div>
@@ -310,7 +294,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="text-sm font-extrabold text-[#d8cab8]">
+      <label htmlFor={id} className="sr-only">
         {label}
       </label>
       <input
@@ -319,7 +303,7 @@ function Field({
         type={type}
         placeholder={placeholder}
         required={required}
-        className="mt-2 w-full rounded-2xl border border-white/10 bg-[#0b1017] px-4 py-3 text-[#d8cab8] outline-none transition placeholder:text-[#7f7366] focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/20"
+        className="w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-4 text-sm text-[#3b314f] outline-none transition placeholder:text-[#6b6277] focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
       />
     </div>
   );
@@ -340,7 +324,7 @@ function Textarea({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="text-sm font-extrabold text-[#d8cab8]">
+      <label htmlFor={id} className="sr-only">
         {label}
       </label>
       <textarea
@@ -349,7 +333,7 @@ function Textarea({
         placeholder={placeholder}
         defaultValue={defaultValue}
         required={required}
-        className="mt-2 min-h-28 w-full rounded-2xl border border-white/10 bg-[#0b1017] px-4 py-3 text-[#d8cab8] outline-none transition placeholder:text-[#7f7366] focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/20"
+        className="min-h-28 w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-4 text-sm text-[#3b314f] outline-none transition placeholder:text-[#6b6277] focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
       />
     </div>
   );

@@ -3,7 +3,14 @@ import type { MetadataRoute } from "next";
 import { businessInfo } from "@/components/site/data";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || businessInfo.siteUrl;
-const routes = ["/", "/services", "/about", "/contact", "/privacy", "/terms"];
+const routes = [
+  "/",
+  "/services",
+  "/about",
+  "/contact",
+  "/privacy",
+  "/policies",
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((route) => ({

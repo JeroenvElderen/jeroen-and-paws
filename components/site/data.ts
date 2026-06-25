@@ -21,11 +21,18 @@ import {
   ShieldHalf,
   Star,
   Timer,
+  Umbrella,
   Users,
   type LucideIcon,
 } from "lucide-react";
 
-export type PageName = "home" | "about" | "services" | "experience" | "contact";
+export type PageName =
+  | "home"
+  | "about"
+  | "services"
+  | "experience"
+  | "contact"
+  | "policies";
 
 export type IconCard = {
   title: string;
@@ -83,9 +90,89 @@ export const navItems: Array<{ label: string; href: string; page: PageName }> =
     { label: "About me", href: "/about", page: "about" },
     { label: "Experience", href: "/experience", page: "experience" },
     { label: "Contact", href: "/contact", page: "contact" },
-    { label: "Policies", href: "/terms", page: "contact" },
+    { label: "Policies", href: "/policies", page: "policies" },
   ];
 
+export const policySections = [
+  {
+    title: "Booking & payment",
+    description:
+      "A non-refundable retainer and signed agreement secure your session date. The remaining balance is due seven days before your session.",
+    icon: CalendarCheck,
+    points: [
+      "Retainers are non-refundable but transferable once",
+      "Dates are only held once the retainer is received",
+      "Payment plans are available upon request",
+    ],
+  },
+  {
+    title: "Rescheduling",
+    description:
+      "Life happens. You can reschedule up to 48 hours in advance at no extra cost, and we will find a new date that works for you.",
+    icon: Clock,
+    points: [
+      "Less than 48 hours: one reschedule allowed, subject to availability",
+      "Weather-related reschedules are always welcome",
+      "Flexibility helps create the best experience for every dog",
+    ],
+  },
+  {
+    title: "Weather",
+    description:
+      "We keep a close eye on the forecast and will reschedule if conditions are not safe or comfortable for your dog.",
+    icon: Umbrella,
+    points: [
+      "Extreme rain, storms, heat, or unsafe conditions may require a new date",
+      "Your dog’s comfort and safety always come first",
+      "We will work together to find the next suitable opening",
+    ],
+  },
+  {
+    title: "Dog wellbeing",
+    description:
+      "Your dog’s safety and happiness are the top priority. Sessions follow your dog’s lead with plenty of breaks, play time, and sniffing time.",
+    icon: Dog,
+    points: [
+      "Please share medical conditions, sensitivities, and behaviour notes",
+      "Treats, water, and calm breaks are always available",
+      "Sessions are dog-led and never forced",
+    ],
+  },
+  {
+    title: "Image use",
+    description:
+      "The best photos from your session may be used on the website, social media, and promotional materials only with your permission.",
+    icon: Camera,
+    points: [
+      "You will always be asked for permission first",
+      "You can choose to keep your session private",
+      "Your images will never be sold to third parties",
+    ],
+  },
+  {
+    title: "Gallery & delivery",
+    description:
+      "You will receive a private online gallery with your best edited images, ready to download and share.",
+    icon: Mail,
+    points: [
+      "Gallery delivery is typically within two to three weeks",
+      "Prints and products are available through your gallery",
+      "Additional images or products can be purchased any time",
+    ],
+  },
+  {
+    title: "Cancellations",
+    description:
+      "If you need to cancel your session, please contact me as soon as possible so the appointment can be released.",
+    icon: Heart,
+    points: [
+      "Cancellations within seven days are non-refundable",
+      "Emergency situations are handled with understanding",
+      "Thank you for respecting my time and small business",
+    ],
+  },
+];
+  
 export const stats = [
   { value: "100+", label: "Pet families supported" },
   { value: "5k+", label: "Walks and care visits" },
