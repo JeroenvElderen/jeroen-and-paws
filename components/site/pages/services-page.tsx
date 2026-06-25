@@ -1,160 +1,146 @@
-import {
-  customCarePlans,
-  dayCareAndOvernightPlans,
-  groupAdventurePlans,
-  homeVisitPlans,
-  labels,
-  walksAndSoloAdventurePlans,
-  trainingPlans,
-  bookingPolicies,
-} from "@/components/site/data";
-import { SiteShell } from "@/components/site/layout/site-shell";
-import { CtaSection } from "@/components/site/sections/cta-section";
-import { PageHero } from "@/components/site/sections/page-hero";
-import {
-  PricingCards,
-  GuaranteeBanner,
-} from "@/components/site/sections/pricing-section";
-import { ProcessSection } from "@/components/site/sections/process-section";
-import { SectionHeader } from "@/components/site/sections/section-header";
-import { ServiceArea } from "@/components/site/sections/service-area";
+import { CalendarDays, Camera, Heart, ImageIcon, MapPin, Mountain, PawPrint } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
-const serviceSections = [
+import styles from "./home-page.module.css";
+
+const navItems = ["Home", "About", "Services", "experience", "Contact"];
+
+const serviceCards = [
   {
-    id: "walks-and-solo-adventures",
-    icon: labels.dog,
-    label: "Walks & Solo Adventures",
-    title: "One-to-one walks and solo journeys",
-    text: "Choose a focused neighbourhood stroll or a longer solo journey, all paced around your companion with individual attention and photo updates.",
-    plans: walksAndSoloAdventurePlans,
-    background: "bg-[#111821]",
-    aliases: ["daily-strolls", "solo-journeys"],
+    title: "Daily strolls",
+    text: "Personalised walks matched to your companion's pace, personality, and routine.",
+    note: "Solo walks, routine-friendly care, and photos updates.",
+    src: "/images/dogs/Nola/Nola-1.jpg",
+    icon: Mountain,
   },
   {
-    id: "home-visits",
-    icon: labels.homeVisit,
-    label: "Home Visits",
-    title: "Essential and extended home visits",
-    text: "Fresh water, feeding, outdoor breaks, calm interaction, and reassurance when your companion needs care at home.",
-    plans: homeVisitPlans,
-    background: "bg-[#080b10]",
+    Title: "Training help",
+    text: "Supportive guidance to build good habits and boost your companion's confidence.",
+    note: "Positive methods, behaviour goals, and owner support",
+    src: "/image/s/dogs/kaiser/kaiser1.jpeg",
+    icon: Camera,
   },
   {
-    id: "day-care-and-overnight-stays",
-    icon: labels.daytimeCare,
-    label: "Day Care & Overnight Stays",
-    title: "Daytime care and calm overnight stays",
-    text: "Pick relaxed daytime support or overnight care in a calm home setting, with gentle activity, rest, familiar routines, and reassuring updates.",
-    plans: dayCareAndOvernightPlans,
-    background: "bg-[#111821]",
-    aliases: ["daytime-care", "overnight-support"],
+    title: "Group adventures",
+    text: "Fun, confidence-building outings where companions explore and play together.",
+    note: "Social play, safe packs, and adventure routes.",
+    src: "/images/dogs/Johnny/Johnny.jpeg",
+    icon: PawPrint,
   },
   {
-    id: "group-adventures",
-    icon: labels.groupAdventure,
-    label: "Group Adventures",
-    title: "2-hour, half-day, and full-day adventures",
-    text: "Guided group outings with movement, gentle social engagement, purposeful play, varied walks, and downtime.",
-    plans: groupAdventurePlans,
-    background: "bg-[#080b10]",
+    title: "Daytime care",
+    text: "Stimulating, reassuring days perfect for companions who love company.",
+    note: "Playtime, rest breaks, and a structured day.",
+    src: "/images/dogs/lakta/lakta1.jpg",
+    icon: PawPrint,
   },
-  {
-    id: "training",
-    icon: labels.training,
-    label: "Training",
-    title: "Introductory, standard, puppy, and extended training",
-    text: "Focused one-to-one training support for foundations, puppies, behaviour reinforcement, slower pacing, and unique goals.",
-    plans: trainingPlans,
-    background: "bg-[#111821]",
-  },
-  {
-    id: "custom-care",
-    icon: labels.customCare,
-    label: "Custom Care",
-    title: "Flexible care for unique needs",
-    text: "All custom and tailored requests are grouped into one flexible option for unique routines, specialist needs, behaviour support, and bespoke plans.",
-    plans: customCarePlans,
-    background: "bg-[#080b10]",
-  },
+];
+
+const included = [
+  { title: "Meet & greet", text: "We get to know your dog's personality, routine, and needs.", icon: CalendarDays },
+  { title: "Tailored plan", text: "Care and training are shaped around your companion.", icon: MapPin },
+  { title: "Structured care", text: "Walks, training, daycare, and boarding stay calm and consistent.", icon: Camera },
+  { title: "Photo updates", text: "Clear updates help you know your dog is happy and safe.", icon: ImageIcon },
+  { title: "Ongoing support", text: "Guidance continues before, during, and after each booking.", icon: Heart },
 ];
 
 export function ServicesPageContent() {
   return (
-    <SiteShell activePage="services">
-      <PageHero
-        icon={labels.services}
-        label="Our services"
-        title="Pick the perfect fit"
-        text="Explore one-to-one walks and solo adventures, home check-ins, day care, boarding, group adventures, training, and custom care options, then start with a free meet-and-greet."
-      />
-      {serviceSections.map(
-        ({ id, icon, label, title, text, plans, background, aliases }) => (
-          <section
-            key={label}
-            id={id}
-            className={`${background} scroll-mt-24 px-6 py-20 sm:px-8`}
-          >
-            {aliases?.map((alias) => (
-              <span key={alias} id={alias} className="block scroll-mt-24" />
+    <main id="main-content" className={styles.page}>
+      <section className={styles.servicesHero}>
+        <Image
+          src="/images/dogs/aslan/aslan.jpg"
+          alt="Dog training and care in a calm outdoor setting"
+          fill 
+          priority
+          sizes="100vw"
+          className={styles.servicesHeroImage}
+        />
+        <div className={styles.servicesHeroOverlay} />
+        <header className={styles.header}>
+          <Link href="/" className={styles.logoLink} aria-label="Jeroen and Paws home">
+            <Image src="/logo3.svg" alt="Jeroen and Paws" width={150} height={89} priority className={styles.logo} />
+          </Link>
+          <nav className={styles.nav} aria-label="Services navigation">
+            {navItems.map((item) => (
+              <Link
+                key={item}
+                href={item === "Home" ? "/" : item === "Services" ? "/services" : item === "About me" ? "/about" : item === "Questions" ? "/#questions" : `/${item.toLowerCase()}`}
+                className={item === "Services" ? styles.activeNavLink : styles.navLink}
+              >
+                {item}
+              </Link>
             ))}
-            <div className="mx-auto max-w-6xl">
-              <SectionHeader
-                icon={icon}
-                label={label}
-                title={title}
-                text={text}
-              />
-              <PricingCards plans={plans} />
-            </div>
-          </section>
-        ),
-      )}
-      <section className="bg-[#111821] px-6 py-16 sm:px-8">
-        <GuaranteeBanner />
-      </section>
-      <section id="policies" className="bg-[#111821] px-6 py-16 sm:px-8">
-        <div className="mx-auto max-w-4xl rounded-3xl bg-[#0b1017] p-7 ring-1 ring-[#8b5cf6]/25">
-          <SectionHeader
-            icon={labels.faq}
-            label="Booking notes"
-            title="Clear expectations before care begins"
-            text="A few practical details help every booking stay safe, fair, and calm for you and your companion."
-          />
-          <ul className="mt-8 space-y-3 text-[#d8cab8]">
-            {bookingPolicies.map((policy) => (
-              <li key={policy} className="rounded-2xl bg-[#111821] px-5 py-4">
-                {policy}
-              </li>
-            ))}
-          </ul>
+          </nav>
+          <Link href="/contact" className={styles.headerButton}>Book a meet & greet <PawPrint aria-hidden="true" /></Link>
+        </header>
+        
+        <div className={styles.servicesHeroContent}>
+          <p className={styles.darkKicker}>Our services</p>
+          <h1>Exceptional care for <span>every</span><br />dog and every <span>routine.</span></h1>
+          <p>From personalised training and engaging walks to reassuring day care, boarding, and home check-ins, every service is shaped around your companion’s needs.</p>
+          <Link href="/contact" className={styles.primaryButton}>Book a meet & greet <PawPrint aria-hidden="true" /></Link>
         </div>
       </section>
-      <section className="bg-[#111821] px-6 py-20 sm:px-8">
-        <div className="mx-auto max-w-6xl">
-          <SectionHeader
-            icon={labels.process}
-            label="How It Works"
-            title="A calm start for every companion"
-            text="A thoughtful meet-and-greet helps Jeroen understand your dog’s routine, personality, and needs before care begins."
-          />
-          <ProcessSection />
+
+      <section className={styles.servicesCardsSection}>
+        <div className={styles.sectionInner}>
+          <div className={styles.servicesIntro}>
+            <p className={styles.sectionKicker}>Choose your care</p>
+            <h2>Services designed around<br /><span>you</span> and your dog.</h2>
+          </div>
+          <div className={styles.servicesCardGrid}>
+            {serviceCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <article key={card.title} className={styles.serviceCardMock}>
+                  <div className={styles.serviceCardImage}>
+                    <Image src={card.src} alt={`${card.title} dog care service`} fill sizes="(min-width: 1024px) 270px, 100vw" />
+                  </div>
+                  <div className={styles.serviceIcon}><Icon aria-hidden="true" /></div>
+                  <div className={styles.serviceCardBody}>
+                    <h3>{card.title}</h3>
+                    <p>{card.text}</p>
+                    <p className={styles.serviceNote}>{card.note}</p>
+                    <Link href="/contact">Learn more <span aria-hidden="true">→</span></Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </div>
       </section>
-      <section className="bg-[#080b10] px-6 py-20 sm:px-8">
-        <div className="mx-auto max-w-6xl">
-          <SectionHeader
-            icon={labels.area}
-            label="Service Area"
-            title="Care by appointment for local dog families"
-            text="Share your location during your enquiry and Jeroen will confirm whether your route, home visit, day care, boarding, or training request can be supported."
-          />
-          <ServiceArea />
+
+      <section className={styles.includedSection}>
+        <PawPrint className={styles.includedPaw} aria-hidden="true" />
+        <div className={styles.sectionInner}>
+          <div className={styles.includedHeading}>
+            <p className={styles.darkKicker}>What’s included</p>
+            <h2>More than just dog care.<br />A calm <span>experience</span> you can trust.</h2>
+          </div>
+          <div className={styles.includedGrid}>
+            {included.map((item) => {
+              const Icon = item.icon;
+              return <div key={item.title} className={styles.includedItem}><Icon aria-hidden="true" /><h3>{item.title}</h3><p>{item.text}</p></div>;
+            })}
+          </div>
         </div>
       </section>
-      <CtaSection
-        title="Welcome to your companion’s second home"
-        text="Reach out and let’s explore the walking, training, day care, boarding, or custom options that suit your dog best."
-      />
-    </SiteShell>
+
+      <section className={styles.servicesFinalSection}>
+        <div className={styles.servicesFinalGrid}>
+          <div>
+            <p className={styles.sectionKicker}>Not sure yet?</p>
+            <h2>Let’s talk about what <span>your dog needs</span>.</h2>
+            <p>Considering training, walks, day care, or boarding? I’m here to help your dog feel understood, supported, and set up for success.</p>
+            <Link href="/contact" className={styles.primaryButton}>Contact me <PawPrint aria-hidden="true" /></Link>
+          </div>
+          <div className={styles.servicesFinalImage}>
+            <Image src="/images/dogs/aslan/aslan.jpg" alt="Dog training and care consultation" fill sizes="(min-width: 1024px) 670px, 100vw" />
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

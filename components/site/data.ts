@@ -25,7 +25,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export type PageName = "home" | "about" | "services" | "contact";
+export type PageName = "home" | "about" | "services" | "experience" | "contact";
 
 export type IconCard = {
   title: string;
@@ -81,6 +81,7 @@ export const navItems: Array<{ label: string; href: string; page: PageName }> =
     { label: "Home", href: "/", page: "home" },
     { label: "Services", href: "/services", page: "services" },
     { label: "About me", href: "/about", page: "about" },
+    { label: "Experience", href: "/experience", page: "experience" },
     { label: "Contact", href: "/contact", page: "contact" },
     { label: "Policies", href: "/terms", page: "contact" },
   ];
