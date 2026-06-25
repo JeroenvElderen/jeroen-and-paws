@@ -1,265 +1,44 @@
 import { Coffee, Heart, Mountain, PawPrint, ShieldCheck } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
-import styles from "./home-page.module.css";
-
-const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
-  { label: "Care approach", href: "#my-story" },
-  { label: "Contact", href: "/contact" },
-];
+import { SiteShell } from "@/components/site/layout/site-shell";
+import { ButtonLink } from "@/components/site/ui/button-link";
 
 const values = [
-  {
-    title: "Dogs first",
-    text: "Your dog’s comfort and happiness always come first. We go at their pace.",
-    icon: PawPrint,
-  },
-  {
-    title: "Positive guidance",
-    text: "Kind, practical support built around real life and your dog’s personality.",
-    icon: Heart,
-  },
-  {
-    title: "Reliable care",
-    text: "Walking, training, day care, and boarding routines that keep your dog settled and supported.",
-    icon: ShieldCheck,
-  },
-];
+  [PawPrint, "Dogs first", "Your dog’s comfort and happiness always come first. We go at their pace."],
+  [Heart, "Positive guidance", "Kind, practical support built around real life and your dog’s personality."],
+  [ShieldCheck, "Reliable care", "Walking, training, day care, and boarding routines that keep your dog settled and supported."],
+] as const;
 
 const personalNotes = [
-  {
-    title: "Outdoor lover",
-    text: "Mountains, forests, and wide open spaces.",
-    icon: PawPrint,
-    src: "/images/dogs/Nola/Nola-1.jpg",
-    alt: "A dog enjoying an outdoor walk in soft mountain light",
-  },
-  {
-    title: "Coffee addict",
-    text: "Good coffee fuels patient, focused days.",
-    icon: Coffee,
-    src: "/images/dogs/Johnny/Johnny.jpeg",
-    alt: "Happy dog enjoying attentive care",
-  },
-  {
-    title: "Adventurer",
-    text: "Always up for the next trail, stroll, or enrichment walk.",
-    icon: Mountain,
-    src: "/images/dogs/lakta/lakta1.jpg",
-    alt: "Dog walking through a natural outdoor trail",
-  },
-];
+  [PawPrint, "Outdoor lover", "Mountains, forests, and wide open spaces.", "/images/dogs/Nola/Nola-1.jpg"],
+  [Coffee, "Coffee addict", "Good coffee fuels patient, focused days.", "/images/dogs/Johnny/Johnny.jpeg"],
+  [Mountain, "Adventurer", "Always up for the next trail, stroll, or enrichment walk.", "/images/dogs/lakta/lakta1.jpg"],
+] as const;
 
 export function AboutPageContent() {
   return (
-    <main id="main-content" className={styles.page}>
-      <section className={styles.aboutHero}>
-        <Image
-          src="/images/dogs/aslan/aslan.jpg"
-          alt="Jeroen caring for a dog outdoors"
-          fill
-          priority
-          sizes="100vw"
-          className={styles.aboutHeroImage}
-        />
-        <div className={styles.aboutHeroOverlay} />
-        <header className={styles.header}>
-          <Link
-            href="/"
-            className={styles.logoLink}
-            aria-label="Jeroen And Paws home"
-          >
-            <Image
-              src="/logo3.svg"
-              alt="Jeroen And Paws"
-              width={150}
-              height={89}
-              priority
-              className={styles.logo}
-            />
-          </Link>
-          <nav className={styles.nav} aria-label="About page navigation">
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className={
-                  item.label === "About" ? styles.activeNavLink : styles.navLink
-                }
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <Link href="/contact" className={styles.headerButton}>
-            Book a meet & greet <PawPrint aria-hidden="true" />
-          </Link>
-        </header>
-
-        <div className={styles.aboutHeroContent}>
-          <p className={styles.darkKicker}>About me</p>
-          <h1>
-            Hi, I’m <span>Jeroen.</span>
-            <br />
-            Dog trainer. Walker. Carer.
-            <br />
-            Dog lover.
-          </h1>
-          <p>
-            I help dogs feel calm, understood, and cared for through positive
-            training, enriching walks, and safe boarding. Every dog is supported
-            at their own pace.
-          </p>
-          <Link href="#my-story" className={styles.primaryButton}>
-            More about my care <PawPrint aria-hidden="true" />
-          </Link>
+    <SiteShell activePage="about">
+      <section className="relative isolate min-h-[620px] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:py-32">
+        <Image src="/images/dogs/aslan/aslan.jpg" alt="Jeroen caring for a dog outdoors" fill priority sizes="100vw" className="object-cover opacity-55" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
+        <div className="relative mx-auto max-w-6xl pt-8">
+          <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">About me</p>
+          <h1 className="mt-5 max-w-3xl text-5xl font-semibold leading-tight text-[#fff7e8] sm:text-7xl">Hi, I’m <span className="text-[#a78bfa]">Jeroen.</span> Dog trainer. Walker. Carer. Dog lover.</h1>
+          <p className="mt-7 max-w-xl text-lg leading-8 text-[#f5e9d5]">I help dogs feel calm, understood, and cared for through positive training, enriching walks, and safe boarding. Every dog is supported at their own pace.</p>
+          <ButtonLink href="/contact" className="mt-9">Book a meet &amp; greet</ButtonLink>
         </div>
       </section>
 
-      <section id="my-story" className={styles.aboutStorySection}>
-        <div className={styles.aboutStoryGrid}>
-          <div className={styles.aboutStoryPhoto}>
-            <Image
-              src="/images/dogs/aslan/aslan.jpg"
-              alt="A calm outdoor dog care moment in the mountains"
-              fill
-              sizes="(min-width: 900px) 540px, 100vw"
-            />
-          </div>
-          <div className={styles.aboutStoryCopy}>
-            <p className={styles.sectionKicker}>My story</p>
-            <h2>
-              Every dog needs care
-              <br />
-              built on <span>trust.</span>
-            </h2>
-            <p>
-              My journey with dogs started with my own companion. I wanted to
-              understand what makes dogs feel secure, confident, and happy—the
-              routines, the communication, and the trust behind every good
-              relationship.
-            </p>
-            <p>
-              That passion grew into a mission: to help other dog parents give
-              their dogs calm guidance, meaningful exercise, and dependable
-              care.
-            </p>
-            <p>
-              Today, I support dogs and their humans with training, walking, day
-              care, and boarding shaped around each dog’s needs, pace, and
-              personality.
-            </p>
-          </div>
-        </div>
-        <PawPrint className={styles.aboutStoryPaw} aria-hidden="true" />
-      </section>
-      
-      <section className={styles.aboutValuesSection}>
-        <div className={styles.aboutValuesGrid}>
-          <div className={styles.aboutValuesIntro}>
-            <p className={styles.darkKicker}>What matters to me</p>
-            <h2>
-              More than a service.
-              <br />
-              It’s about <span>connection.</span>
-            </h2>
-            <p>
-              Great care happens when dogs feel safe and humans feel at ease.
-              That’s why every walk, training session, and stay is calm,
-              structured, and focused on what matters most—your dog’s wellbeing.
-            </p>
-          </div>
-          <div className={styles.aboutValueCards}>
-            {values.map((value) => {
-              const Icon = value.icon;
-              return (
-                <article key={value.title} className={styles.aboutValueCard}>
-                  <Icon aria-hidden="true" />
-                  <h3>{value.title}</h3>
-                  <p>{value.text}</p>
-                </article>
-              );
-            })}
-          </div>
-        </div>
+      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center"><div className="relative min-h-[440px] overflow-hidden rounded-xl"><Image src="/images/dogs/kaiser/kaiser2.jpeg" alt="A calm outdoor dog care moment" fill sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" /></div><div><p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">My story</p><h2 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">Every dog needs care built on <span className="text-[#7c3aed]">trust.</span></h2><p className="mt-6 leading-8 text-[#4f4857]">My journey with dogs started with my own companion. I wanted to understand what makes dogs feel secure, confident, and happy — the routines, communication, and trust behind every good relationship.</p><p className="mt-4 leading-8 text-[#4f4857]">Today, I support dogs and their humans with training, walking, day care, and boarding shaped around each dog’s needs, pace, and personality.</p></div></div>
       </section>
 
-      <section className={styles.aboutPersonalSection}>
-        <div className={styles.aboutPersonalGrid}>
-          <div className={styles.aboutPersonalIntro}>
-            <p className={styles.sectionKicker}>Beyond the leash</p>
-            <h2>
-              A little more
-              <br />
-              about me.
-            </h2>
-            <p>
-              When I’m not working with dogs, you’ll probably find me outdoors
-              with my own dog, exploring new places and enjoying a quiet trail.
-            </p>
-            <p>
-              I love nature, good coffee and road trips with no fixed
-              destination.
-            </p>
-            <Link href="/contact" className={styles.secondaryButton}>
-              Let’s talk care <PawPrint aria-hidden="true" />
-            </Link>
-          </div>
-          {personalNotes.map((note) => {
-            const Icon = note.icon;
-            return (
-              <article key={note.title} className={styles.aboutPersonalCard}>
-                <div className={styles.aboutPersonalPhoto}>
-                  <Image
-                    src={note.src}
-                    alt={note.alt}
-                    fill
-                    sizes="(min-width: 900px) 260px, 100vw"
-                  />
-                </div>
-                <div className={styles.aboutPersonalMeta}>
-                  <span>
-                    <Icon aria-hidden="true" />
-                  </span>
-                  <div>
-                    <h3>{note.title}</h3>
-                    <p>{note.text}</p>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </section>
+      <section className="bg-[#100d19] px-6 py-20 sm:px-8"><div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start"><div><p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">What matters to me</p><h2 className="mt-3 text-4xl font-semibold leading-tight text-[#fff7e8] sm:text-5xl">More than a service. It’s about <span className="text-[#a78bfa]">connection.</span></h2><p className="mt-6 leading-8 text-[#d8cab8]">Great care happens when dogs feel safe and humans feel at ease. Every walk, training session, and stay is calm, structured, and focused on your dog’s wellbeing.</p></div><div className="grid gap-5 sm:grid-cols-3">{values.map(([Icon, title, text]) => <article key={title} className="rounded-xl border border-[#8b5cf6]/20 bg-[#171f2a] p-6"><Icon className="text-[#a78bfa]" /><h3 className="mt-4 font-semibold text-[#fff7e8]">{title}</h3><p className="mt-2 text-sm leading-6 text-[#d8cab8]">{text}</p></article>)}</div></div></section>
 
-      <section className={styles.aboutFinalCta}>
-        <Image
-          src="/images/dogs/kaiser/kaiser1.jpeg"
-          alt="Dog looking across a misty mountain landscape"
-          fill
-          sizes="100vw"
-          className={styles.aboutFinalImage}
-        />
-        <div className={styles.aboutFinalOverlay} />
-        <div className={styles.aboutFinalContent}>
-          <h2>
-            Let’s create a care plan
-            <br />
-            <span>together.</span>
-          </h2>
-          <p>
-            I’d love to hear about your dog and help you choose the support that
-            fits them best.
-          </p>
-          <Link href="/contact" className={styles.primaryButton}>
-            Book a meet & greet <PawPrint aria-hidden="true" />
-          </Link>
-        </div>
-      </section>
-      </main>
+      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8"><div className="mx-auto max-w-6xl"><div className="text-center"><p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">Beyond the leash</p><h2 className="mt-3 text-4xl font-semibold">A little more <span className="text-[#7c3aed]">about me.</span></h2><p className="mx-auto mt-5 max-w-2xl leading-8 text-[#4f4857]">When I’m not working with dogs, you’ll probably find me outdoors with my own dog, exploring new places and enjoying a quiet trail.</p></div><div className="mt-10 grid gap-5 md:grid-cols-3">{personalNotes.map(([Icon, title, text, src]) => <article key={title} className="overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"><div className="relative h-56"><Image src={src} alt={`${title} dog care detail`} fill sizes="(min-width: 1024px) 360px, 100vw" className="object-cover" /></div><div className="p-6"><Icon className="text-[#7c3aed]" /><h3 className="mt-4 text-xl font-semibold">{title}</h3><p className="mt-2 text-sm leading-6 text-[#4f4857]">{text}</p></div></article>)}</div></div></section>
+
+      <section className="relative isolate overflow-hidden px-6 py-24 text-[#fff7e8] sm:px-8"><Image src="/images/dogs/kaiser/kaiser1.jpeg" alt="Dog looking across a misty mountain landscape" fill sizes="100vw" className="-z-10 object-cover" /><div className="absolute inset-0 -z-10 bg-black/65" /><div className="mx-auto max-w-6xl"><h2 className="max-w-2xl text-5xl font-semibold leading-tight">Let’s create a care plan <span className="text-[#c4b5fd]">together.</span></h2><p className="mt-6 max-w-xl leading-8 text-[#f5e9d5]">I’d love to hear about your dog and help you choose the support that fits them best.</p><ButtonLink href="/contact" className="mt-8">Book a meet &amp; greet</ButtonLink></div></section>
+    </SiteShell>
   );
 }

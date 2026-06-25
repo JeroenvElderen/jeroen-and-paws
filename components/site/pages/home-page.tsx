@@ -1,10 +1,8 @@
-import { Camera, Heart, Mail, PawPrint } from "lucide-react";
+import { Camera, Heart, PawPrint } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
-import styles from "./home-page.module.css";
-
-const navItems = ["Home", "About", "Portfolio", "Experience", "Contact"];
+import { SiteShell } from "@/components/site/layout/site-shell";
+import { ButtonLink } from "@/components/site/ui/button-link";
 
 const portfolioCards = [
   { title: "Adventures", src: "/images/dogs/Nola/Nola-1.jpg" },
@@ -14,210 +12,50 @@ const portfolioCards = [
 ];
 
 const steps = [
-  {
-    title: "Connect",
-    text: "We get to know you and your dog. We plan the perfect session for you both.",
-    icon: PawPrint,
-  },
-  {
-    title: "Session",
-    text: "A relaxed outdoor session where your dog can be themselves. No pressure, just fun.",
-    icon: Camera,
-  },
-  {
-    title: "Memories",
-    text: "Beautiful, timeless images you’ll cherish for a lifetime.",
-    icon: Heart,
-  },
-];
+  [PawPrint, "01", "Connect", "We get to know you and your dog, then plan the right care or session for you both."],
+  [Camera, "02", "Session", "A relaxed outdoor experience where your dog can be themselves. No pressure, just fun."],
+  [Heart, "03", "Memories", "Beautiful updates, care, and images you can trust and remember."],
+] as const;
 
 export function HomePage() {
   return (
-    <main id="main-content" className={styles.page}>
-      <section className={styles.hero}>
-        <Image
-          src="/images/dogs/aslan/aslan.jpg"
-          alt="Jeroen photographing a dog in the mountains"
-          fill
-          priority
-          sizes="100vw"
-          className={styles.heroImage}
-        />
-        <div className={styles.heroOverlay} />
-        <header className={styles.header}>
-          <Link href="/" className={styles.logoLink} aria-label="Jeroen And Paws home">
-            <Image
-              src="/logo3.svg"
-              alt="Jeroen And Paws"
-              width={150}
-              height={89}
-              priority
-              className={styles.logo}
-            />
-          </Link>
-          <nav className={styles.nav} aria-label="Homepage navigation">
-            {navItems.map((item) => (
-              <a
-                key={item}
-                href={item === "Home" ? "/" : `#${item.toLowerCase()}`}
-                className={item === "Home" ? styles.activeNavLink : styles.navLink}
-              >
-                {item}
-              </a>
-            ))}
-          </nav>
-          <a href="#contact" className={styles.headerButton}>
-            Book a session
-          </a>
-        </header>
-
-        <div className={styles.heroContent}>
-          <h1>
-            Dog photography
-            <br />
-            for people who see
-            <br />
-            their dogs as <span>family.</span>
-          </h1>
-          <p>Natural, emotional photography across Ireland and the Netherlands.</p>
-          <a href="#contact" className={styles.primaryButton}>
-            Book your session <PawPrint aria-hidden="true" />
-          </a>
-        </div>
-      </section>
-
-      <section id="about" className={styles.aboutSection}>
-        <div className={styles.aboutGrid}>
-          <div className={styles.aboutPhoto}>
-            <Image
-              src="/images/dogs/aslan/aslan.jpg"
-              alt="A relaxed outdoor dog photography session at sunset"
-              fill
-              sizes="(min-width: 768px) 540px, 100vw"
-            />
-          </div>
-          <div className={styles.aboutCopy}>
-            <p className={styles.sectionKicker}>About me</p>
-            <h2>
-              Every dog has a story
-              <br />
-              worth <span>remembering.</span>
-            </h2>
-            <p>
-              I&apos;m Jeroen, a dog photographer with a passion for capturing real moments
-              and the unique bond between dogs and their humans. My sessions are relaxed,
-              natural and focused on what matters most — connection.
-            </p>
-            <a href="#contact" className={styles.secondaryButton}>
-              More about me <PawPrint aria-hidden="true" />
-            </a>
-          </div>
-        </div>
-        <PawPrint className={styles.aboutPaw} aria-hidden="true" />
-      </section>
-
-      <section id="portfolio" className={styles.portfolioSection}>
-        <div className={styles.sectionInner}>
-          <div className={styles.portfolioHeading}>
-            <div>
-              <p className={styles.darkKicker}>Portfolio</p>
-              <h2>Moments. Connection. Memories.</h2>
-            </div>
-            <a href="#portfolio" className={styles.outlineButton}>
-              View full portfolio <PawPrint aria-hidden="true" />
-            </a>
-          </div>
-          <div className={styles.portfolioGrid}>
-            {portfolioCards.map((card) => (
-              <article key={card.title} className={styles.portfolioCard}>
-                <Image src={card.src} alt={`${card.title} dog photography gallery`} fill sizes="(min-width: 1024px) 270px, 50vw" />
-                <div className={styles.cardShade} />
-                <div className={styles.cardText}>
-                  <h3>{card.title}</h3>
-                  <p>See gallery <span aria-hidden="true">→</span></p>
-                </div>
-              </article>
-            ))}
+    <SiteShell activePage="home">
+      <section className="relative isolate min-h-[680px] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:py-32">
+        <Image src="/images/dogs/aslan/aslan.jpg" alt="Jeroen photographing a dog in the mountains" fill priority sizes="100vw" className="object-cover opacity-55" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
+        <div className="relative mx-auto max-w-6xl pt-8">
+          <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">Jeroen &amp; Paws</p>
+          <h1 className="mt-5 max-w-3xl text-5xl font-semibold leading-tight text-[#fff7e8] sm:text-7xl">Dog care and photography for people who see dogs as <span className="text-[#a78bfa]">family.</span></h1>
+          <p className="mt-7 max-w-xl text-lg leading-8 text-[#f5e9d5]">Natural, calm, companion-first care with training, walks, day care, boarding, and memorable outdoor sessions shaped around your dog.</p>
+          <div className="mt-9 flex flex-wrap gap-4">
+            <ButtonLink href="/contact">Book a Free Meet &amp; Greet</ButtonLink>
+            <ButtonLink href="/experience" variant="outline">See the experience</ButtonLink>
           </div>
         </div>
       </section>
 
-      <section id="experience" className={styles.experienceSection}>
-        <p className={styles.sectionKicker}>The experience</p>
-        <h2>
-          A simple process,
-          <br />
-          <span>beautiful</span> results.
-        </h2>
-        <div className={styles.stepsGrid}>
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <article key={step.title} className={styles.stepCard}>
-                <div className={styles.stepIcon}>
-                  <Icon aria-hidden="true" />
-                </div>
-                <p className={styles.stepNumber}>0{index + 1}</p>
-                <h3>{step.title}</h3>
-                <p>{step.text}</p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className={styles.testimonialSection}>
-        <Image
-          src="/images/dogs/kaiser/kaiser1.jpeg"
-          alt="Soulful dog portrait"
-          fill
-          sizes="100vw"
-          className={styles.testimonialImage}
-        />
-        <div className={styles.testimonialOverlay} />
-        <div className={styles.testimonialContent}>
-          <p className={styles.quoteMark}>“</p>
-          <blockquote>
-            Jeroen has a unique way of capturing the soul of your dog. The photos are
-            absolutely breathtaking.
-          </blockquote>
-          <p className={styles.quoteAuthor}>— Marleen</p>
-          <div className={styles.dots} aria-hidden="true">
-            <span />
-            <span />
-            <span />
-            <span />
+      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
+          <div className="relative min-h-[440px] overflow-hidden rounded-xl shadow-2xl shadow-black/10"><Image src="/images/dogs/kaiser/kaiser1.jpeg" alt="A relaxed outdoor dog care session" fill sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" /></div>
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">About the care</p>
+            <h2 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">Every dog has a story worth <span className="text-[#7c3aed]">understanding.</span></h2>
+            <p className="mt-6 leading-8 text-[#4f4857]">I help dogs feel calm, understood, and cared for through positive training, enriching walks, and safe boarding. Every dog is supported at their own pace.</p>
+            <ButtonLink href="/about" className="mt-8">More about me</ButtonLink>
           </div>
         </div>
       </section>
 
-      <footer id="contact" className={styles.footerSection}>
-        <div className={styles.footerGrid}>
-          <div className={styles.footerBrand}>
-            <Image src="/logo3.svg" alt="Jeroen And Paws" width={112} height={66} className={styles.footerLogo} />
-            <p>Natural dog photography across Ireland &amp; the Netherlands.</p>
-            <div className={styles.socials}>
-              <span aria-hidden="true">◎</span>
-              <span aria-hidden="true">f</span>
-              <Mail aria-hidden="true" />
-            </div>
-          </div>
-          <div className={styles.footerCta}>
-            <h2>
-              Ready to capture
-              <br />
-              your story <span>together?</span>
-            </h2>
-            <p>Let’s create something beautiful.</p>
-            <Link href="/contact" className={styles.primaryButton}>
-              Book your session <PawPrint aria-hidden="true" />
-            </Link>
-          </div>
-          <div className={styles.footerPhoto}>
-            <Image src="/images/dogs/aslan/aslan.jpg" alt="Dog photography session in the mountains" fill sizes="320px" />
-          </div>
+      <section className="bg-[#100d19] px-6 py-20 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">Portfolio</p><h2 className="mt-3 text-4xl font-semibold text-[#fff7e8] sm:text-5xl">Moments. Connection. <span className="text-[#a78bfa]">Memories.</span></h2></div><ButtonLink href="/experience" variant="outline">View experience</ButtonLink></div>
+          <div className="mt-10 grid gap-4 md:grid-cols-4">{portfolioCards.map((card) => <article key={card.title} className="relative min-h-72 overflow-hidden rounded-xl text-white"><Image src={card.src} alt={`${card.title} dog photography gallery`} fill sizes="(min-width: 1024px) 270px, 50vw" className="object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" /><div className="absolute bottom-0 p-5"><h3 className="text-xl font-semibold">{card.title}</h3><p className="mt-2 text-sm text-[#f5e9d5]">See gallery →</p></div></article>)}</div>
         </div>
-      </footer>
-    </main>
+      </section>
+
+      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+        <div className="mx-auto max-w-6xl text-center"><p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">The process</p><h2 className="mt-3 text-4xl font-semibold">A simple process, <span className="text-[#7c3aed]">beautiful</span> results.</h2><div className="mt-14 grid gap-8 md:grid-cols-3">{steps.map(([Icon, number, title, text]) => <article key={title}><div className="mx-auto grid size-16 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]"><Icon /></div><p className="mt-5 text-xs font-black text-[#8b5cf6]">{number}</p><h3 className="mt-2 font-semibold">{title}</h3><p className="mt-3 text-sm leading-6 text-[#4f4857]">{text}</p></article>)}</div></div>
+      </section>
+    </SiteShell>
   );
 }
