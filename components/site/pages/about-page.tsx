@@ -46,7 +46,7 @@ const personalNotes = [
 export function AboutPageContent() {
   return (
     <SiteShell activePage="about">
-      <section className="relative isolate min-h-[calc(100svh-5rem)] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:py-32">
+      <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src="/images/dogs/aslan/aslan.jpg"
           alt="Jeroen caring for a dog outdoors"
@@ -56,18 +56,18 @@ export function AboutPageContent() {
           className="object-cover opacity-55"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
-        <div className="relative mx-auto max-w-6xl pt-8">
+        <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
             ABOUT JEROEN
           </p>
-          <h1 className="mt-5 max-w-3xl text-5xl font-semibold leading-tight text-[#fff7e8] sm:text-7xl">
+          <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight text-[#fff7e8] sm:text-7xl">
             Hi, I’m <span className="text-[#a78bfa]">Jeroen</span>.
             Premium care starts with truly knowing every dog.
           </h1>
-          <p className="mt-7 max-w-xl text-lg leading-8 text-[#f5e9d5]">
+          <p className="mt-7 max-w-xl text-base leading-7 text-[#f5e9d5] sm:text-lg sm:leading-8">
             Premium care is not rushed. I take the time to understand each dog&apos;s personality, routine, confidence, and comfort cues, then create a calm experience where they feel safe, understood, and genuinely cared for.
           </p>
-          <ButtonLink href="/contact" className="mt-9">
+          <ButtonLink href="/contact" className="mt-8 sm:mt-9">
             Book a Complimentary Meet &amp; Greet
           </ButtonLink>
         </div>

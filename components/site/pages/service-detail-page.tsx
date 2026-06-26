@@ -9,7 +9,7 @@ import { ButtonLink } from "@/components/site/ui/button-link";
 export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
   return (
     <SiteShell activePage="services">
-      <section className="relative isolate min-h-[calc(100svh-5rem)] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:py-32">
+      <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src={service.heroImage}
           alt={service.heroAlt}
@@ -19,20 +19,20 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
           className="object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.96),rgba(8,11,16,.58),rgba(8,11,16,.18))]" />
-        <div className="relative mx-auto max-w-6xl pt-8">
+        <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#c4b5fd]">
             {service.eyebrow}
           </p>
-          <h1 className="mt-5 max-w-3xl text-5xl font-semibold leading-tight text-[#fff7e8] sm:text-7xl">
+          <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight text-[#fff7e8] sm:text-7xl">
             {service.title}
           </h1>
-          <p className="mt-4 max-w-2xl text-3xl font-semibold leading-tight text-[#c4b5fd] sm:text-4xl">
+          <p className="mt-4 max-w-2xl text-2xl font-semibold leading-tight text-[#c4b5fd] sm:text-4xl">
             {service.headline}
           </p>
-          <p className="mt-7 max-w-xl text-lg leading-8 text-[#f5e9d5]">
+          <p className="mt-7 max-w-xl text-base leading-7 text-[#f5e9d5] sm:text-lg sm:leading-8">
             {service.intro}
           </p>
-          <ButtonLink href="/contact" className="mt-9">
+          <ButtonLink href="/contact" className="mt-8 sm:mt-9">
             {service.ctaLabel}
           </ButtonLink>
         </div>

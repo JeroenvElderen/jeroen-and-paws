@@ -47,7 +47,7 @@ export function ContactPageContent({
 }) {
   return (
     <SiteShell activePage="contact">
-      <section className="relative isolate min-h-[calc(100svh-5rem)] overflow-hidden bg-[#080b10] px-6 py-24 sm:px-8 lg:flex lg:items-center lg:py-28">
+      <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:flex lg:items-center lg:py-28">
         <Image
           src="/images/dogs/Johnny/Johnny.jpeg"
           alt="Happy dog enjoying a calm outdoor session with Jeroen & Paws"
@@ -61,14 +61,14 @@ export function ContactPageContent({
         <div className="relative mx-auto w-full max-w-6xl">
           <div className="max-w-xl">
             <SectionLabel icon={labels.process}>Get in touch</SectionLabel>
-            <h1 className="mt-5 text-5xl font-semibold leading-tight tracking-[-0.04em] text-[#fff7e8] sm:text-6xl lg:text-7xl">
+            <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-[-0.04em] text-[#fff7e8] sm:text-6xl lg:text-7xl">
               Let’s create something beautiful{" "}
               <span className="text-[#a78bfa]">together.</span>
             </h1>
-            <p className="mt-7 max-w-md text-lg leading-8 text-white">
+            <p className="mt-7 max-w-md text-base leading-7 text-white sm:text-lg sm:leading-8">
               Have a question or ready to book? I’d love to hear from you.
             </p>
-            <ButtonLink href="#message" className="mt-9">
+            <ButtonLink href="#message" className="mt-8 sm:mt-9">
               Send a Message
             </ButtonLink>
           </div>
@@ -143,7 +143,7 @@ export function ContactPageContent({
             </ul>
             <ButtonLink
               href={`https://wa.me/${businessInfo.whatsappNumber}`}
-              className="mt-9"
+              className="mt-8 sm:mt-9"
             >
               Book a Free Chat
             </ButtonLink>

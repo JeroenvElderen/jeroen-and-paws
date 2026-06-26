@@ -22,7 +22,7 @@ const steps = [
 export function HomePage() {
   return (
     <SiteShell activePage="home">
-      <section className="relative isolate flex h-[calc(100svh-5rem)] max-h-[calc(100svh-5rem)] overflow-hidden bg-[#080b10] px-6 py-8 sm:px-8 sm:py-10 lg:py-12">
+      <section className="relative isolate flex min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-10 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-10 lg:h-[calc(100svh-5rem)] lg:max-h-[calc(100svh-5rem)] lg:py-12">
         <Image
           src="/images/dogs/lakta.jpg"
           alt="A happy dog enjoying personalised care with Jeroen & Paws"
@@ -36,19 +36,19 @@ export function HomePage() {
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
             Jeroen &amp; Paws
           </p>
-          <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight text-[#fff7e8] sm:text-5xl lg:text-6xl">
+          <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-[#fff7e8] sm:text-5xl lg:text-6xl">
             Premium dog care for calmer days and happier tails.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-[#f5e9d5] sm:text-lg sm:leading-8">
             A boutique dog walking, home visit, day care, boarding, and training service shaped around your dog&apos;s character, comfort, and routine—with thoughtful updates every step of the way.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3 sm:gap-4">
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
             <ButtonLink href="/contact">Book a Complimentary Meet &amp; Greet</ButtonLink>
             <ButtonLink href="/services" variant="outline">
               Explore Services
             </ButtonLink>
           </div>
-          <ul className="mt-10 grid max-w-3xl gap-3 text-sm font-bold text-[#fff7e8] sm:grid-cols-2">
+          <ul className="mt-8 grid max-w-3xl gap-3 text-sm font-bold text-[#fff7e8] sm:mt-10 sm:grid-cols-2">
             {carePromises.map((promise) => (
               <li key={promise} className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
                 <PawPrint aria-hidden="true" className="h-4 w-4 shrink-0 text-[#a78bfa]" />
