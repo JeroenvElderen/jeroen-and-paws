@@ -160,12 +160,12 @@ export function ServicesPageContent() {
     <SiteShell activePage="services">
       <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
-          src="/images/dogs/aslan/aslan.jpg"
+          src="/images/dogs/compass.jpeg"
           alt="Dog training and care in a calm outdoor setting"
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-55"
+          className="object-cover object-[center_22%] opacity-55"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
         <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">

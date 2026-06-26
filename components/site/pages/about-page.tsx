@@ -88,25 +88,25 @@ const experienceLocations = [
     Trees,
     "Quiet Forest Trails",
     "Space to sniff, explore, and unwind.",
-    "/images/dogs/kaiser/kaiser2.jpeg",
+    "/images/dogs/kaiser.jpg",
   ],
   [
     Waves,
     "Coastal Walks",
     "Fresh air, views, and plenty of smells.",
-    "/images/dogs/aslan/aslan.jpg",
+    "/images/dogs/lola/lola1.jpeg",
   ],
   [
     Flower2,
     "Open Meadows",
     "Room to run, play, and simply be a dog.",
-    "/images/dogs/lola/lola1.jpeg",
+    "/images/dogs/ace.jpg",
   ],
   [
     Shell,
     "Secret Local Spots",
     "Calm places away from busy crowds.",
-    "/images/dogs/Nola/nola2.jpg",
+    "/images/dogs/rufus.jpg",
   ],
 ] as const;
 
@@ -177,19 +177,19 @@ const personalNotes = [
     PawPrint,
     "Outdoors",
     "Fresh air, muddy boots, and dogs convinced we've only just started the walk.",
-    "/images/dogs/Nola/Nola-1.jpg",
+    "/images/dogs/leia.jpg",
   ],
   [
     Coffee,
     "Coffee Enthusiast",
     "Powered by good coffee. Motivated by wagging tails. Usually in that order.",
-    "/images/dogs/Johnny/Johnny.jpeg",
+    "/images/dogs/mealalola.jpeg",
   ],
   [
     Mountain,
     "Adventure Seeker",
     "Always searching for the next trail. The dogs usually find it before I do.",
-    "/images/dogs/lakta/lakta1.jpg",
+    "/images/dogs/lakta1.jpeg",
   ],
 ] as const;
 
@@ -198,7 +198,7 @@ export function AboutPageContent() {
     <SiteShell activePage="about">
       <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
-          src="/images/dogs/aslan/aslan.jpg"
+          src="/images/dogs/leia.jpg"
           alt="Jeroen caring for a dog outdoors"
           fill
           priority
@@ -230,7 +230,7 @@ export function AboutPageContent() {
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
           <div className="relative min-h-[440px] overflow-hidden rounded-xl">
             <Image
-              src="/images/dogs/kaiser/kaiser2.jpeg"
+              src="/images/dogs/menola.jpeg"
               alt="A calm outdoor dog care moment"
               fill
               sizes="(min-width: 1024px) 560px, 100vw"
@@ -347,7 +347,7 @@ export function AboutPageContent() {
       <section className="grid bg-[#100d19] lg:grid-cols-2">
         <div className="relative min-h-[440px]">
           <Image
-            src="/images/dogs/Johnny/Johnny.jpeg"
+            src="/images/dogs/shadow.jpg"
             alt="A dog enjoying a calm outdoor adventure"
             fill
             className="object-cover"
@@ -458,7 +458,7 @@ export function AboutPageContent() {
         </div>
         <div className="relative min-h-[440px]">
           <Image
-            src="/images/dogs/pancho/pancho2.jpeg"
+            src="/images/dogs/pancho/pancho1.jpeg"
             alt="Dogs walking together in a forest"
             fill
             className="object-cover"
@@ -603,7 +603,7 @@ export function AboutPageContent() {
 
       <section className="relative isolate overflow-hidden px-6 py-24 text-[#fff7e8] sm:px-8">
         <Image
-          src="/images/dogs/kaiser/kaiser1.jpeg"
+          src="/images/dogs/lola1.jpeg"
           alt="Dog looking across a misty mountain landscape"
           fill
           sizes="100vw"
