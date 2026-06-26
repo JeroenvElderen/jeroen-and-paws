@@ -20,22 +20,22 @@ import { SectionLabel } from "@/components/site/ui/section-label";
 const reassuranceItems = [
   {
     title: "Experienced",
-    text: "Years of experience with dogs of all breeds, ages, and personalities.",
+    text: "Years of hands-on experience caring for dogs of every age, breed, and temperament.",
     icon: PawPrint,
   },
   {
-    title: "Trusted",
-    text: "Positive methods, patience, and a calm approach.",
+    title: "Personal",
+    text: "Every dog is treated with patience, kindness, and genuine one-to-one attention.",
     icon: Heart,
   },
   {
-    title: "Professional",
-    text: "High-quality care, updates, and attention to detail.",
+    title: "Detail Focused",
+    text: "From photo updates to personalised care, every detail is considered.",
     icon: Camera,
   },
   {
     title: "Safety first",
-    text: "Your dog's comfort, wellbeing, and safety always come first.",
+    text: "Calm introductions, secure handling, and your dog's wellbeing always come first.",
     icon: ShieldCheck,
   },
 ];
@@ -62,14 +62,16 @@ export function ContactPageContent({
           <div className="max-w-xl">
             <SectionLabel icon={labels.process}>Get in touch</SectionLabel>
             <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-[-0.04em] text-[#fff7e8] sm:text-6xl lg:text-7xl">
-              Let’s create something beautiful{" "}
-              <span className="text-[#a78bfa]">together.</span>
+              Let&apos;s get to know{" "}
+              <span className="text-[#a78bfa]">your dog.</span>
             </h1>
             <p className="mt-7 max-w-md text-base leading-7 text-white sm:text-lg sm:leading-8">
-              Have a question or ready to book? I’d love to hear from you.
+              Tell me a little about your dog and what you&apos;re
+              looking for. Together we&apos;ll find the care that&apos;s
+              the right fit.
             </p>
             <ButtonLink href="#message" className="mt-8 sm:mt-9">
-              Send a Message
+              Start the conversation
             </ButtonLink>
           </div>
         </div>
@@ -91,7 +93,7 @@ export function ContactPageContent({
         </div>
         <div className="relative mx-auto max-w-6xl">
           <p className="text-xs font-extrabold uppercase tracking-[0.35em] text-[#c4b5fd]">
-            You and your dog are in good hands
+            WHY FAMILIES CHOOSE JEROEN & PAWS
           </p>
           <div className="mt-10 grid gap-8 md:grid-cols-4">
             {reassuranceItems.map(({ title, text, icon: Icon }) => (
@@ -119,18 +121,17 @@ export function ContactPageContent({
         <div className="flex items-center px-6 py-16 sm:px-8 lg:justify-end lg:py-24">
           <div className="w-full max-w-xl lg:pr-16">
             <h2 className="text-4xl font-semibold leading-tight tracking-[-0.03em] text-[#fff7e8] sm:text-5xl">
-              Not sure where to start? Let’s{" "}
-              <span className="text-[#a78bfa]">chat.</span>
+              Not sure what&apos;s right for{" "}
+              <span className="text-[#a78bfa]">your dog.</span>
             </h2>
             <p className="mt-5 max-w-md text-base leading-8 text-[#f5ead8]">
-              Every dog is different. A quick conversation helps me understand
-              your needs and create the best experience for your dog.
+              Every dog is unique. We&apos;ll talk about their personality, routine, and what you&apos;re looking for so I can recommend the care that suits them best.
             </p>
             <ul className="mt-8 space-y-3 text-sm font-semibold text-[#f5ead8]">
               {[
-                "No obligation",
-                "Friendly advice",
-                "Tailored to you and your dog",
+                "No pressure or commitment",
+                "Personal recommendations",
+                "Tailored around your dog's routine",
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3">
                   <CheckCircle2
@@ -145,7 +146,7 @@ export function ContactPageContent({
               href={`https://wa.me/${businessInfo.whatsappNumber}`}
               className="mt-8 sm:mt-9"
             >
-              Book a Free Chat
+              Start the Conversation
             </ButtonLink>
           </div>
         </div>

@@ -7,28 +7,28 @@ const contactMethods = [
   {
     title: "Email",
     body: businessInfo.email,
-    detail: "I aim to reply within 24 hours.",
+    detail: "Usually replies within 24 hours.",
     href: `mailto:${businessInfo.email}`,
     icon: Mail,
   },
   {
     title: "Phone / WhatsApp",
     body: businessInfo.phoneDisplay,
-    detail: "Monday – Sunday, 8am – 10pm",
+    detail: "Available daily • 8am–10pm",
     href: `tel:${businessInfo.phoneHref}`,
     icon: Phone,
   },
   {
     title: "Location",
-    body: "Ireland",
-    detail: "Available by appointment for local families.",
+    body: "County Wicklow",
+    detail: "Serving Greystones and surrounding areas.",
     icon: MapPin,
   },
   {
     title: "Follow Along",
-    body: "@jeroen.and.paws",
-    detail: "Behind the scenes and latest sessions.",
-    href: "https://www.instagram.com/jeroen.and.paws/",
+    body: "@jeroen_and_paws",
+    detail: "Daily adventures, happy tails, and behind-the-scenes moments.",
+    href: "https://www.instagram.com/jeroen_and_paws/",
     icon: Camera,
   },
 ];
@@ -40,7 +40,7 @@ export function ContactInfo() {
         Let’s connect
       </p>
       <h2 className="mt-4 text-4xl font-semibold leading-tight tracking-[-0.03em] text-[#2a2040] sm:text-5xl">
-        I can’t wait to hear about{" "}
+        Looking forward to meeting{" "}
         <span className="text-[#7c3aed]">your dog.</span>
       </h2>
       <div className="mt-8 flex items-center gap-4 text-[#7c3aed]">

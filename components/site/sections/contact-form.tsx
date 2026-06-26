@@ -151,11 +151,10 @@ export function ContactForm({ selectedService }: ContactFormProps) {
         Send a message
       </p>
       <h2 className="mt-4 text-4xl font-semibold leading-tight tracking-[-0.03em] text-[#2a2040] sm:text-5xl">
-        How can I help <span className="text-[#7c3aed]">you?</span>
+        Tell me about your <span className="text-[#7c3aed]">dog?</span>
       </h2>
       <p className="mt-6 max-w-md text-base leading-8 text-[#3b314f]">
-        Fill out the form below and I’ll get back to you as soon as possible
-        (usually within 24 hours).
+        Tell me a little about your dog, what you&apos;re looking for, and how I can help. I&apos;ll get back to you within 24 hours.
       </p>
       {selectedService?.service ? (
         <p className="mt-3 rounded-2xl bg-[#0b1017] px-4 py-3 text-sm font-semibold text-[#d8cab8] ring-1 ring-[#8b5cf6]/25">
@@ -184,7 +183,7 @@ export function ContactForm({ selectedService }: ContactFormProps) {
             className="w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-4 text-sm text-[#3b314f] outline-none transition focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
           >
             <option value="" disabled>
-              What are you interested in?
+              Which service are you interested in?
             </option>
             {serviceOptions.map(({ value, label }) => (
               <option key={value} value={value}>
@@ -199,14 +198,14 @@ export function ContactForm({ selectedService }: ContactFormProps) {
           </select>
         </div>
         <Textarea
-          label="Tell me about your dog(s)"
+          label="Tell me about your dog"
           id="pet-info"
-          placeholder="Tell me about your dog(s)"
+          placeholder="Tell me about your dog"
         />
         <Textarea
-          label="Preferred location (if you have one)"
+          label="Anything else you'd like me to know?"
           id="message"
-          placeholder="Preferred location (if you have one)"
+          placeholder="Anything else you'd like me to know?"
           defaultValue={getServiceSummary(selectedService)}
           required
         />
@@ -257,8 +256,7 @@ export function ContactForm({ selectedService }: ContactFormProps) {
           </p>
         ) : null}
         <p className="text-sm leading-6 text-[#6b6277]">
-          By submitting, you agree that Jeroen & Paws may use your details to
-          respond to your enquiry and prepare a safe care plan. Read the{" "}
+          By submitting this form, you agree that Jeroen & Paws may use your details to respond to your enquiry in accordance with the{" "}
           <Link
             href="/privacy"
             className="font-bold text-[#7c3aed] hover:text-[#5b21b6]"
@@ -272,7 +270,7 @@ export function ContactForm({ selectedService }: ContactFormProps) {
           disabled={isSubmitting}
           className="rounded-md bg-[#6d3fa0] px-8 py-4 text-xs font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-[#7c3aed] disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {isSubmitting ? "Sending..." : "Send Your Message"}
+          {isSubmitting ? "Sending..." : "Send message"}
         </button>
       </form>
     </div>

@@ -97,82 +97,82 @@ export const policySections = [
   {
     title: "Booking & payment",
     description:
-      "A non-refundable retainer and signed agreement secure your session date. The remaining balance is due seven days before your session.",
+      "Bookings are confirmed once we've agreed on a date and service. Payment is made securely through Revolut using a payment link or invoice.",
     icon: CalendarCheck,
     points: [
-      "Retainers are non-refundable but transferable once",
-      "Dates are only held once the retainer is received",
-      "Payment plans are available upon request",
+      "Secure payment via Revolut",
+      "Payment link or invoice provided",
+      "Regular bookings can be arranged in advance",
     ],
   },
   {
     title: "Rescheduling",
     description:
-      "Life happens. You can reschedule up to 48 hours in advance at no extra cost, and we will find a new date that works for you.",
+      "Plans change. If you need to move your booking, just let me know as early as possible and I'll do my best to find another time.",
     icon: Clock,
     points: [
-      "Less than 48 hours: one reschedule allowed, subject to availability",
-      "Weather-related reschedules are always welcome",
-      "Flexibility helps create the best experience for every dog",
+      "Subject to availability",
+      "Weather-related reschedules are always free",
+      "I'll always try to accommodate you",
     ],
   },
   {
     title: "Weather",
     description:
-      "We keep a close eye on the forecast and will reschedule if conditions are not safe or comfortable for your dog.",
+      "Your dog's comfort and safety always come first. If the weather isn't suitable, we'll arrange another time whenever possible.",
     icon: Umbrella,
     points: [
-      "Extreme rain, storms, heat, or unsafe conditions may require a new date",
-      "Your dog’s comfort and safety always come first",
-      "We will work together to find the next suitable opening",
+      "Extreme weather may require rescheduling",
+      "Your dog's wellbeing always comes first",
+      "We'll work together to find another suitable time",
     ],
   },
   {
     title: "Dog wellbeing",
     description:
-      "Your dog’s safety and happiness are the top priority. Sessions follow your dog’s lead with plenty of breaks, play time, and sniffing time.",
+      "Every dog is treated with patience, kindness, and respect. Walks and visits are always tailored around their personality, pace, and individual needs.",
     icon: Dog,
     points: [
-      "Please share medical conditions, sensitivities, and behaviour notes",
-      "Treats, water, and calm breaks are always available",
-      "Sessions are dog-led and never forced",
+      "Please share any medical or behavioural information",
+      "Water, treats, and rest breaks are always available",
+      "Sessions are always dog-led and positive",
     ],
   },
   {
-    title: "Image use",
+    title: "Photo updates",
     description:
-      "The best photos from your session may be used on the website, social media, and promotional materials only with your permission.",
+      "During walks, day care, adventures, and boarding, I love capturing little moments from your dog's day. Photo updates are always included at no extra cost.",
     icon: Camera,
     points: [
-      "You will always be asked for permission first",
-      "You can choose to keep your session private",
-      "Your images will never be sold to third parties",
+      "Photo updates are included with every service",
+      "Photos may be used by Jeroen & Paws on the website and social media",
+      "Your personal information is never shared",
     ],
   },
   {
-    title: "Gallery & delivery",
+    title: "Updates & delivery",
     description:
-      "You will receive a private online gallery with your best edited images, ready to download and share.",
+      "You'll receive photos and updates during or shortly after your dog's visit, so you can see exactly how their day went.",
     icon: Mail,
     points: [
-      "Gallery delivery is typically within two to three weeks",
-      "Prints and products are available through your gallery",
-      "Additional images or products can be purchased any time",
+      "Updates are sent during or after your booking",
+      "Photos are included at no extra cost",
+      "No additional fees for photo updates",
     ],
   },
   {
     title: "Cancellations",
     description:
-      "If you need to cancel your session, please contact me as soon as possible so the appointment can be released.",
+      "If you need to cancel or change your booking, please let me know as soon as possible so I can offer the space to another family.",
     icon: Heart,
     points: [
-      "Cancellations within seven days are non-refundable",
-      "Emergency situations are handled with understanding",
-      "Thank you for respecting my time and small business",
+      "48 hours' notice is appreciated",
+      "Emergencies are always handled with understanding",
+      "Thank you for supporting a local small business",
     ],
   },
 ];
-  
+
 export const stats = [
   { value: "100+", label: "Pet families supported" },
   { value: "5k+", label: "Walks and care visits" },

@@ -1,11 +1,25 @@
 import { Check, ShieldCheck } from "lucide-react";
+import { clsx } from "clsx";
 
 import type { PricingPlan } from "@/components/site/data";
 import { ServiceBookingActions } from "@/components/site/sections/service-booking-actions";
 
-export function PricingCards({ plans }: { plans: PricingPlan[] }) {
+export function PricingCards({
+  plans,
+  variant = "default",
+}: {
+  plans: PricingPlan[];
+  variant?: "default" | "compact";
+}) {
+  const isCompact = variant === "compact";
+
   return (
-    <div className="grid gap-7 lg:grid-cols-3">
+    <div
+      className={clsx(
+        "grid",
+        isCompact ? "gap-4" : "gap-7 md:grid-cols-2 xl:grid-cols-3",
+      )}
+    >
       {plans.map(
         ({
           title,
@@ -21,21 +35,44 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
         }) => (
           <article
             key={title}
-            className={`relative rounded-3xl bg-[#111821] p-8 shadow-sm ring-1 ${featured ? "ring-4 ring-[#8b5cf6]" : "ring-white/10"}`}
+            className={clsx(
+              "relative overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1",
+              isCompact ? "p-6" : "p-8",
+              featured ? "ring-4 ring-[#8b5cf6]" : "ring-white/10",
+            )}
           >
-            {featured ? (
-              <div className="absolute right-6 top-6 rounded-full bg-[#3a2915] px-4 py-1 text-xs font-extrabold uppercase tracking-wide text-[#a78bfa]">
-                {badge || "Recommended"}
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#24163f] text-[#8b5cf6]">
+                <Icon aria-hidden="true" className="h-6 w-6" />
               </div>
-            ) : null}
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#24163f] text-[#8b5cf6]">
-              <Icon aria-hidden="true" className="h-6 w-6" />
+              {featured ? (
+                <div className="rounded-full bg-[#3a2915] px-4 py-1 text-xs font-extrabold uppercase tracking-wide text-[#a78bfa]">
+                  {badge || "Recommended"}
+                </div>
+              ) : null}
             </div>
-            <h3 className="mt-6 text-2xl font-extrabold text-[#fff7e8]">
+            <h3
+              className={clsx(
+                "font-extrabold text-[#fff7e8]",
+                isCompact ? "mt-5 text-xl" : "mt-6 text-2xl",
+              )}
+            >
               {title}
             </h3>
-            <p className="mt-3 leading-7 text-[#b9aa99]">{description}</p>
-            <p className="mt-6 text-4xl font-extrabold text-[#8b5cf6]">
+            <p
+              className={clsx(
+                "mt-3 text-[#b9aa99]",
+                isCompact ? "leading-6" : "leading-7",
+              )}
+            >
+              {description}
+            </p>
+            <p
+              className={clsx(
+                "font-extrabold text-[#8b5cf6]",
+                isCompact ? "mt-5 text-3xl" : "mt-6 text-4xl",
+              )}
+            >
               {pricePrefix ? (
                 <span className="text-base font-bold text-[#988b7b]">
                   {pricePrefix}
@@ -56,7 +93,12 @@ export function PricingCards({ plans }: { plans: PricingPlan[] }) {
                 {priceNote}
               </p>
             ) : null}
-            <ul className="mt-6 space-y-3 text-sm text-[#d8cab8]">
+            <ul
+              className={clsx(
+                "text-sm text-[#d8cab8]",
+                isCompact ? "mt-5 grid gap-2 sm:grid-cols-2" : "mt-6 space-y-3",
+              )}
+            >
               {features.map((feature) => (
                 <li key={feature} className="flex gap-2">
                   <Check
@@ -97,7 +139,10 @@ export function GuaranteeBanner() {
           Safety comes first
         </h3>
         <p className="mt-2 leading-7 text-[#b9aa99]">
-          Every service begins with thoughtful introductions, secure handling, and careful supervision. I adapt every outing to your dog&apos;s confidence, experience, and comfort, so they always feel safe, relaxed, and well cared for.
+          Every service begins with thoughtful introductions, secure handling,
+          and careful supervision. I adapt every outing to your dog&apos;s
+          confidence, experience, and comfort, so they always feel safe,
+          relaxed, and well cared for.
         </p>
       </div>
     </div>

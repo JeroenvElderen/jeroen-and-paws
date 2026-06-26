@@ -28,15 +28,15 @@ export default function PoliciesPage() {
         <div className="mx-auto flex max-w-6xl items-center sm:min-h-[calc(100svh-17rem)]">
           <div className="max-w-xl">
             <p className="text-sm font-extrabold uppercase tracking-[0.28em] text-[#a78bfa]">
-              Policies
+              GOOD TO KNOW
             </p>
             <h1 className="mt-6 text-4xl font-extrabold leading-tight text-[#fff7e8] sm:text-6xl">
-              Clear policies.
+              Clear expectations.
               <span className="block text-[#a78bfa]">Happy tails.</span>
             </h1>
             <p className="mt-7 max-w-md text-base leading-7 text-[#fff7e8] sm:text-lg sm:leading-8">
-              These policies help make each session smooth, respectful, and
-              enjoyable for you and your dog.
+              Everything is designed to keep bookings simple, communication
+              clear, and every dog safe and comfortable.
             </p>
             <PawPrint
               className="mt-8 h-9 w-9 text-[#a78bfa]"
@@ -93,15 +93,19 @@ export default function PoliciesPage() {
         <div className="mx-auto max-w-6xl">
           <div className="max-w-lg">
             <h2 className="text-4xl font-extrabold text-[#fff7e8]">
-              Questions?
-              <span className="block text-[#a78bfa]">I’m here to help.</span>
+              Still have
+              <span className="block text-[#a78bfa]">questions?</span>
             </h2>
+
             <p className="mt-5 leading-7 text-[#fff7e8]">
-              If you have any questions about these policies or your session,
-              feel free to reach out. I’m happy to chat.
+              If there&apos;s anything you&apos;d like to know before booking,
+              I&apos;m always happy to help. Whether it&apos;s about a service,
+              your dog&apos;s needs, or choosing the right care, just get in
+              touch.
             </p>
+
             <ButtonLink href="/contact" className="mt-7">
-              Send me a message
+              Get in touch
             </ButtonLink>
           </div>
         </div>
@@ -110,11 +114,13 @@ export default function PoliciesPage() {
       <section className="bg-[#080b10] px-6 py-8 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-center text-sm font-bold uppercase tracking-[0.2em] text-[#a78bfa] sm:flex-row sm:justify-center">
           <PawPrint className="h-7 w-7" aria-hidden="true" />
+
           <p className="normal-case tracking-normal text-[#fff7e8]">
-            Thank you for trusting me with your story.
+            Thank you for trusting Jeroen & Paws.
           </p>
+
           <Link href="/contact" className="hover:text-[#ddd6fe]">
-            I can’t wait to meet you and your dog.
+            I can&apos;t wait to meet you and your dog.
           </Link>
         </div>
       </section>

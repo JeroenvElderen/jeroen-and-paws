@@ -136,7 +136,10 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
             </h2>
             <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {service.perfectFor.map((item) => (
-                <li key={item} className="flex items-center gap-3 text-sm font-semibold text-[#4f4857]">
+                <li
+                  key={item}
+                  className="flex items-center gap-3 text-sm font-semibold text-[#4f4857]"
+                >
                   <span className="grid size-5 place-items-center rounded-full bg-[#8b5cf6] text-white">
                     <Heart aria-hidden="true" className="h-3 w-3" />
                   </span>
@@ -147,8 +150,14 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
           </div>
           <div className="rounded-3xl border border-[#8b5cf6]/20 bg-white p-8 shadow-xl shadow-black/5">
             <Heart aria-hidden="true" className="text-[#7c3aed]" />
-            <p className="mt-5 leading-8 text-[#4f4857]">{service.reassurance}</p>
-            <ButtonLink href="/contact" variant="outline" className="mt-7 border-[#7c3aed] text-[#2d2140] hover:bg-[#eee8f7]">
+            <p className="mt-5 leading-8 text-[#4f4857]">
+              {service.reassurance}
+            </p>
+            <ButtonLink
+              href="/contact"
+              variant="outline"
+              className="mt-7 border-[#7c3aed] text-[#2d2140] hover:bg-[#eee8f7]"
+            >
               Let&apos;s chat
             </ButtonLink>
           </div>
@@ -172,14 +181,18 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
                 <div className="flex gap-4">
                   <CalendarDays className="text-[#c4b5fd]" />
                   <p className="text-sm leading-6 text-[#d8cab8]">
-                    <strong className="block text-[#fff7e8]">Flexible scheduling</strong>
+                    <strong className="block text-[#fff7e8]">
+                      Flexible scheduling
+                    </strong>
                     Options available around your dog&apos;s rhythm.
                   </p>
                 </div>
                 <div className="flex gap-4">
                   <PawPrint className="text-[#c4b5fd]" />
                   <p className="text-sm leading-6 text-[#d8cab8]">
-                    <strong className="block text-[#fff7e8]">Trusted & reliable</strong>
+                    <strong className="block text-[#fff7e8]">
+                      Trusted & reliable
+                    </strong>
                     Professional, insured, and experienced care.
                   </p>
                 </div>
@@ -195,10 +208,13 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
                 </p>
                 <p className="mt-3 text-5xl font-semibold text-[#1d1728]">
                   {service.priceFrom}
-                  <span className="text-base font-medium text-[#4f4857]"> {service.priceUnit}</span>
+                  <span className="text-base font-medium text-[#4f4857]">
+                    {" "}
+                    {service.priceUnit}
+                  </span>
                 </p>
               </div>
-              <PricingCards plans={service.plans} />
+              <PricingCards plans={service.plans} variant="compact" />
             </div>
           </div>
         </div>
