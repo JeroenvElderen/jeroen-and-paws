@@ -12,8 +12,8 @@ export function Header({ activePage }: { activePage: PageName }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#8b5cf6]/15 bg-[#080b10]/95 backdrop-blur">
-      <div className="mx-auto flex min-h-16 w-full max-w-6xl items-center justify-between px-4 sm:min-h-20 sm:px-8">
+    <header className={`top-0 z-40 border-b border-[#8b5cf6]/15 bg-[#080b10]/95 backdrop-blur ${activePage === "home" ? "absolute w-full border-transparent bg-transparent md:sticky md:border-[#8b5cf6]/15 md:bg-[#080b10]/95" : "sticky"}`}>
+      <div className="mx-auto flex min-h-28 w-full max-w-6xl items-center justify-between px-8 sm:min-h-20 sm:px-8">
         <Link
           href="/"
           className="inline-flex items-center"
@@ -25,21 +25,31 @@ export function Header({ activePage }: { activePage: PageName }) {
             width={152}
             height={90}
             priority
-            className="h-12 w-auto sm:h-14"
+            className="h-16 w-auto sm:h-14"
           />
         </Link>
 
+        {activePage === "home" ? (
+          <ButtonLink
+            href="/contact"
+            className="ml-auto mr-6 hidden w-auto rounded-[6px] bg-[#6f45ad] px-6 py-4 text-xs font-black uppercase tracking-[0.18em] text-white hover:bg-[#7c55ba] min-[390px]:inline-flex md:hidden"
+            onClick={() => setIsOpen(false)}
+          >
+            Book a Session
+          </ButtonLink>
+        ) : null}
+
         <button
           type="button"
-          className="inline-flex rounded-full border border-[#8b5cf6]/15 p-2 text-[#c4b5fd] md:hidden"
+          className="inline-flex rounded-none border-0 p-0 text-[#fff7e8] md:hidden"
           aria-label="Toggle menu"
           aria-expanded={isOpen}
           onClick={() => setIsOpen((open) => !open)}
         >
           {isOpen ? (
-            <X aria-hidden="true" className="h-6 w-6" />
+            <X aria-hidden="true" className="h-11 w-11" />
           ) : (
-            <Menu aria-hidden="true" className="h-6 w-6" />
+            <Menu aria-hidden="true" className="h-11 w-11" />
           )}
         </button>
 
@@ -58,8 +68,8 @@ export function Header({ activePage }: { activePage: PageName }) {
           ))}
         </nav>
 
-        <ButtonLink href="/contact" className="hidden md:inline-flex">
-          Book a Free Meet & Greet
+        <ButtonLink href="/contact" className="hidden rounded-[6px] bg-[#6f45ad] px-8 py-5 text-sm font-black uppercase tracking-[0.18em] text-white hover:bg-[#7c55ba] md:inline-flex">
+          {activePage === "home" ? "Book a Session" : "Book a Free Meet & Greet"}
         </ButtonLink>
       </div>
 
