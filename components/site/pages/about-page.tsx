@@ -93,11 +93,27 @@ export function AboutPageContent() {
               <span className="text-[#7c3aed]">trust.</span>
             </h2>
             <p className="mt-6 leading-8 text-[#4f4857]">
-              My work with dogs began with a simple belief: excellent care should feel personal. Dogs relax when they are understood, and owners relax when communication is clear, considered, and honest. That belief continues to guide every service I offer.
+              Hi, I&apos;m Jeroen — a certified canine specialist with over 7 years of experience. I work with both companion and working dogs using proven, ethical training methods. I provide personalized training, thoughtful care, and a safe, enriching environment for every dog I welcome.
             </p>
             <p className="mt-4 leading-8 text-[#4f4857]">
-              Today, those values shape every walk, check-in, training session, day care day, and overnight stay. I look at the dog in front of me—their energy, confidence, habits, and needs—and tailor the experience with patience and attention to detail.
+              From customized walks to structured day care and boarding, your dog receives the same consistency and dedication I give my own. I prioritize safety, emotional well-being, and clear communication — keeping you informed and your dog happy, relaxed, and thriving.
             </p>
+            <p className="mt-4 leading-8 text-[#4f4857]">
+              Exceptional care doesn&apos;t just meet your dog&apos;s needs — it helps them become their best self. That&apos;s what I deliver.
+            </p>
+            <div className="mt-8 rounded-xl border border-[#8b5cf6]/20 bg-white p-6 shadow-xl shadow-black/5">
+              <h3 className="text-xl font-semibold text-[#1d1728]">Experiences with:</h3>
+              <ul className="mt-4 space-y-3 text-[#4f4857]">
+                <li className="flex gap-3">
+                  <PawPrint className="mt-1 h-5 w-5 flex-none text-[#7c3aed]" />
+                  <span>Working dogs such as sled dogs, police dogs, and guide dogs</span>
+                </li>
+                <li className="flex gap-3">
+                  <PawPrint className="mt-1 h-5 w-5 flex-none text-[#7c3aed]" />
+                  <span>All kinds of breeds, from small to big</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>

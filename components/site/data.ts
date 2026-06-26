@@ -88,7 +88,7 @@ export const navItems: Array<{ label: string; href: string; page: PageName }> =
     { label: "Home", href: "/", page: "home" },
     { label: "About me", href: "/about", page: "about" },
     { label: "Services", href: "/services", page: "services" },
-    { label: "Experience", href: "/experience", page: "experience" },
+    { label: "Why me", href: "/experience", page: "experience" },
     { label: "Contact", href: "/contact", page: "contact" },
     { label: "Policies", href: "/policies", page: "policies" },
   ];
