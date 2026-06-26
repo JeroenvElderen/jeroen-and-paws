@@ -142,32 +142,38 @@
     .text-7xl,
     .sm\:text-7xl,
     .lg\:text-7xl {
-      font-size: clamp(2.5rem, 14vw, 3.35rem) !important;
-      line-height: 1.04 !important;
+      font-size: clamp(2.2rem, 10.5vw, 2.85rem) !important;
+      line-height: 1.12 !important;
+      letter-spacing: -0.025em !important;
     }
 
     .text-6xl,
     .sm\:text-6xl,
     .lg\:text-6xl {
-      font-size: clamp(2.35rem, 12vw, 3rem) !important;
-      line-height: 1.08 !important;
+      font-size: clamp(2.05rem, 9.5vw, 2.6rem) !important;
+      line-height: 1.14 !important;
+      letter-spacing: -0.025em !important;
     }
 
     .text-5xl,
     .sm\:text-5xl {
       font-size: clamp(2rem, 9.8vw, 2.65rem) !important;
-      line-height: 1.12 !important;
+      font-size: clamp(1.85rem, 8.4vw, 2.35rem) !important;
+      line-height: 1.18 !important;
+      letter-spacing: -0.02em !important;
     }
 
     .text-4xl,
     .sm\:text-4xl {
-      font-size: clamp(1.75rem, 8vw, 2.15rem) !important;
-      line-height: 1.16 !important;
+      font-size: clamp(1.6rem, 7vw, 2rem) !important;
+      line-height: 1.2 !important;
+      letter-spacing: -0.015em !important;
     }
 
     .text-3xl {
-      font-size: clamp(1.45rem, 6.5vw, 1.85rem) !important;
-      line-height: 1.2 !important;
+      font-size: clamp(1.35rem, 5.8vw, 1.7rem) !important;
+      line-height: 1.24 !important;
+      letter-spacing: -0.01em !important;
     }
 
     .px-6 {
@@ -195,7 +201,7 @@
 
     .tracking-\[0\.35em\],
     .tracking-\[0\.25em\] {
-      letter-spacing: 0.16em !important;
+      letter-spacing: 0.11em !important;
     }
 
     .p-8,

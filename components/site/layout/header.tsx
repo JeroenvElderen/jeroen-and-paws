@@ -58,7 +58,7 @@ export function Header({ activePage }: { activePage: PageName }) {
           ))}
         </nav>
 
-        <ButtonLink href="/contact" className="hidden md:inline-flex">
+        <ButtonLink href="/contact" className="hidden max-md:hidden md:inline-flex">
           Book a Free Meet & Greet
         </ButtonLink>
       </div>
