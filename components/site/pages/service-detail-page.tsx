@@ -58,9 +58,9 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
                 return (
                   <article
                     key={item.title}
-                    className="rounded-3xl bg-white p-6 text-center shadow-xl shadow-black/5 ring-1 ring-[#1d1728]/5"
+                    className="motion-card motion-card-light rounded-3xl bg-white p-6 text-center shadow-xl shadow-black/5 ring-1 ring-[#1d1728]/5"
                   >
-                    <div className="mx-auto grid size-16 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
+                    <div className="motion-icon mx-auto grid size-16 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
                       <Icon aria-hidden="true" />
                     </div>
                     <h3 className="mt-5 font-semibold">{item.title}</h3>
@@ -104,7 +104,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
             </ol>
           </div>
           <div>
-            <div className="relative min-h-[420px] overflow-hidden rounded-3xl shadow-2xl shadow-black/10">
+            <div className="motion-media relative min-h-[420px] overflow-hidden rounded-3xl shadow-2xl shadow-black/10">
               <Image
                 src={service.featureImage}
                 alt={service.featureAlt}
@@ -113,8 +113,8 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
                 className="object-cover"
               />
             </div>
-            <div className="mt-5 flex items-center gap-5 rounded-3xl bg-[#f3edf8] p-6">
-              <div className="grid size-14 shrink-0 place-items-center rounded-full bg-[#7c3aed] text-white">
+            <div className="motion-card motion-card-light mt-5 flex items-center gap-5 rounded-3xl bg-[#f3edf8] p-6">
+              <div className="motion-icon grid size-14 shrink-0 place-items-center rounded-full bg-[#7c3aed] text-white">
                 <PawPrint aria-hidden="true" />
               </div>
               <p className="text-xl font-semibold leading-8">
@@ -148,8 +148,8 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
               ))}
             </ul>
           </div>
-          <div className="rounded-3xl border border-[#8b5cf6]/20 bg-white p-8 shadow-xl shadow-black/5">
-            <Heart aria-hidden="true" className="text-[#7c3aed]" />
+          <div className="motion-card motion-card-light rounded-3xl border border-[#8b5cf6]/20 bg-white p-8 shadow-xl shadow-black/5">
+            <Heart aria-hidden="true" className="motion-icon text-[#7c3aed]" />
             <p className="mt-5 leading-8 text-[#4f4857]">
               {service.reassurance}
             </p>
@@ -193,7 +193,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
                     <strong className="block text-[#fff7e8]">
                       Trusted & reliable
                     </strong>
-                    Professional, insured, and experienced care.
+                    Professional, attentive, and experienced care.
                   </p>
                 </div>
               </div>
@@ -202,7 +202,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
               </ButtonLink>
             </div>
             <div className="bg-[#f7f4ef] p-8 sm:p-10">
-              <div className="mb-7 rounded-3xl bg-white p-7 shadow-xl shadow-black/10">
+              <div className="motion-card motion-card-light mb-7 rounded-3xl bg-white p-7 shadow-xl shadow-black/10">
                 <p className="text-xs font-black uppercase tracking-[0.25em] text-[#8b5cf6]">
                   Starting from
                 </p>

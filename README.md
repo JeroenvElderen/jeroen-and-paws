@@ -38,7 +38,7 @@ npm run test         # Run Vitest tests
 - `/about` — Jeroen, values, story, and trust content
 - `/contact` — free meet-and-greet/contact form, contact cards, and FAQ
 - `/privacy` — privacy notice for enquiry and care-plan information
-- `/terms` — practical booking notes and care expectations
+- `/policies` — practical booking notes and care expectations
 
 ## Environment variables
 

@@ -130,7 +130,7 @@ export function ChatOrFormModal({ service, onClose }: ChatOrFormModalProps) {
 
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
           <Link
-            className="inline-flex items-center justify-center rounded-full bg-[#8b5cf6] px-7 py-3 text-center font-extrabold text-[#080b10] transition hover:-translate-y-0.5 hover:bg-[#a78bfa]"
+            className="motion-button inline-flex items-center justify-center rounded-full bg-[#8b5cf6] px-7 py-3 text-center font-extrabold text-[#080b10] transition hover:-translate-y-0.5 hover:bg-[#a78bfa]"
             href={service.chatUrl}
             onClick={onClose}
             target="_blank"
@@ -139,7 +139,7 @@ export function ChatOrFormModal({ service, onClose }: ChatOrFormModalProps) {
             Chat on WhatsApp
           </Link>
           <Link
-            className="inline-flex items-center justify-center rounded-full border-2 border-[#8b5cf6] px-7 py-3 text-center font-extrabold text-[#c4b5fd] transition hover:-translate-y-0.5 hover:bg-[#1f1738]"
+            className="motion-button inline-flex items-center justify-center rounded-full border-2 border-[#8b5cf6] px-7 py-3 text-center font-extrabold text-[#c4b5fd] transition hover:-translate-y-0.5 hover:bg-[#1f1738]"
             href={service.formUrl}
             onClick={onClose}
           >

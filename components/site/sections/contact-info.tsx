@@ -28,7 +28,7 @@ const contactMethods = [
     title: "Follow Along",
     body: "@jeroen_and_paws",
     detail: "Daily adventures, happy tails, and behind-the-scenes moments.",
-    href: "https://www.instagram.com/jeroen_and_paws/",
+    href: businessInfo.instagramUrl,
     icon: Camera,
   },
 ];
@@ -50,8 +50,8 @@ export function ContactInfo() {
       </div>
       <div className="mt-8 space-y-8">
         {contactMethods.map(({ title, body, detail, href, icon: Icon }) => (
-          <article key={title} className="flex gap-5">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#6d3fa0] text-white shadow-lg shadow-[#6d3fa0]/20">
+          <article key={title} className="motion-card motion-card-light flex gap-5 rounded-2xl p-2 -m-2">
+            <div className="motion-icon flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#6d3fa0] text-white shadow-lg shadow-[#6d3fa0]/20">
               <Icon aria-hidden="true" className="h-6 w-6" />
             </div>
             <div>

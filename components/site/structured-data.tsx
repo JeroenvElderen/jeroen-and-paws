@@ -27,7 +27,7 @@ export function StructuredData() {
           "Home check-ins",
           "Custom dog care",
         ],
-        sameAs: [],
+        sameAs: [businessInfo.instagramUrl],
       },
       {
         "@type": "FAQPage",

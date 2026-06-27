@@ -53,20 +53,21 @@ export const businessInfo = {
   phoneDisplay: "+353 87 247 3099",
   phoneHref: "+353872473099",
   whatsappNumber: "00353872473099",
+  instagramUrl: "https://www.instagram.com/jeroen_and_paws/",
   siteUrl: "https://jeroenandpaws.com",
   serviceAreaSummary:
-    "Dog walking, training, day care, boarding, and home check-ins by appointment for local dog families in Ireland.",
+    "Dog walking, training, day care, boarding, and home check-ins by appointment for dog families in Greystones and surrounding County Wicklow areas.",
   responseTime: "Jeroen aims to reply within 24 hours.",
   hours: "Monday - Sunday: 8:00 AM - 10:00 PM",
 };
 
 export const serviceAreas = [
+  "Greystones",
+  "County Wicklow",
+  "Surrounding Wicklow areas by appointment",
   "Local dog walking routes",
   "Home visits by appointment",
   "Day care and boarding clients",
-  "Training meet-and-greets",
-  "Nearby custom care plans",
-  "Ireland-based enquiries",
 ];
 
 export const bookingPolicies = [

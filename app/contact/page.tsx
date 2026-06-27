@@ -4,7 +4,7 @@ import type { SelectedServiceDetails } from "@/components/site/sections/contact-
 export const metadata = {
   title: "Contact & Book a Free Meet and Greet",
   description:
-    "Contact Jeroen & Paws to talk about training, walks, day care, boarding, home check-ins, and personalised care for your dog.",
+    "Contact Jeroen & Paws to talk about training, walks, day care, boarding, home check-ins, and personalised dog care in Greystones and County Wicklow.",
 };
 
 type ContactPageProps = {

@@ -204,9 +204,9 @@ export function ServicesPageContent() {
                 <Link
                   key={card.title}
                   href={`/services/${card.slug}`}
-                  className="group overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5 transition hover:-translate-y-1 hover:shadow-2xl"
+                  className="motion-card motion-card-light group overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
                 >
-                  <div className="relative h-48">
+                  <div className="motion-media relative h-48">
                     <Image
                       src={card.src}
                       alt={`${card.title} dog care service`}
@@ -216,7 +216,7 @@ export function ServicesPageContent() {
                     />
                   </div>
                   <div className="p-6">
-                    <div className="grid size-12 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
+                    <div className="motion-icon grid size-12 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
                       <Icon />
                     </div>
                     <h3 className="mt-5 text-xl font-semibold">{card.title}</h3>
@@ -250,9 +250,9 @@ export function ServicesPageContent() {
               return (
                 <div
                   key={item.title}
-                  className="rounded-xl border border-[#8b5cf6]/20 bg-[#171f2a] p-6"
+                  className="motion-card motion-card-dark rounded-xl border border-[#8b5cf6]/20 bg-[#171f2a] p-6"
                 >
-                  <Icon className="text-[#a78bfa]" />
+                  <Icon className="motion-icon text-[#a78bfa]" />
                   <h3 className="mt-4 font-semibold text-[#fff7e8]">
                     {item.title}
                   </h3>

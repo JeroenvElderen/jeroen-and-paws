@@ -10,9 +10,9 @@ export function ServicesPreview() {
       {servicePreviews.map((service) => (
         <article
           key={service.title}
-          className="overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1 ring-white/10 transition hover:-translate-y-1 hover:shadow-xl"
+          className="motion-card motion-card-dark overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1 ring-white/10"
         >
-          <div className="relative h-56">
+          <div className="motion-media relative h-56">
             <PlaceholderImage
               alt={service.alt}
               sizes="(min-width: 768px) 33vw, 100vw"
@@ -31,7 +31,7 @@ export function ServicesPreview() {
             </p>
             <Link
               href={service.href}
-              className="mt-5 inline-flex items-center gap-2 font-extrabold text-[#8b5cf6] hover:text-[#ddd6fe]"
+              className="motion-link mt-5 inline-flex items-center gap-2 font-extrabold text-[#8b5cf6] hover:text-[#ddd6fe]"
             >
               Learn more <ArrowRight aria-hidden="true" className="h-4 w-4" />
             </Link>

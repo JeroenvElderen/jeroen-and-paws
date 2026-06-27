@@ -7,9 +7,9 @@ export function TeamSection() {
       {teamMembers.map((member) => (
         <article
           key={member.name}
-          className="overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1 ring-white/10"
+          className="motion-card motion-card-dark overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1 ring-white/10"
         >
-          <div className="relative h-80">
+          <div className="motion-media relative h-80">
             <PlaceholderImage
               alt={member.alt}
               sizes="(min-width: 768px) 33vw, 100vw"

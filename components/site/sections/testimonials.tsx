@@ -9,7 +9,7 @@ export function Testimonials() {
       {testimonials.map((testimonial) => (
         <article
           key={testimonial.name}
-          className="rounded-3xl bg-[#111821] p-7 shadow-sm ring-1 ring-white/10"
+          className="motion-card motion-card-dark rounded-3xl bg-[#111821] p-7 shadow-sm ring-1 ring-white/10"
         >
           <div className="flex gap-1 text-[#8b5cf6]">
             {Array.from({ length: 5 }).map((_, index) => (
@@ -22,7 +22,7 @@ export function Testimonials() {
           </div>
           <p className="mt-5 leading-7 text-[#d8cab8]">“{testimonial.text}”</p>
           <div className="mt-6 flex items-center gap-3">
-            <div className="relative h-12 w-12 overflow-hidden rounded-full">
+            <div className="motion-media relative h-12 w-12 overflow-hidden rounded-full">
               <PlaceholderImage alt={testimonial.name} sizes="48px" />
             </div>
             <div>

@@ -228,7 +228,7 @@ export function AboutPageContent() {
 
       <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="relative min-h-[440px] overflow-hidden rounded-xl">
+          <div className="motion-media relative min-h-[440px] overflow-hidden rounded-xl">
             <Image
               src="/images/dogs/menola.jpeg"
               alt="A calm outdoor dog care moment"
@@ -262,7 +262,7 @@ export function AboutPageContent() {
               Exceptional care doesn&apos;t just meet your dog&apos;s needs — it
               helps them become their best self. That&apos;s what I deliver.
             </p>
-            <div className="mt-8 rounded-xl border border-[#8b5cf6]/20 bg-white p-6 shadow-xl shadow-black/5">
+            <div className="motion-card motion-card-light mt-8 rounded-xl border border-[#8b5cf6]/20 bg-white p-6 shadow-xl shadow-black/5">
               <h3 className="text-xl font-semibold text-[#1d1728]">
                 Experiences with:
               </h3>
@@ -305,9 +305,9 @@ export function AboutPageContent() {
             {values.map(([Icon, title, text]) => (
               <article
                 key={title}
-                className="rounded-xl border border-[#8b5cf6]/20 bg-[#171f2a] p-6"
+                className="motion-card motion-card-dark rounded-xl border border-[#8b5cf6]/20 bg-[#171f2a] p-6"
               >
-                <Icon className="text-[#a78bfa]" />
+                <Icon className="motion-icon text-[#a78bfa]" />
                 <h3 className="mt-4 font-semibold text-[#fff7e8]">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-[#d8cab8]">{text}</p>
               </article>
@@ -396,7 +396,7 @@ export function AboutPageContent() {
             {experienceLocations.map(([Icon, title, text, img]) => (
               <article
                 key={title}
-                className="relative overflow-hidden rounded-xl text-left text-white"
+                className="motion-card motion-card-dark motion-media relative overflow-hidden rounded-xl text-left text-white"
               >
                 <Image
                   src={img}
@@ -456,7 +456,7 @@ export function AboutPageContent() {
             ))}
           </div>
         </div>
-        <div className="relative min-h-[440px]">
+        <div className="motion-media relative min-h-[440px]">
           <Image
             src="/images/dogs/pancho/pancho1.jpeg"
             alt="Dogs walking together in a forest"
@@ -577,9 +577,9 @@ export function AboutPageContent() {
             {personalNotes.map(([Icon, title, text, src]) => (
               <article
                 key={title}
-                className="overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
+                className="motion-card motion-card-light overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
               >
-                <div className="relative h-56">
+                <div className="motion-media relative h-56">
                   <Image
                     src={src}
                     alt={`${title} dog care detail`}
@@ -589,7 +589,7 @@ export function AboutPageContent() {
                   />
                 </div>
                 <div className="p-6">
-                  <Icon className="text-[#7c3aed]" />
+                  <Icon className="motion-icon text-[#7c3aed]" />
                   <h3 className="mt-4 text-xl font-semibold">{title}</h3>
                   <p className="mt-2 text-sm leading-6 text-[#4f4857]">
                     {text}

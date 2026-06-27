@@ -59,7 +59,7 @@ export function ServiceBookingActions({ plan }: ServiceBookingActionsProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className={`mt-7 inline-flex w-full items-center justify-center rounded-full px-7 py-3 text-base font-bold transition hover:-translate-y-0.5 ${
+        className={`motion-button mt-7 inline-flex w-full items-center justify-center rounded-full px-7 py-3 text-base font-bold transition hover:-translate-y-0.5 ${
           plan.featured
             ? "bg-[#8b5cf6] text-[#080b10] shadow-lg shadow-black/25 hover:bg-[#a78bfa]"
             : "border-2 border-[#8b5cf6] text-[#c4b5fd] hover:bg-[#1f1738]"

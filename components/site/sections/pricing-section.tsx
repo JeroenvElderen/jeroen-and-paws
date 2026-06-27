@@ -36,13 +36,13 @@ export function PricingCards({
           <article
             key={title}
             className={clsx(
-              "relative overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1",
+              "motion-card motion-card-dark relative overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1",
               isCompact ? "p-6" : "p-8",
               featured ? "ring-4 ring-[#8b5cf6]" : "ring-white/10",
             )}
           >
             <div className="flex items-start justify-between gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#24163f] text-[#8b5cf6]">
+              <div className="motion-icon flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#24163f] text-[#8b5cf6]">
                 <Icon aria-hidden="true" className="h-6 w-6" />
               </div>
               {featured ? (
@@ -129,10 +129,10 @@ export function PricingCards({
 
 export function GuaranteeBanner() {
   return (
-    <div className="mx-auto flex max-w-4xl gap-5 rounded-3xl bg-[#17130d] p-7 text-left ring-1 ring-[#8b5cf6]/25">
+    <div className="motion-card motion-card-dark mx-auto flex max-w-4xl gap-5 rounded-3xl bg-[#17130d] p-7 text-left ring-1 ring-[#8b5cf6]/25">
       <ShieldCheck
         aria-hidden="true"
-        className="h-10 w-10 shrink-0 text-[#8b5cf6]"
+        className="motion-icon h-10 w-10 shrink-0 text-[#8b5cf6]"
       />
       <div>
         <h3 className="text-2xl font-extrabold text-[#fff7e8]">

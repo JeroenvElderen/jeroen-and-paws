@@ -81,6 +81,13 @@
   --sidebar-accent-foreground: #ddd6fe;
   --sidebar-border: rgba(139, 92, 246, 0.18);
   --sidebar-ring: #8b5cf6;
+  --site-header-height: 4rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --site-header-height: 5rem;
+  }
 }
 
 @layer base {
@@ -117,16 +124,101 @@
   animation: scroll-cue-bounce 1.35s ease-in-out infinite;
 }
 
+.motion-card,
+.motion-button,
+.motion-icon,
+.motion-link svg,
+.motion-media img {
+  transition-duration: 220ms;
+  transition-property: background-color, border-color, box-shadow, color, opacity,
+    transform;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.motion-card {
+  transform: translateZ(0);
+}
+
+.motion-media {
+  overflow: hidden;
+}
+
+.motion-media img {
+  transition-duration: 520ms;
+}
+
+.motion-link svg {
+  flex-shrink: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .motion-card:hover,
+  .motion-card:focus-within {
+    transform: translateY(-0.25rem);
+  }
+
+  .motion-card-light:hover,
+  .motion-card-light:focus-within {
+    box-shadow: 0 22px 46px rgba(31, 23, 32, 0.14);
+  }
+
+  .motion-card-dark:hover,
+  .motion-card-dark:focus-within {
+    box-shadow: 0 24px 54px rgba(0, 0, 0, 0.28);
+  }
+
+  .motion-card:hover .motion-media img,
+  .motion-card:focus-within .motion-media img,
+  .motion-media:hover img {
+    transform: scale(1.035);
+  }
+
+  .motion-card:hover .motion-icon,
+  .motion-card:focus-within .motion-icon {
+    transform: translateY(-0.125rem) scale(1.04);
+  }
+
+  .motion-button:hover,
+  .motion-button:focus-visible {
+    transform: translateY(-0.125rem);
+  }
+
+  .motion-link:hover svg,
+  .motion-link:focus-visible svg {
+    transform: translateX(0.18rem);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scroll-cue-bounce {
     animation: none;
+  }
+
+  .motion-card,
+  .motion-button,
+  .motion-icon,
+  .motion-link svg,
+  .motion-media img {
+    transition: none !important;
+  }
+
+  .motion-card,
+  .motion-card:hover,
+  .motion-card:focus-within,
+  .motion-button,
+  .motion-button:hover,
+  .motion-button:focus-visible,
+  .motion-icon,
+  .motion-link svg,
+  .motion-media img {
+    transform: none !important;
   }
 }
 @layer base {
   html,
   body {
     max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   img,
@@ -134,6 +226,26 @@
   video,
   canvas {
     max-width: 100%;
+  }
+}
+
+@media (min-width: 640px) {
+  main[data-section-stack="ready"] > section {
+    position: sticky;
+    top: var(--section-stack-top, var(--site-header-height));
+    z-index: var(--section-stack-z, 1);
+  }
+}
+
+footer {
+  position: relative;
+  z-index: 45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main[data-section-stack="ready"] > section {
+    position: relative;
+    top: auto;
   }
 }
 

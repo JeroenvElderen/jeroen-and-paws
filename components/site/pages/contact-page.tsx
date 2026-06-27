@@ -14,6 +14,7 @@ import {
   type SelectedServiceDetails,
 } from "@/components/site/sections/contact-form";
 import { ContactInfo } from "@/components/site/sections/contact-info";
+import { FaqSection } from "@/components/site/sections/faq-section";
 import { ButtonLink } from "@/components/site/ui/button-link";
 import { SectionLabel } from "@/components/site/ui/section-label";
 
@@ -54,9 +55,9 @@ export function ContactPageContent({
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[center_90%] opacity-70"
+          className="object-cover object-[center_74%] opacity-80"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,0.96)_0%,rgba(8,11,16,0.78)_38%,rgba(8,11,16,0.28)_74%,rgba(8,11,16,0.66)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,0.9)_0%,rgba(8,11,16,0.66)_38%,rgba(8,11,16,0.18)_74%,rgba(8,11,16,0.46)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#080b10] to-transparent" />
         <div className="relative mx-auto w-full max-w-6xl">
           <div className="max-w-xl">
@@ -99,11 +100,11 @@ export function ContactPageContent({
             {reassuranceItems.map(({ title, text, icon: Icon }) => (
               <article
                 key={title}
-                className="border-[#8b5cf6]/25 px-6 md:border-l md:first:border-l-0"
+                className="motion-card motion-card-dark border-[#8b5cf6]/25 px-6 md:border-l md:first:border-l-0"
               >
                 <Icon
                   aria-hidden="true"
-                  className="mx-auto h-12 w-12 text-[#a78bfa]"
+                  className="motion-icon mx-auto h-12 w-12 text-[#a78bfa]"
                 />
                 <h2 className="mt-6 text-sm font-extrabold uppercase tracking-[0.2em] text-white">
                   {title}
@@ -114,6 +115,20 @@ export function ContactPageContent({
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section id="faq" className="bg-[#080b10] px-6 py-20 sm:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-10 max-w-3xl">
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
+              Common questions
+            </p>
+            <h2 className="mt-3 text-4xl font-semibold leading-tight text-[#fff7e8] sm:text-5xl">
+              Helpful details before a first booking.
+            </h2>
+          </div>
+          <FaqSection />
         </div>
       </section>
 
@@ -150,7 +165,7 @@ export function ContactPageContent({
             </ButtonLink>
           </div>
         </div>
-        <div className="relative min-h-[420px] lg:min-h-[560px]">
+        <div className="motion-media relative min-h-[420px] lg:min-h-[560px]">
           <Image
             src="/images/dogs/pancho/pancho2.jpeg"
             alt="Dog sitting peacefully outdoors during a Jeroen & Paws care session"

@@ -54,7 +54,7 @@ function PolicyBlock({
   children: React.ReactNode;
 }) {
   return (
-    <article className="rounded-3xl bg-[#0b1017] p-7 ring-1 ring-white/10">
+    <article className="motion-card motion-card-dark rounded-3xl bg-[#0b1017] p-7 ring-1 ring-white/10">
       <h2 className="text-2xl font-extrabold text-[#fff7e8]">{title}</h2>
       <p className="mt-3 leading-8">{children}</p>
     </article>

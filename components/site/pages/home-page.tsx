@@ -61,7 +61,7 @@ export function HomePage() {
 
       <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="relative min-h-[440px] overflow-hidden rounded-xl shadow-2xl shadow-black/10">
+          <div className="motion-media relative min-h-[440px] overflow-hidden rounded-xl shadow-2xl shadow-black/10">
             <Image
               src="/images/dogs/ace.jpg"
               alt="Dog enjoying a calm Jeroen & Paws walk"

@@ -20,7 +20,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${service.title} | Jeroen & Paws`,
+    title: service.title,
     description: service.intro,
   };
 }

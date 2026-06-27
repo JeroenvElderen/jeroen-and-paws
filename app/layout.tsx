@@ -14,14 +14,14 @@ export const metadata: Metadata = {
     template: "%s | Jeroen & Paws",
   },
   description:
-    "Jeroen & Paws offers personalised dog walking, training, day care, home check-ins, and boarding with warm, dependable care by appointment in Ireland.",
+    "Jeroen & Paws offers personalised dog walking, training, day care, home check-ins, and boarding with warm, dependable care by appointment in Greystones and County Wicklow.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Jeroen & Paws | Personalised Dog Care & Training",
     description:
-      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Ireland.",
+      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Greystones and County Wicklow.",
     url: siteUrl,
     siteName: businessInfo.name,
     images: [
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Jeroen & Paws | Personalised Dog Care & Training",
     description:
-      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Ireland.",
+      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Greystones and County Wicklow.",
     images: ["/images/dogs/lakta/lakta1.jpg"],
   },
 };

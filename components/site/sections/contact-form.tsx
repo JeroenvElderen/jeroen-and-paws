@@ -172,30 +172,38 @@ export function ContactForm({ selectedService }: ContactFormProps) {
             required
           />
         </div>
-        <div>
-          <label htmlFor="service" className="sr-only">
-            Service Interested In
-          </label>
-          <select
-            id="service"
-            name="service"
-            defaultValue={selectedServiceValue}
-            className="w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-4 text-sm text-[#3b314f] outline-none transition focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
-          >
-            <option value="" disabled>
-              Which service are you interested in?
-            </option>
-            {serviceOptions.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label="Phone or WhatsApp"
+            id="phone"
+            type="tel"
+            placeholder="Phone or WhatsApp"
+          />
+          <div>
+            <label htmlFor="service" className="sr-only">
+              Service Interested In
+            </label>
+            <select
+              id="service"
+              name="service"
+              defaultValue={selectedServiceValue}
+              className="h-[3.375rem] w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-0 text-sm text-[#3b314f] outline-none transition focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
+            >
+              <option value="" disabled>
+                Which service are you interested in?
               </option>
-            ))}
-            {hasCustomSelectedOption ? (
-              <option value="selected-service">
-                {selectedService?.service}
-              </option>
-            ) : null}
-          </select>
+              {serviceOptions.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+              {hasCustomSelectedOption ? (
+                <option value="selected-service">
+                  {selectedService?.service}
+                </option>
+              ) : null}
+            </select>
+          </div>
         </div>
         <Textarea
           label="Tell me about your dog"
@@ -268,7 +276,7 @@ export function ContactForm({ selectedService }: ContactFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-[#6d3fa0] px-8 py-4 text-xs font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-[#7c3aed] disabled:cursor-not-allowed disabled:opacity-70"
+          className="motion-button rounded-md bg-[#6d3fa0] px-8 py-4 text-xs font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-[#7c3aed] disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isSubmitting ? "Sending..." : "Send message"}
         </button>
