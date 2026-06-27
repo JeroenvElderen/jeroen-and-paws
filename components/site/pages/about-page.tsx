@@ -203,7 +203,7 @@ export function AboutPageContent() {
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-55"
+          className="object-cover object-[center_47%] opacity-55"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
         <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">
@@ -525,10 +525,10 @@ export function AboutPageContent() {
 
         <div className="relative min-h-[520px] overflow-hidden px-6 py-20 sm:px-12 lg:px-20">
           <Image
-            src="/images/dogs/ollie/ollie1.jpeg"
+            src="/images/dogs/echo.jpg"
             alt="A relaxed dog after a day of adventure"
             fill
-            className="object-cover"
+            className="object-cover object-[center_35%]"
           />
 
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-transparent" />
@@ -603,7 +603,7 @@ export function AboutPageContent() {
 
       <section className="relative isolate overflow-hidden px-6 py-24 text-[#fff7e8] sm:px-8">
         <Image
-          src="/images/dogs/lola1.jpeg"
+          src="/images/dogs/honey.jpg"
           alt="Dog looking across a misty mountain landscape"
           fill
           sizes="100vw"
