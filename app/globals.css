@@ -400,6 +400,19 @@ footer {
   mix-blend-mode: screen;
 }
 
+.premium-glass-card {
+  background-image:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    radial-gradient(circle at 20% 0%, rgba(139, 92, 246, 0.22), transparent 16rem);
+}
+
+.mobile-menu-panel {
+  background-image:
+    radial-gradient(circle at 12% 0%, rgba(139, 92, 246, 0.18), transparent 16rem),
+    linear-gradient(180deg, rgba(17, 24, 33, 0.98), rgba(8, 11, 16, 1));
+  box-shadow: 0 28px 52px rgba(0, 0, 0, 0.32);
+}
+
 .premium-dark-section::before {
   background:
     radial-gradient(circle at 12% 8%, rgba(139, 92, 246, 0.18), transparent 28rem),
@@ -571,6 +584,16 @@ footer {
 
   .premium-image-reveal {
     clip-path: none !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .premium-hero-orb {
+    min-height: auto;
+  }
+
+  .premium-hero-image {
+    object-position: 62% center;
   }
 }
 
