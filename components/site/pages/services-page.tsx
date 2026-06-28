@@ -197,17 +197,17 @@ export function ServicesPageContent() {
               <span className="text-[#7c3aed]">right</span> for your dog.
             </h2>
           </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
             {serviceCards.map((card, index) => {
               const Icon = card.icon;
 
               return (
-                <ScrollReveal key={card.title} delay={index * 70}>
+                <ScrollReveal key={card.title} delay={index * 70} className="h-full">
                 <Link
                   href={`/services/${card.slug}`}
-                  className="motion-card motion-card-light group overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
+                  className="motion-card motion-card-light group flex h-full flex-col overflow-hidden rounded-3xl border border-[#1d1728]/10 bg-white shadow-[0_18px_45px_rgba(31,23,32,0.12)] ring-1 ring-white/70"
                 >
-                  <div className="motion-media relative h-48">
+                  <div className="motion-media relative h-52 border-b border-[#1d1728]/10">
                     <Image
                       src={card.src}
                       alt={`${card.title} dog care service`}
@@ -216,7 +216,7 @@ export function ServicesPageContent() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="p-6">
+                  <div className="flex flex-1 flex-col p-6">
                     <div className="motion-icon grid size-12 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
                       <Icon />
                     </div>
@@ -224,7 +224,7 @@ export function ServicesPageContent() {
                     <p className="mt-3 text-sm leading-6 text-[#4f4857]">
                       {card.text}
                     </p>
-                    <p className="mt-4 text-sm font-semibold text-[#7c3aed]">
+                    <p className="mt-auto pt-5 text-sm font-semibold text-[#7c3aed]">
                       {card.note}
                     </p>
                   </div>
