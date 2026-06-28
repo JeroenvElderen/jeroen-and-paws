@@ -2,6 +2,12 @@
 import { Moon } from "lucide-react";
 import type { PricingPlan } from "./types";
 
+export const overnightSupportImages = {
+  serviceCard: "/images/dogs/pancho/pancho1.jpeg",
+  hero: "/images/dogs/pancho/pancho1.jpeg",
+  feature: "/images/dogs/rufus.jpg",
+} as const;
+
 export const overnightSupportPlans: PricingPlan[] = [
   {
     title: "Standard Overnight Stay",
