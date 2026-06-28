@@ -1,3 +1,4 @@
+// Service detail page content for each individual service page. Edit this file to change service hero copy, included items, steps, images, and service-specific pricing links.
 import {
   CalendarDays,
   Camera,
