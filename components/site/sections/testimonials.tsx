@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import type { CSSProperties } from "react";
 
 import { testimonials } from "@/components/site/data";
 import { PlaceholderImage } from "@/components/site/ui/placeholder-image";
@@ -11,12 +12,13 @@ export function Testimonials() {
           key={testimonial.name}
           className="motion-card motion-card-dark rounded-3xl bg-[#111821] p-7 shadow-sm ring-1 ring-white/10"
         >
-          <div className="flex gap-1 text-[#8b5cf6]">
+          <div className="premium-star-group flex gap-1 text-[#8b5cf6]">
             {Array.from({ length: 5 }).map((_, index) => (
               <Star
                 key={index}
                 aria-hidden="true"
                 className="h-4 w-4 fill-current"
+                style={{ "--star-index": index } as CSSProperties}
               />
             ))}
           </div>

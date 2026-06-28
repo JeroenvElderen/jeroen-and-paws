@@ -38,7 +38,7 @@ export function PricingCards({
             className={clsx(
               "motion-card motion-card-dark relative overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1",
               isCompact ? "p-6" : "p-8",
-              featured ? "ring-4 ring-[#8b5cf6]" : "ring-white/10",
+              featured ? "premium-featured-card ring-4 ring-[#8b5cf6]" : "ring-white/10",
             )}
           >
             <div className="flex items-start justify-between gap-4">

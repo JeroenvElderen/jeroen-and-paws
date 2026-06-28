@@ -5,6 +5,7 @@ import Link from "next/link";
 import { policySections } from "@/components/site/data";
 import { SiteShell } from "@/components/site/layout/site-shell";
 import { ButtonLink } from "@/components/site/ui/button-link";
+import { ScrollReveal } from "@/components/site/ui/scroll-reveal";
 
 export const metadata = {
   title: "Policies",
@@ -15,14 +16,14 @@ export const metadata = {
 export default function PoliciesPage() {
   return (
     <SiteShell activePage="policies">
-      <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
+      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src="/images/dogs/Nola/nola2.jpg"
           alt="Happy dog in a warm outdoor setting"
           fill
           priority
           sizes="100vw"
-          className="-z-20 object-cover object-center opacity-55"
+          className="premium-hero-image -z-20 object-cover object-center opacity-55"
         />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(8,11,16,0.96)_0%,rgba(8,11,16,0.82)_36%,rgba(8,11,16,0.34)_70%,rgba(8,11,16,0.72)_100%)]" />
         <div className="mx-auto flex max-w-6xl items-center sm:min-h-[calc(100svh-17rem)]">
@@ -46,14 +47,14 @@ export default function PoliciesPage() {
         </div>
       </section>
 
-      <section className="bg-[#f8f6f3] px-6 py-12 text-[#171022] sm:px-8 lg:py-16">
+      <section className="premium-cream-texture bg-[#f8f6f3] px-6 py-12 text-[#171022] sm:px-8 lg:py-16">
         <div className="mx-auto max-w-6xl divide-y divide-[#d8d0c8]">
-          {policySections.map((section) => {
+          {policySections.map((section, index) => {
             const Icon = section.icon;
 
             return (
+              <ScrollReveal key={section.title} delay={index * 70}>
               <article
-                key={section.title}
                 className="grid gap-8 py-10 md:grid-cols-[120px_1fr_1.25fr] md:items-center lg:gap-12"
               >
                 <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#ece7f2] text-[#21163a] md:h-24 md:w-24">
@@ -76,18 +77,19 @@ export default function PoliciesPage() {
                   ))}
                 </ul>
               </article>
+              </ScrollReveal>
             );
           })}
         </div>
       </section>
 
-      <section className="relative isolate overflow-hidden bg-[#160f25] px-6 py-16 sm:px-8">
+      <section className="premium-dark-section relative isolate overflow-hidden bg-[#160f25] px-6 py-16 sm:px-8">
         <Image
           src="/images/dogs/kaiser/kaiser2.jpeg"
           alt="Dog waiting calmly outdoors"
           fill
           sizes="100vw"
-          className="-z-20 object-cover object-center opacity-35"
+          className="premium-hero-image -z-20 object-cover object-center opacity-35"
         />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(22,15,37,0.98)_0%,rgba(22,15,37,0.9)_42%,rgba(22,15,37,0.35)_100%)]" />
         <div className="mx-auto max-w-6xl">

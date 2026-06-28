@@ -24,6 +24,7 @@ import {
   PricingCards,
 } from "@/components/site/sections/pricing-section";
 import { ButtonLink } from "@/components/site/ui/button-link";
+import { ScrollReveal } from "@/components/site/ui/scroll-reveal";
 
 const serviceCards = [
   {
@@ -158,14 +159,14 @@ const pricingSections = [
 export function ServicesPageContent() {
   return (
     <SiteShell activePage="services">
-      <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
+      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src="/images/dogs/walk.jpeg"
           alt="Dog training and care in a calm outdoor setting"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[center_65%] opacity-55"
+          className="premium-hero-image object-cover object-[center_65%] opacity-55"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
         <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">
@@ -185,7 +186,7 @@ export function ServicesPageContent() {
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
@@ -197,12 +198,12 @@ export function ServicesPageContent() {
             </h2>
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {serviceCards.map((card) => {
+            {serviceCards.map((card, index) => {
               const Icon = card.icon;
 
               return (
+                <ScrollReveal key={card.title} delay={index * 70}>
                 <Link
-                  key={card.title}
                   href={`/services/${card.slug}`}
                   className="motion-card motion-card-light group overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
                 >
@@ -228,13 +229,14 @@ export function ServicesPageContent() {
                     </p>
                   </div>
                 </Link>
+                </ScrollReveal>
               );
             })}
           </div>
         </div>
       </section>
 
-      <section className="bg-[#100d19] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#100d19] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
             What&apos;s included
@@ -244,12 +246,12 @@ export function ServicesPageContent() {
             <span className="text-[#a78bfa]">Peace of mind</span> included.
           </h2>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-            {included.map((item) => {
+            {included.map((item, index) => {
               const Icon = item.icon;
 
               return (
+                <ScrollReveal key={item.title} delay={index * 70}>
                 <div
-                  key={item.title}
                   className="motion-card motion-card-dark rounded-xl border border-[#8b5cf6]/20 bg-[#171f2a] p-6"
                 >
                   <Icon className="motion-icon text-[#a78bfa]" />
@@ -260,13 +262,14 @@ export function ServicesPageContent() {
                     {item.text}
                   </p>
                 </div>
+                </ScrollReveal>
               );
             })}
           </div>
         </div>
       </section>
 
-      <section className="bg-[#080b10] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#080b10] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl space-y-16">
           <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
@@ -281,8 +284,9 @@ export function ServicesPageContent() {
             </p>
           </div>
 
-          {pricingSections.map((section) => (
-            <div key={section.id} id={section.id} className="scroll-mt-28">
+          {pricingSections.map((section, index) => (
+            <ScrollReveal key={section.id} delay={index * 80}>
+            <div id={section.id} className="scroll-mt-28">
               <div className="mb-8 max-w-3xl">
                 <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
                   {section.eyebrow}
@@ -296,13 +300,16 @@ export function ServicesPageContent() {
               </div>
               <PricingCards plans={section.plans} />
             </div>
+            </ScrollReveal>
           ))}
 
-          <GuaranteeBanner />
+          <ScrollReveal>
+            <GuaranteeBanner />
+          </ScrollReveal>
         </div>
       </section>
 
-      <section className="grid bg-[#f7f4ef] text-[#1d1728] lg:grid-cols-2">
+      <section className="premium-cream-texture grid bg-[#f7f4ef] text-[#1d1728] lg:grid-cols-2">
         <div className="px-6 py-20 sm:px-12 lg:px-20">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             HERE TO HELP
@@ -318,7 +325,7 @@ export function ServicesPageContent() {
             Book a meet &amp; greet
           </ButtonLink>
         </div>
-        <div className="relative min-h-[440px]">
+        <ScrollReveal delay={120} className="premium-image-reveal relative min-h-[440px]">
           <Image
             src="/images/dogs/pancho/pancho2.jpeg"
             alt="Dog training and care consultation"
@@ -326,7 +333,7 @@ export function ServicesPageContent() {
             sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-cover"
           />
-        </div>
+        </ScrollReveal>
       </section>
     </SiteShell>
   );
