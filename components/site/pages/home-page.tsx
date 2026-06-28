@@ -24,38 +24,38 @@ const steps = [
 export function HomePage() {
   return (
     <SiteShell activePage="home">
-      <section className="premium-hero-orb relative isolate flex min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-10 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-10 lg:h-[calc(100svh-5rem)] lg:max-h-[calc(100svh-5rem)] lg:py-12">
+      <section className="premium-hero-orb relative isolate flex min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-8 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-10 lg:h-[calc(100svh-5rem)] lg:max-h-[calc(100svh-5rem)] lg:py-12">
         <Image
           src="/images/dogs/lakta.jpg"
           alt="A happy dog enjoying personalised care with Jeroen & Paws"
           fill
           priority
           sizes="100vw"
-          className="premium-hero-image object-cover opacity-55"
+          className="premium-hero-image object-cover object-[58%_center] opacity-50 sm:object-center sm:opacity-55"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.58),rgba(8,11,16,.22))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.97),rgba(8,11,16,.72),rgba(8,11,16,.38))] sm:bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.58),rgba(8,11,16,.22))]" />
         <div className="relative mx-auto flex w-full max-w-6xl flex-col justify-center">
-          <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
+          <p className="text-[0.68rem] font-black uppercase tracking-[0.28em] sm:text-xs sm:tracking-[0.35em] text-[#a78bfa]">
             Jeroen &amp; Paws
           </p>
-          <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-[#fff7e8] sm:text-5xl lg:text-6xl">
+          <h1 className="mt-4 max-w-3xl text-[2.35rem] font-semibold leading-[1.05] text-[#fff7e8] sm:text-5xl sm:leading-tight lg:text-6xl">
             <span className="premium-line-reveal">Premium dog care for</span>{" "}
             <span className="premium-line-reveal" style={{ "--line-delay": "220ms" } as CSSProperties}>
               calmer days and happier tails.
             </span>
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-[#f5e9d5] sm:text-lg sm:leading-8">
+          <p className="mt-4 max-w-xl text-[0.98rem] leading-7 text-[#f5e9d5] sm:mt-5 sm:text-lg sm:leading-8">
             A boutique dog walking, home visit, day care, boarding, and training service shaped around your dog&apos;s character, comfort, and routine—with thoughtful updates every step of the way.
           </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+          <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:flex-wrap sm:gap-4">
             <ButtonLink href="/contact">Book a Complimentary Meet &amp; Greet</ButtonLink>
             <ButtonLink href="/services" variant="outline">
               Explore Services
             </ButtonLink>
           </div>
-          <ul className="mt-8 grid max-w-3xl gap-3 text-sm font-bold text-[#fff7e8] sm:mt-10 sm:grid-cols-2">
+          <ul className="mt-6 grid max-w-3xl gap-2.5 text-sm font-bold text-[#fff7e8] sm:mt-10 sm:grid-cols-2 sm:gap-3">
             {carePromises.map((promise) => (
-              <li key={promise} className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
+              <li key={promise} className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur max-sm:[&:nth-child(n+3)]:hidden">
                 <PawPrint aria-hidden="true" className="h-4 w-4 shrink-0 text-[#a78bfa]" />
                 {promise}
               </li>
@@ -64,10 +64,10 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
           <ScrollReveal>
-            <div className="motion-media premium-image-reveal relative min-h-[440px] overflow-hidden rounded-xl shadow-2xl shadow-black/10">
+            <div className="motion-media premium-image-reveal relative min-h-[300px] overflow-hidden sm:min-h-[440px] rounded-xl shadow-2xl shadow-black/10">
             <Image
               src="/images/dogs/ace.jpg"
               alt="Dog enjoying a calm Jeroen & Paws walk"
@@ -96,14 +96,14 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="premium-dark-section bg-[#100d19] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#100d19] px-5 py-14 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
                 SERVICES
               </p>
-              <h2 className="mt-3 text-4xl font-semibold text-[#fff7e8] sm:text-5xl">
+              <h2 className="mt-3 text-3xl font-semibold text-[#fff7e8] sm:text-5xl">
                 Boutique services for every kind of care day.
               </h2>
             </div>
@@ -117,15 +117,15 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             How it works
           </p>
-          <h2 className="mt-3 text-4xl font-semibold">
+          <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
             Simple booking, elevated care, thoughtful updates.
           </h2>
-          <div className="mt-14 grid gap-8 md:grid-cols-3">
+          <div className="mt-10 grid gap-8 sm:mt-14 md:grid-cols-3">
             {steps.map(([Icon, number, title, text]) => (
               <ScrollReveal key={title} delay={Number(number) * 90}>
                 <article>
@@ -142,13 +142,13 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="premium-dark-section bg-[#100d19] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#100d19] px-5 py-14 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
               Trusted by dog owners
             </p>
-            <h2 className="mt-3 text-4xl font-semibold text-[#fff7e8] sm:text-5xl">
+            <h2 className="mt-3 text-3xl font-semibold text-[#fff7e8] sm:text-5xl">
               Trusted by dogs. Recommended by discerning owners.
             </h2>
           </div>

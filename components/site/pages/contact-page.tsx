@@ -49,7 +49,7 @@ export function ContactPageContent({
 }) {
   return (
     <SiteShell activePage="contact">
-      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:flex lg:items-center lg:py-28">
+      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:flex lg:items-center lg:py-28">
         <Image
           src="/images/dogs/walkaslan.jpg"
           alt="Happy dog enjoying a calm outdoor session with Jeroen & Paws"
@@ -81,7 +81,7 @@ export function ContactPageContent({
 
       <section
         id="message"
-        className="premium-cream-texture bg-[#f8f6f2] px-6 py-20 text-[#241832] sm:px-8"
+        className="premium-cream-texture bg-[#f8f6f2] px-5 py-14 text-[#241832] sm:px-8 sm:py-20"
       >
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
           <ScrollReveal>
@@ -93,7 +93,7 @@ export function ContactPageContent({
         </div>
       </section>
       
-      <section className="premium-dark-section relative overflow-hidden bg-[#160f25] px-6 py-16 text-center sm:px-8">
+      <section className="premium-dark-section relative overflow-hidden bg-[#160f25] px-5 py-12 text-center sm:px-8 sm:py-16">
         <div className="absolute -right-12 bottom-0 text-[#8b5cf6]/10">
           <PawPrint aria-hidden="true" className="h-56 w-56" />
         </div>
@@ -125,7 +125,7 @@ export function ContactPageContent({
         </div>
       </section>
 
-      <section id="faq" className="premium-dark-section bg-[#080b10] px-6 py-20 sm:px-8">
+      <section id="faq" className="premium-dark-section bg-[#080b10] px-5 py-14 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 max-w-3xl">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
@@ -142,7 +142,7 @@ export function ContactPageContent({
       </section>
 
       <section className="premium-dark-section grid bg-[#080b10] lg:grid-cols-2">
-        <ScrollReveal className="flex items-center px-6 py-16 sm:px-8 lg:justify-end lg:py-24">
+        <ScrollReveal className="flex items-center px-5 py-12 sm:px-8 sm:py-16 lg:justify-end lg:py-24">
           <div className="w-full max-w-xl lg:pr-16">
             <h2 className="text-4xl font-semibold leading-tight tracking-[-0.03em] text-[#fff7e8] sm:text-5xl">
               Not sure what&apos;s right for{" "}
@@ -174,7 +174,7 @@ export function ContactPageContent({
             </ButtonLink>
           </div>
         </ScrollReveal>
-        <ScrollReveal delay={120} className="motion-media premium-image-reveal relative min-h-[420px] lg:min-h-[560px]">
+        <ScrollReveal delay={120} className="motion-media premium-image-reveal relative min-h-[300px] sm:min-h-[420px] lg:min-h-[560px]">
           <Image
             src="/images/dogs/pancho/pancho2.jpeg"
             alt="Dog sitting peacefully outdoors during a Jeroen & Paws care session"

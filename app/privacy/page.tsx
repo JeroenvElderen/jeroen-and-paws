@@ -18,7 +18,7 @@ export default function PrivacyPage() {
         title="How your enquiry information is used"
         text="Jeroen & Paws only asks for details needed to reply to enquiries, prepare safe care plans, and arrange dog walking, training, day care, boarding, or home visits."
       />
-      <section className="premium-dark-section bg-[#111821] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#111821] px-5 py-14 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-4xl space-y-7 text-[#d8cab8]">
           <ScrollReveal>
             <PolicyBlock title="Information collected">
@@ -63,7 +63,7 @@ function PolicyBlock({
   children: React.ReactNode;
 }) {
   return (
-    <article className="motion-card motion-card-dark rounded-3xl bg-[#0b1017] p-7 ring-1 ring-white/10">
+    <article className="motion-card motion-card-dark rounded-3xl bg-[#0b1017] p-5 ring-1 ring-white/10 sm:p-7">
       <h2 className="text-2xl font-extrabold text-[#fff7e8]">{title}</h2>
       <p className="mt-3 leading-8">{children}</p>
     </article>

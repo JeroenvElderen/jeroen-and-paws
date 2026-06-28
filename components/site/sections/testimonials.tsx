@@ -10,7 +10,7 @@ export function Testimonials() {
       {testimonials.map((testimonial) => (
         <article
           key={testimonial.name}
-          className="motion-card motion-card-dark rounded-3xl bg-[#111821] p-7 shadow-sm ring-1 ring-white/10"
+          className="motion-card motion-card-dark rounded-3xl bg-[#111821] p-5 sm:p-7 shadow-sm ring-1 ring-white/10"
         >
           <div className="premium-star-group flex gap-1 text-[#8b5cf6]">
             {Array.from({ length: 5 }).map((_, index) => (

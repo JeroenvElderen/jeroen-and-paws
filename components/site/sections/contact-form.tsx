@@ -163,12 +163,19 @@ export function ContactForm({ selectedService }: ContactFormProps) {
       ) : null}
       <form ref={formRef} className="mt-8 space-y-4" onSubmit={handleSubmit}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Your Name" id="name" placeholder="Your Name" required />
+          <Field
+            label="Your Name"
+            id="name"
+            placeholder="Your Name"
+            autoComplete="name"
+            required
+          />
           <Field
             label="Email Address"
             id="email"
             type="email"
             placeholder="Email Address"
+            autoComplete="email"
             required
           />
         </div>
@@ -178,6 +185,8 @@ export function ContactForm({ selectedService }: ContactFormProps) {
             id="phone"
             type="tel"
             placeholder="Phone or WhatsApp"
+            autoComplete="tel"
+            inputMode="tel"
           />
           <div>
             <label htmlFor="service" className="sr-only">
@@ -187,7 +196,7 @@ export function ContactForm({ selectedService }: ContactFormProps) {
               id="service"
               name="service"
               defaultValue={selectedServiceValue}
-              className="h-[3.375rem] w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-0 text-sm text-[#3b314f] outline-none transition focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
+              className="h-14 w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-0 text-sm text-[#3b314f] outline-none transition focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
             >
               <option value="" disabled>
                 Which service are you interested in?
@@ -276,7 +285,7 @@ export function ContactForm({ selectedService }: ContactFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="motion-button rounded-md bg-[#6d3fa0] px-8 py-4 text-xs font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-[#7c3aed] disabled:cursor-not-allowed disabled:opacity-70"
+          className="motion-button w-full rounded-md bg-[#6d3fa0] px-8 py-4 sm:w-auto text-xs font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-[#7c3aed] disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isSubmitting ? "Sending..." : "Send message"}
         </button>
@@ -291,12 +300,16 @@ function Field({
   placeholder,
   type = "text",
   required = false,
+  autoComplete,
+  inputMode,
 }: {
   label: string;
   id: string;
   placeholder: string;
   type?: string;
   required?: boolean;
+  autoComplete?: string;
+  inputMode?: "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search";
 }) {
   return (
     <div>
@@ -309,7 +322,9 @@ function Field({
         type={type}
         placeholder={placeholder}
         required={required}
-        className="w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-4 text-sm text-[#3b314f] outline-none transition placeholder:text-[#6b6277] focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+        className="w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-4 text-base sm:text-sm text-[#3b314f] outline-none transition placeholder:text-[#6b6277] focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
       />
     </div>
   );
@@ -339,7 +354,7 @@ function Textarea({
         placeholder={placeholder}
         defaultValue={defaultValue}
         required={required}
-        className="min-h-28 w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-4 text-sm text-[#3b314f] outline-none transition placeholder:text-[#6b6277] focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
+        className="min-h-28 w-full rounded-md border border-[#ded8e8] bg-white/60 px-4 py-4 text-base sm:text-sm text-[#3b314f] outline-none transition placeholder:text-[#6b6277] focus:border-[#7c3aed] focus:ring-4 focus:ring-[#7c3aed]/15"
       />
     </div>
   );

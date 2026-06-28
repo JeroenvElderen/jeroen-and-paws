@@ -5,7 +5,7 @@ import { businessInfo, serviceAreas } from "@/components/site/data";
 export function ServiceArea() {
   return (
     <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-      <div className="motion-card motion-card-dark flex min-h-[350px] flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-[#24163f] to-[#141a21] p-8 text-center">
+      <div className="motion-card motion-card-dark flex min-h-[260px] flex-col sm:min-h-[350px] items-center justify-center rounded-3xl bg-gradient-to-br from-[#24163f] to-[#141a21] p-5 text-center sm:p-8">
         <MapPin
           aria-hidden="true"
           className="motion-icon h-20 w-20 text-[#8b5cf6]/40"

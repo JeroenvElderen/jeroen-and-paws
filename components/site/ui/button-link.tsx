@@ -19,7 +19,7 @@ export function ButtonLink({
 }: ButtonLinkProps) {
   return (
     <Link
-      className={`motion-button premium-button relative inline-flex w-full items-center justify-center overflow-hidden rounded-full px-5 py-3 text-center text-base font-bold sm:w-auto sm:px-7 transition hover:-translate-y-0.5 ${variants[variant]} ${className}`}
+      className={`motion-button premium-button relative inline-flex w-full items-center justify-center overflow-hidden rounded-full px-5 py-4 text-center text-base font-bold sm:w-auto sm:px-7 sm:py-3 transition hover:-translate-y-0.5 ${variants[variant]} ${className}`}
       {...props}
     />
   );

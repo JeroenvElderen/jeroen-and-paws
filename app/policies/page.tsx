@@ -16,7 +16,7 @@ export const metadata = {
 export default function PoliciesPage() {
   return (
     <SiteShell activePage="policies">
-      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
+      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src="/images/dogs/Nola/nola2.jpg"
           alt="Happy dog in a warm outdoor setting"
@@ -47,7 +47,7 @@ export default function PoliciesPage() {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f8f6f3] px-6 py-12 text-[#171022] sm:px-8 lg:py-16">
+      <section className="premium-cream-texture bg-[#f8f6f3] px-5 py-12 text-[#171022] sm:px-8 lg:py-16">
         <div className="mx-auto max-w-6xl divide-y divide-[#d8d0c8]">
           {policySections.map((section, index) => {
             const Icon = section.icon;
@@ -83,7 +83,7 @@ export default function PoliciesPage() {
         </div>
       </section>
 
-      <section className="premium-dark-section relative isolate overflow-hidden bg-[#160f25] px-6 py-16 sm:px-8">
+      <section className="premium-dark-section relative isolate overflow-hidden bg-[#160f25] px-5 py-12 sm:px-8 sm:py-16">
         <Image
           src="/images/dogs/kaiser/kaiser2.jpeg"
           alt="Dog waiting calmly outdoors"
@@ -113,7 +113,7 @@ export default function PoliciesPage() {
         </div>
       </section>
 
-      <section className="bg-[#080b10] px-6 py-8 sm:px-8">
+      <section className="bg-[#080b10] px-5 py-8 sm:px-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-center text-sm font-bold uppercase tracking-[0.2em] text-[#a78bfa] sm:flex-row sm:justify-center">
           <PawPrint className="h-7 w-7" aria-hidden="true" />
 

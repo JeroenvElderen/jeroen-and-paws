@@ -159,7 +159,7 @@ const pricingSections = [
 export function ServicesPageContent() {
   return (
     <SiteShell activePage="services">
-      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
+      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src="/images/dogs/walk.jpeg"
           alt="Dog training and care in a calm outdoor setting"
@@ -186,7 +186,7 @@ export function ServicesPageContent() {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
@@ -236,7 +236,7 @@ export function ServicesPageContent() {
         </div>
       </section>
 
-      <section className="premium-dark-section bg-[#100d19] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#100d19] px-5 py-14 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
             What&apos;s included
@@ -269,7 +269,7 @@ export function ServicesPageContent() {
         </div>
       </section>
 
-      <section className="premium-dark-section bg-[#080b10] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#080b10] px-5 py-14 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl space-y-16">
           <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
@@ -310,7 +310,7 @@ export function ServicesPageContent() {
       </section>
 
       <section className="premium-cream-texture grid bg-[#f7f4ef] text-[#1d1728] lg:grid-cols-2">
-        <div className="px-6 py-20 sm:px-12 lg:px-20">
+        <div className="px-5 py-14 sm:px-12 sm:py-20 lg:px-20">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             HERE TO HELP
           </p>
@@ -325,7 +325,7 @@ export function ServicesPageContent() {
             Book a meet &amp; greet
           </ButtonLink>
         </div>
-        <ScrollReveal delay={120} className="premium-image-reveal relative min-h-[440px]">
+        <ScrollReveal delay={120} className="premium-image-reveal relative min-h-[300px] sm:min-h-[440px]">
           <Image
             src="/images/dogs/pancho/pancho2.jpeg"
             alt="Dog training and care consultation"

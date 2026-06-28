@@ -27,7 +27,7 @@ export function ScrollCue() {
 
   return (
     <div
-      className={`pointer-events-none fixed bottom-6 left-1/2 z-30 -translate-x-1/2 transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
+      className={`pointer-events-none fixed bottom-28 left-1/2 md:bottom-6 z-30 -translate-x-1/2 transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
       aria-hidden="true"
     >
       <div className="scroll-cue-bounce grid size-12 place-items-center rounded-full border border-[#c4b5fd]/35 bg-[#080b10]/75 text-[#c4b5fd] shadow-lg shadow-black/25 backdrop-blur">

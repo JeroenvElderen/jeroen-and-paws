@@ -6,7 +6,7 @@ export function ValuesSection() {
       {values.map(({ title, description, icon: Icon }) => (
         <article
           key={title}
-          className="motion-card motion-card-dark rounded-3xl bg-[#111821]/10 p-8 text-center ring-1 ring-white/15"
+          className="motion-card motion-card-dark rounded-3xl bg-[#111821]/10 p-5 text-center sm:p-8 ring-1 ring-white/15"
         >
           <Icon
             aria-hidden="true"
