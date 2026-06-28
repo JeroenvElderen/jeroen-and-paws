@@ -12,14 +12,14 @@ export function ServicesPreview() {
           key={service.title}
           className="motion-card motion-card-dark overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1 ring-white/10"
         >
-          <div className="motion-media relative h-56">
+          <div className="motion-media relative h-44 sm:h-56">
             <PlaceholderImage
               alt={service.alt}
               sizes="(min-width: 768px) 33vw, 100vw"
               src={service.imageSrc}
             />
           </div>
-          <div className="p-7">
+          <div className="p-5 sm:p-7">
             <h3 className="text-2xl font-extrabold text-[#fff7e8]">
               {service.title}
             </h3>
@@ -31,7 +31,7 @@ export function ServicesPreview() {
             </p>
             <Link
               href={service.href}
-              className="motion-link mt-5 inline-flex items-center gap-2 font-extrabold text-[#8b5cf6] hover:text-[#ddd6fe]"
+              className="motion-link mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#8b5cf6]/35 px-4 font-extrabold text-[#8b5cf6] hover:text-[#ddd6fe] sm:min-h-0 sm:w-auto sm:justify-start sm:rounded-none sm:border-0 sm:px-0"
             >
               Learn more <ArrowRight aria-hidden="true" className="h-4 w-4" />
             </Link>

@@ -6,7 +6,7 @@ export function FeatureGrid() {
       {trustHighlights.map(({ title, description, icon: Icon }) => (
         <article
           key={title}
-          className="motion-card motion-card-dark rounded-3xl border border-white/10 bg-[#111821] p-8 text-center shadow-sm"
+          className="motion-card motion-card-dark rounded-3xl border border-white/10 bg-[#111821] p-5 text-center sm:p-8 shadow-sm"
         >
           <div className="motion-icon mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#24163f] text-[#8b5cf6]">
             <Icon aria-hidden="true" className="h-7 w-7" />

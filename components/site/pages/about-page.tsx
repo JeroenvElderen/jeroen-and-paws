@@ -197,7 +197,7 @@ const personalNotes = [
 export function AboutPageContent() {
   return (
     <SiteShell activePage="about">
-      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
+      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src="/images/dogs/leia.jpg"
           alt="Jeroen caring for a dog outdoors"
@@ -227,10 +227,10 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
           <ScrollReveal>
-            <div className="motion-media premium-image-reveal relative min-h-[440px] overflow-hidden rounded-xl">
+            <div className="motion-media premium-image-reveal relative min-h-[300px] sm:min-h-[440px] overflow-hidden rounded-xl">
             <Image
               src="/images/dogs/menola.jpeg"
               alt="A calm outdoor dog care moment"
@@ -288,7 +288,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="premium-dark-section bg-[#100d19] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#100d19] px-5 py-14 sm:px-8 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
@@ -323,7 +323,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             BEFORE WE BEGIN
@@ -354,7 +354,7 @@ export function AboutPageContent() {
       </section>
 
       <section className="premium-dark-section grid bg-[#100d19] lg:grid-cols-2">
-        <div className="relative min-h-[440px]">
+        <div className="relative min-h-[300px] sm:min-h-[440px]">
           <Image
             src="/images/dogs/shadow.jpg"
             alt="A dog enjoying a calm outdoor adventure"
@@ -362,7 +362,7 @@ export function AboutPageContent() {
             className="object-cover"
           />
         </div>
-        <div className="px-6 py-20 sm:px-12 lg:px-20">
+        <div className="px-5 py-14 sm:px-12 sm:py-20 lg:px-20">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
             THE DAY OF THE VISIT
           </p>
@@ -390,7 +390,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             Adventure together
@@ -413,7 +413,7 @@ export function AboutPageContent() {
                   alt={`${title} dog experience`}
                   width={420}
                   height={260}
-                  className="h-52 w-full object-cover"
+                  className="h-44 w-full sm:h-52 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                 <div className="absolute bottom-0 p-5">
@@ -433,7 +433,7 @@ export function AboutPageContent() {
       </section>
 
       <section className="premium-dark-section grid bg-[#100d19] lg:grid-cols-2">
-        <div className="px-6 py-20 sm:px-12 lg:px-20">
+        <div className="px-5 py-14 sm:px-12 sm:py-20 lg:px-20">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
             Experience that matters
           </p>
@@ -467,7 +467,7 @@ export function AboutPageContent() {
             ))}
           </div>
         </div>
-        <div className="motion-media relative min-h-[440px]">
+        <div className="motion-media relative min-h-[300px] sm:min-h-[440px]">
           <Image
             src="/images/dogs/pancho/pancho1.jpeg"
             alt="Dogs walking together in a forest"
@@ -477,7 +477,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             The session flow
@@ -503,7 +503,7 @@ export function AboutPageContent() {
       </section>
 
       <section className="premium-cream-texture grid bg-[#f7f4ef] text-[#1d1728] lg:grid-cols-[.9fr_1.1fr]">
-        <div className="px-6 py-20 sm:px-12 lg:px-20">
+        <div className="px-5 py-14 sm:px-12 sm:py-20 lg:px-20">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             Frequently Asked Questions
           </p>
@@ -536,7 +536,7 @@ export function AboutPageContent() {
           </div>
         </div>
 
-        <div className="relative min-h-[520px] overflow-hidden px-6 py-20 sm:px-12 lg:px-20">
+        <div className="relative min-h-[340px] sm:min-h-[520px] overflow-hidden px-5 py-14 sm:px-12 sm:py-20 lg:px-20">
           <Image
             src="/images/dogs/echo.jpg"
             alt="A relaxed dog after a day of adventure"
@@ -569,7 +569,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
@@ -593,7 +593,7 @@ export function AboutPageContent() {
                 key={title}
                 className="motion-card motion-card-light overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
               >
-                <div className="motion-media relative h-56">
+                <div className="motion-media relative h-44 sm:h-56">
                   <Image
                     src={src}
                     alt={`${title} dog care detail`}
@@ -616,7 +616,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="premium-hero-orb relative isolate overflow-hidden px-6 py-24 text-[#fff7e8] sm:px-8">
+      <section className="premium-hero-orb relative isolate overflow-hidden px-5 py-16 text-[#fff7e8] sm:px-8 sm:py-24">
         <Image
           src="/images/dogs/honey.jpg"
           alt="Dog looking across a misty mountain landscape"

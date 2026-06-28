@@ -37,7 +37,7 @@ export function PricingCards({
             key={title}
             className={clsx(
               "motion-card motion-card-dark relative overflow-hidden rounded-3xl bg-[#111821] shadow-sm ring-1",
-              isCompact ? "p-6" : "p-8",
+              isCompact ? "p-5 sm:p-6" : "p-5 sm:p-8",
               featured ? "premium-featured-card ring-4 ring-[#8b5cf6]" : "ring-white/10",
             )}
           >
@@ -129,7 +129,7 @@ export function PricingCards({
 
 export function GuaranteeBanner() {
   return (
-    <div className="motion-card motion-card-dark mx-auto flex max-w-4xl gap-5 rounded-3xl bg-[#17130d] p-7 text-left ring-1 ring-[#8b5cf6]/25">
+    <div className="motion-card motion-card-dark mx-auto flex max-w-4xl flex-col gap-4 rounded-3xl bg-[#17130d] p-5 text-left ring-1 ring-[#8b5cf6]/25 sm:flex-row sm:gap-5 sm:p-7">
       <ShieldCheck
         aria-hidden="true"
         className="motion-icon h-10 w-10 shrink-0 text-[#8b5cf6]"

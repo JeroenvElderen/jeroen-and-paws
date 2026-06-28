@@ -293,7 +293,6 @@ footer {
 
     .text-5xl,
     .sm\:text-5xl {
-      font-size: clamp(2rem, 9.8vw, 2.65rem) !important;
       font-size: clamp(1.85rem, 8.4vw, 2.35rem) !important;
       line-height: 1.18 !important;
       letter-spacing: -0.02em !important;
@@ -646,5 +645,46 @@ footer {
   .premium-button::after {
     transform: none !important;
     transition: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 767px) {
+  html {
+    scroll-padding-bottom: calc(6.25rem + env(safe-area-inset-bottom));
+  }
+
+  main {
+    overflow-x: clip;
+  }
+
+  main :is(section, article, div) {
+    scroll-margin-top: calc(var(--site-header-height) + 1rem);
+  }
+
+  main :is(p, li) {
+    overflow-wrap: anywhere;
+  }
+
+  a,
+  button,
+  select,
+  input,
+  textarea {
+    min-height: 44px;
+  }
+
+  .premium-hero-orb {
+    display: flex;
+    align-items: center;
+  }
+
+  .premium-hero-orb > .relative {
+    width: 100%;
   }
 }

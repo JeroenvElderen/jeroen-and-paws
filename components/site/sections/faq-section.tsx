@@ -6,7 +6,7 @@ export function FaqSection() {
       {faqs.map((faq) => (
         <article
           key={faq.question}
-          className="motion-card motion-card-dark rounded-3xl bg-[#111821] p-7 shadow-sm ring-1 ring-white/10"
+          className="motion-card motion-card-dark rounded-3xl bg-[#111821] p-5 sm:p-7 shadow-sm ring-1 ring-white/10"
         >
           <h3 className="text-xl font-extrabold text-[#fff7e8]">
             {faq.question}

@@ -37,7 +37,7 @@ const footerSections = [
 export function Footer() {
   return (
     <footer className="bg-[#080b10] text-[#d8cab8]">
-      <div className="mx-auto w-full max-w-6xl px-6 py-14 sm:px-8">
+      <div className="mx-auto w-full max-w-6xl px-5 py-14 sm:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.25fr_0.75fr_0.75fr_1.15fr]">
           <div>
             <Image

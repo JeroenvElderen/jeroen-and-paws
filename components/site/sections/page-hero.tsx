@@ -14,7 +14,7 @@ export function PageHero({
   text: string;
 }) {
   return (
-    <section className="premium-hero-orb bg-[#080b10] px-6 py-20 text-center sm:px-8">
+    <section className="premium-hero-orb bg-[#080b10] px-5 py-14 text-center sm:py-20 sm:px-8">
       <div className="mx-auto max-w-4xl">
         <SectionLabel icon={icon}>{label}</SectionLabel>
         <h1 className="text-5xl font-extrabold tracking-tight text-[#fff7e8] sm:text-6xl">

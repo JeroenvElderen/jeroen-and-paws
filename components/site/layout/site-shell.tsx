@@ -1,5 +1,6 @@
 import { Footer } from "@/components/site/layout/footer";
 import { Header } from "@/components/site/layout/header";
+import { MobileBookingBar } from "@/components/site/layout/mobile-booking-bar";
 import { SectionStack } from "@/components/site/layout/section-stack";
 import { ScrollCue } from "@/components/site/ui/scroll-cue";
 import type { PageName } from "@/components/site/data";
@@ -18,6 +19,7 @@ export function SiteShell({
       <SectionStack />
       <Footer />
       <ScrollCue />
+      <MobileBookingBar />
     </>
   );
 }

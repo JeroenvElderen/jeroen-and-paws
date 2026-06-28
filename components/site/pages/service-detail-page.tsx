@@ -10,7 +10,7 @@ import { ScrollReveal } from "@/components/site/ui/scroll-reveal";
 export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
   return (
     <SiteShell activePage="services">
-      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
+      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src={service.heroImage}
           alt={service.heroAlt}
@@ -39,7 +39,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
             <div>
@@ -77,7 +77,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-white px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-white px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-12 border-y border-[#1d1728]/10 py-16 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
@@ -107,7 +107,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
           </div>
           <div>
             <ScrollReveal delay={120}>
-            <div className="motion-media premium-image-reveal relative min-h-[420px] overflow-hidden rounded-3xl shadow-2xl shadow-black/10">
+            <div className="motion-media premium-image-reveal relative min-h-[300px] sm:min-h-[420px] overflow-hidden rounded-3xl shadow-2xl shadow-black/10">
               <Image
                 src={service.featureImage}
                 alt={service.featureAlt}
@@ -129,7 +129,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
         </div>
       </section>
 
-      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.2fr_.8fr] lg:items-center">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
@@ -152,7 +152,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
               ))}
             </ul>
           </div>
-          <div className="motion-card motion-card-light rounded-3xl border border-[#8b5cf6]/20 bg-white p-8 shadow-xl shadow-black/5">
+          <div className="motion-card motion-card-light rounded-3xl border border-[#8b5cf6]/20 bg-white p-5 sm:p-8 shadow-xl shadow-black/5">
             <Heart aria-hidden="true" className="motion-icon text-[#7c3aed]" />
             <p className="mt-5 leading-8 text-[#4f4857]">
               {service.reassurance}
@@ -168,10 +168,10 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
         </div>
       </section>
 
-      <section className="premium-dark-section bg-[#080b10] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#080b10] px-5 py-14 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="overflow-hidden rounded-3xl bg-[#130f1f] shadow-2xl shadow-black/20 lg:grid lg:grid-cols-[1fr_.95fr]">
-            <div className="p-8 text-[#fff7e8] sm:p-12">
+            <div className="p-5 text-[#fff7e8] sm:p-12">
               <p className="text-xs font-black uppercase tracking-[0.35em] text-[#c4b5fd]">
                 Ready to book?
               </p>
@@ -205,8 +205,8 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
                 {service.ctaLabel}
               </ButtonLink>
             </div>
-            <div className="bg-[#f7f4ef] p-8 sm:p-10">
-              <div className="motion-card motion-card-light mb-7 rounded-3xl bg-white p-7 shadow-xl shadow-black/10">
+            <div className="bg-[#f7f4ef] p-5 sm:p-10">
+              <div className="motion-card motion-card-light mb-7 rounded-3xl bg-white p-5 sm:p-7 shadow-xl shadow-black/10">
                 <p className="text-xs font-black uppercase tracking-[0.25em] text-[#8b5cf6]">
                   Starting from
                 </p>

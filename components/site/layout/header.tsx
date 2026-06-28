@@ -1,11 +1,11 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { Mail, Menu, MessageCircleHeart, Phone, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-import { navItems, type PageName } from "@/components/site/data";
+import { businessInfo, navItems, type PageName } from "@/components/site/data";
 import { ButtonLink } from "@/components/site/ui/button-link";
 
 export function Header({ activePage }: { activePage: PageName }) {
@@ -32,7 +32,7 @@ export function Header({ activePage }: { activePage: PageName }) {
         <button
           type="button"
           className="inline-flex rounded-full border border-[#8b5cf6]/25 bg-[#111821] p-2 text-[#c4b5fd] shadow-lg shadow-black/20 md:hidden"
-          aria-label="Toggle menu"
+          aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
           onClick={() => setIsOpen((open) => !open)}
         >
@@ -66,13 +66,18 @@ export function Header({ activePage }: { activePage: PageName }) {
 
       {isOpen ? (
         <nav
-          className="mobile-menu-panel border-t border-[#8b5cf6]/15 bg-[#080b10] px-4 pb-6 md:hidden"
+          className="mobile-menu-panel border-t border-[#8b5cf6]/15 bg-[#080b10] px-4 pb-7 md:hidden"
           aria-label="Mobile navigation"
         >
           <div className="mx-auto flex max-w-6xl flex-col gap-2 pt-4">
-            <p className="mb-2 rounded-2xl border border-[#8b5cf6]/15 bg-[#111821] px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-[#a78bfa]">
-              Premium care, one tap away
-            </p>
+            <div className="mb-2 rounded-2xl border border-[#8b5cf6]/15 bg-[#111821] px-4 py-3">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#a78bfa]">
+                Premium care, one tap away
+              </p>
+              <p className="mt-1 text-sm font-semibold text-[#b9aa99]">
+                {businessInfo.responseTime}
+              </p>
+            </div>
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -90,6 +95,32 @@ export function Header({ activePage }: { activePage: PageName }) {
             >
               Book a Free Meet & Greet
             </ButtonLink>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              <Link
+                href={`https://wa.me/${businessInfo.whatsappNumber}`}
+                className="grid min-h-12 place-items-center rounded-2xl bg-white/[0.04] text-[#c4b5fd] ring-1 ring-white/10"
+                aria-label="Message Jeroen & Paws on WhatsApp"
+                onClick={() => setIsOpen(false)}
+              >
+                <MessageCircleHeart aria-hidden="true" className="size-5" />
+              </Link>
+              <Link
+                href={`tel:${businessInfo.phoneHref}`}
+                className="grid min-h-12 place-items-center rounded-2xl bg-white/[0.04] text-[#c4b5fd] ring-1 ring-white/10"
+                aria-label="Call Jeroen & Paws"
+                onClick={() => setIsOpen(false)}
+              >
+                <Phone aria-hidden="true" className="size-5" />
+              </Link>
+              <Link
+                href={`mailto:${businessInfo.email}`}
+                className="grid min-h-12 place-items-center rounded-2xl bg-white/[0.04] text-[#c4b5fd] ring-1 ring-white/10"
+                aria-label="Email Jeroen & Paws"
+                onClick={() => setIsOpen(false)}
+              >
+                <Mail aria-hidden="true" className="size-5" />
+              </Link>
+            </div>
           </div>
         </nav>
       ) : null}
