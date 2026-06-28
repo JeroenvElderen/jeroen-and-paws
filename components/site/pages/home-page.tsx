@@ -1,10 +1,12 @@
 import { CalendarCheck, Heart, PawPrint } from "lucide-react";
 import Image from "next/image";
+import type { CSSProperties } from "react";
 
 import { SiteShell } from "@/components/site/layout/site-shell";
 import { ServicesPreview } from "@/components/site/sections/services-preview";
 import { Testimonials } from "@/components/site/sections/testimonials";
 import { ButtonLink } from "@/components/site/ui/button-link";
+import { ScrollReveal } from "@/components/site/ui/scroll-reveal";
 
 const carePromises = [
   "Qualified & Experienced Care",
@@ -22,14 +24,14 @@ const steps = [
 export function HomePage() {
   return (
     <SiteShell activePage="home">
-      <section className="relative isolate flex min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-10 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-10 lg:h-[calc(100svh-5rem)] lg:max-h-[calc(100svh-5rem)] lg:py-12">
+      <section className="premium-hero-orb relative isolate flex min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-10 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-10 lg:h-[calc(100svh-5rem)] lg:max-h-[calc(100svh-5rem)] lg:py-12">
         <Image
           src="/images/dogs/lakta.jpg"
           alt="A happy dog enjoying personalised care with Jeroen & Paws"
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-55"
+          className="premium-hero-image object-cover opacity-55"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.58),rgba(8,11,16,.22))]" />
         <div className="relative mx-auto flex w-full max-w-6xl flex-col justify-center">
@@ -37,7 +39,10 @@ export function HomePage() {
             Jeroen &amp; Paws
           </p>
           <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-[#fff7e8] sm:text-5xl lg:text-6xl">
-            Premium dog care for calmer days and happier tails.
+            <span className="premium-line-reveal">Premium dog care for</span>{" "}
+            <span className="premium-line-reveal" style={{ "--line-delay": "220ms" } as CSSProperties}>
+              calmer days and happier tails.
+            </span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-[#f5e9d5] sm:text-lg sm:leading-8">
             A boutique dog walking, home visit, day care, boarding, and training service shaped around your dog&apos;s character, comfort, and routine—with thoughtful updates every step of the way.
@@ -59,9 +64,10 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="motion-media relative min-h-[440px] overflow-hidden rounded-xl shadow-2xl shadow-black/10">
+          <ScrollReveal>
+            <div className="motion-media premium-image-reveal relative min-h-[440px] overflow-hidden rounded-xl shadow-2xl shadow-black/10">
             <Image
               src="/images/dogs/ace.jpg"
               alt="Dog enjoying a calm Jeroen & Paws walk"
@@ -69,7 +75,9 @@ export function HomePage() {
               sizes="(min-width: 1024px) 560px, 100vw"
               className="object-cover"
             />
-          </div>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal delay={120}>
           <div>
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
               THE JEROEN & PAWS DIFFERENCE
@@ -84,10 +92,11 @@ export function HomePage() {
               Meet Jeroen
             </ButtonLink>
           </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      <section className="bg-[#100d19] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#100d19] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
@@ -102,13 +111,13 @@ export function HomePage() {
               Explore Services
             </ButtonLink>
           </div>
-          <div className="mt-10">
+          <ScrollReveal className="mt-10">
             <ServicesPreview />
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto max-w-6xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             How it works
@@ -118,7 +127,8 @@ export function HomePage() {
           </h2>
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             {steps.map(([Icon, number, title, text]) => (
-              <article key={title}>
+              <ScrollReveal key={title} delay={Number(number) * 90}>
+                <article>
                 <div className="mx-auto grid size-16 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
                   <Icon aria-hidden="true" />
                 </div>
@@ -126,12 +136,13 @@ export function HomePage() {
                 <h3 className="mt-2 font-semibold">{title}</h3>
                 <p className="mt-3 text-sm leading-6 text-[#4f4857]">{text}</p>
               </article>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-[#100d19] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#100d19] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
@@ -141,9 +152,9 @@ export function HomePage() {
               Trusted by dogs. Recommended by discerning owners.
             </h2>
           </div>
-          <div className="mt-10">
+          <ScrollReveal className="mt-10">
             <Testimonials />
-          </div>
+          </ScrollReveal>
         </div>
       </section>
     </SiteShell>

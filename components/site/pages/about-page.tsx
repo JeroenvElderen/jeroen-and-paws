@@ -22,6 +22,7 @@ import Image from "next/image";
 
 import { SiteShell } from "@/components/site/layout/site-shell";
 import { ButtonLink } from "@/components/site/ui/button-link";
+import { ScrollReveal } from "@/components/site/ui/scroll-reveal";
 
 const values = [
   [
@@ -196,14 +197,14 @@ const personalNotes = [
 export function AboutPageContent() {
   return (
     <SiteShell activePage="about">
-      <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
+      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src="/images/dogs/leia.jpg"
           alt="Jeroen caring for a dog outdoors"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[center_47%] opacity-55"
+          className="premium-hero-image object-cover object-[center_47%] opacity-55"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
         <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">
@@ -226,9 +227,10 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="motion-media relative min-h-[440px] overflow-hidden rounded-xl">
+          <ScrollReveal>
+            <div className="motion-media premium-image-reveal relative min-h-[440px] overflow-hidden rounded-xl">
             <Image
               src="/images/dogs/menola.jpeg"
               alt="A calm outdoor dog care moment"
@@ -236,7 +238,9 @@ export function AboutPageContent() {
               sizes="(min-width: 1024px) 560px, 100vw"
               className="object-cover"
             />
-          </div>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal delay={120}>
           <div>
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
               My story
@@ -280,10 +284,11 @@ export function AboutPageContent() {
               </ul>
             </div>
           </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      <section className="bg-[#100d19] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#100d19] px-6 py-20 sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
@@ -302,7 +307,8 @@ export function AboutPageContent() {
             </p>
           </div>
           <div className="grid gap-5 sm:grid-cols-3">
-            {values.map(([Icon, title, text]) => (
+            {values.map(([Icon, title, text], index) => (
+              <ScrollReveal key={title} delay={index * 90}>
               <article
                 key={title}
                 className="motion-card motion-card-dark rounded-xl border border-[#8b5cf6]/20 bg-[#171f2a] p-6"
@@ -311,12 +317,13 @@ export function AboutPageContent() {
                 <h3 className="mt-4 font-semibold text-[#fff7e8]">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-[#d8cab8]">{text}</p>
               </article>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto max-w-6xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             BEFORE WE BEGIN
@@ -328,8 +335,9 @@ export function AboutPageContent() {
             your dog.
           </h2>
           <div className="mt-14 grid gap-8 md:grid-cols-4">
-            {prepSteps.map(([Icon, number, title, text]) => (
-              <article key={title} className="relative">
+            {prepSteps.map(([Icon, number, title, text], index) => (
+              <ScrollReveal key={title} delay={index * 80}>
+              <article className="relative">
                 <div className="mx-auto grid size-16 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
                   <Icon />
                 </div>
@@ -339,12 +347,13 @@ export function AboutPageContent() {
                 <h3 className="mt-2 font-semibold">{title}</h3>
                 <p className="mt-3 text-sm leading-6 text-[#4f4857]">{text}</p>
               </article>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="grid bg-[#100d19] lg:grid-cols-2">
+      <section className="premium-dark-section grid bg-[#100d19] lg:grid-cols-2">
         <div className="relative min-h-[440px]">
           <Image
             src="/images/dogs/shadow.jpg"
@@ -381,7 +390,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto max-w-6xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             Adventure together
@@ -393,7 +402,8 @@ export function AboutPageContent() {
             </span>
           </h2>
           <div className="mt-10 grid gap-4 md:grid-cols-4">
-            {experienceLocations.map(([Icon, title, text, img]) => (
+            {experienceLocations.map(([Icon, title, text, img], index) => (
+              <ScrollReveal key={title} delay={index * 80}>
               <article
                 key={title}
                 className="motion-card motion-card-dark motion-media relative overflow-hidden rounded-xl text-left text-white"
@@ -412,6 +422,7 @@ export function AboutPageContent() {
                   <p className="text-sm text-[#f5e9d5]">{text}</p>
                 </div>
               </article>
+              </ScrollReveal>
             ))}
           </div>
           <p className="mt-8 text-[#4f4857]">
@@ -421,7 +432,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="grid bg-[#100d19] lg:grid-cols-2">
+      <section className="premium-dark-section grid bg-[#100d19] lg:grid-cols-2">
         <div className="px-6 py-20 sm:px-12 lg:px-20">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
             Experience that matters
@@ -466,7 +477,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto max-w-6xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             The session flow
@@ -476,20 +487,22 @@ export function AboutPageContent() {
             <span className="text-[#7c3aed]">unfolds naturally.</span>
           </h2>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-7">
-            {sessionFlow.map(([Icon, title, text]) => (
-              <article key={title}>
+            {sessionFlow.map(([Icon, title, text], index) => (
+              <ScrollReveal key={title} delay={index * 55}>
+              <article>
                 <div className="mx-auto grid size-14 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
                   <Icon className="h-5 w-5" />
                 </div>
                 <h3 className="mt-4 font-semibold">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-[#4f4857]">{text}</p>
               </article>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="grid bg-[#f7f4ef] text-[#1d1728] lg:grid-cols-[.9fr_1.1fr]">
+      <section className="premium-cream-texture grid bg-[#f7f4ef] text-[#1d1728] lg:grid-cols-[.9fr_1.1fr]">
         <div className="px-6 py-20 sm:px-12 lg:px-20">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             Frequently Asked Questions
@@ -556,7 +569,7 @@ export function AboutPageContent() {
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
@@ -574,7 +587,8 @@ export function AboutPageContent() {
             </p>
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {personalNotes.map(([Icon, title, text, src]) => (
+            {personalNotes.map(([Icon, title, text, src], index) => (
+              <ScrollReveal key={title} delay={index * 90}>
               <article
                 key={title}
                 className="motion-card motion-card-light overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
@@ -596,18 +610,19 @@ export function AboutPageContent() {
                   </p>
                 </div>
               </article>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative isolate overflow-hidden px-6 py-24 text-[#fff7e8] sm:px-8">
+      <section className="premium-hero-orb relative isolate overflow-hidden px-6 py-24 text-[#fff7e8] sm:px-8">
         <Image
           src="/images/dogs/honey.jpg"
           alt="Dog looking across a misty mountain landscape"
           fill
           sizes="100vw"
-          className="-z-10 object-cover"
+          className="premium-hero-image -z-10 object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-black/65" />
         <div className="mx-auto max-w-6xl">

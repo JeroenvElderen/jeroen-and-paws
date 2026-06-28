@@ -5,18 +5,19 @@ import { type ServiceDetail } from "@/components/site/service-details";
 import { SiteShell } from "@/components/site/layout/site-shell";
 import { PricingCards } from "@/components/site/sections/pricing-section";
 import { ButtonLink } from "@/components/site/ui/button-link";
+import { ScrollReveal } from "@/components/site/ui/scroll-reveal";
 
 export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
   return (
     <SiteShell activePage="services">
-      <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
+      <section className="premium-hero-orb relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#080b10] px-6 py-16 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
           src={service.heroImage}
           alt={service.heroAlt}
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-60"
+          className="premium-hero-image object-cover opacity-60"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.96),rgba(8,11,16,.58),rgba(8,11,16,.18))]" />
         <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">
@@ -38,7 +39,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
             <div>
@@ -53,11 +54,11 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
               </p>
             </div>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {service.included.map((item) => {
+              {service.included.map((item, index) => {
                 const Icon = item.icon;
                 return (
+                  <ScrollReveal key={item.title} delay={index * 80}>
                   <article
-                    key={item.title}
                     className="motion-card motion-card-light rounded-3xl bg-white p-6 text-center shadow-xl shadow-black/5 ring-1 ring-[#1d1728]/5"
                   >
                     <div className="motion-icon mx-auto grid size-16 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
@@ -68,6 +69,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
                       {item.text}
                     </p>
                   </article>
+                  </ScrollReveal>
                 );
               })}
             </div>
@@ -75,7 +77,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
         </div>
       </section>
 
-      <section className="bg-white px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-white px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-12 border-y border-[#1d1728]/10 py-16 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
@@ -104,7 +106,8 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
             </ol>
           </div>
           <div>
-            <div className="motion-media relative min-h-[420px] overflow-hidden rounded-3xl shadow-2xl shadow-black/10">
+            <ScrollReveal delay={120}>
+            <div className="motion-media premium-image-reveal relative min-h-[420px] overflow-hidden rounded-3xl shadow-2xl shadow-black/10">
               <Image
                 src={service.featureImage}
                 alt={service.featureAlt}
@@ -113,6 +116,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
                 className="object-cover"
               />
             </div>
+            </ScrollReveal>
             <div className="motion-card motion-card-light mt-5 flex items-center gap-5 rounded-3xl bg-[#f3edf8] p-6">
               <div className="motion-icon grid size-14 shrink-0 place-items-center rounded-full bg-[#7c3aed] text-white">
                 <PawPrint aria-hidden="true" />
@@ -125,7 +129,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
         </div>
       </section>
 
-      <section className="bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
+      <section className="premium-cream-texture bg-[#f7f4ef] px-6 py-20 text-[#1d1728] sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.2fr_.8fr] lg:items-center">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
@@ -164,7 +168,7 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
         </div>
       </section>
 
-      <section className="bg-[#080b10] px-6 py-20 sm:px-8">
+      <section className="premium-dark-section bg-[#080b10] px-6 py-20 sm:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="overflow-hidden rounded-3xl bg-[#130f1f] shadow-2xl shadow-black/20 lg:grid lg:grid-cols-[1fr_.95fr]">
             <div className="p-8 text-[#fff7e8] sm:p-12">

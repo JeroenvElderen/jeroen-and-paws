@@ -51,7 +51,8 @@ export function Header({ activePage }: { activePage: PageName }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-full px-5 py-2 text-sm font-bold transition ${activePage === item.page ? "bg-[#24163f] text-[#c4b5fd]" : "text-[#b9aa99] hover:bg-[#111821] hover:text-[#c4b5fd]"}`}
+              aria-current={activePage === item.page ? "page" : undefined}
+              className={`premium-nav-link rounded-full px-5 py-2 text-sm font-bold transition ${activePage === item.page ? "text-[#c4b5fd]" : "text-[#b9aa99] hover:text-[#c4b5fd]"}`}
             >
               {item.label}
             </Link>
