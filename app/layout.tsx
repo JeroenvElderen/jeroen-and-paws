@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { businessInfo } from "@/components/site/data";
 import { StructuredData } from "@/components/site/structured-data";
@@ -6,6 +6,11 @@ import { StructuredData } from "@/components/site/structured-data";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || businessInfo.siteUrl;
+
+export const viewport: Viewport = {
+  themeColor: "#080b10",
+  colorScheme: "dark",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
