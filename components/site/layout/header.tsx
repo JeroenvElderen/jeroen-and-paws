@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Menu, MessageCircleHeart, Phone, X } from "lucide-react";
+import { Mail, Menu, MessageCircleHeart, Phone, UserCircle, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -59,9 +59,19 @@ export function Header({ activePage }: { activePage: PageName }) {
           ))}
         </nav>
 
-        <ButtonLink href="/contact" className="hidden max-md:hidden md:inline-flex">
-          Book a Free Meet & Greet
-        </ButtonLink>
+        <div className="hidden items-center gap-3 md:flex">
+          <Link
+            href="/portal"
+            aria-label="Open customer profile portal"
+            aria-current={activePage === "portal" ? "page" : undefined}
+            className={`grid size-11 place-items-center rounded-full border transition ${activePage === "portal" ? "border-[#8b5cf6]/50 bg-[#24163f] text-[#ddd6fe]" : "border-[#8b5cf6]/25 bg-[#111821] text-[#c4b5fd] hover:border-[#8b5cf6]/45 hover:bg-[#171f2a]"}`}
+          >
+            <UserCircle aria-hidden="true" className="size-5" />
+          </Link>
+          <ButtonLink href="/contact" className="hidden max-md:hidden md:inline-flex">
+            Book a Free Meet & Greet
+          </ButtonLink>
+        </div>
       </div>
 
       {isOpen ? (
@@ -95,7 +105,16 @@ export function Header({ activePage }: { activePage: PageName }) {
             >
               Book a Free Meet & Greet
             </ButtonLink>
-            <div className="mt-2 grid grid-cols-3 gap-2">
+            <div className="mt-2 grid grid-cols-4 gap-2">
+              <Link
+                href="/portal"
+                className={`grid min-h-12 place-items-center rounded-2xl ring-1 ${activePage === "portal" ? "bg-[#24163f] text-[#ddd6fe] ring-[#8b5cf6]/25" : "bg-white/[0.04] text-[#c4b5fd] ring-white/10"}`}
+                aria-label="Open customer profile portal"
+                aria-current={activePage === "portal" ? "page" : undefined}
+                onClick={() => setIsOpen(false)}
+              >
+                <UserCircle aria-hidden="true" className="size-5" />
+              </Link>
               <Link
                 href={`https://wa.me/${businessInfo.whatsappNumber}`}
                 className="grid min-h-12 place-items-center rounded-2xl bg-white/[0.04] text-[#c4b5fd] ring-1 ring-white/10"

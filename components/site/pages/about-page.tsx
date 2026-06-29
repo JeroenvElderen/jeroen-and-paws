@@ -199,12 +199,12 @@ export function AboutPageContent() {
     <SiteShell activePage="about">
       <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
-          src="/images/dogs/leia.jpg"
+          src="/images/dogs/melaktacompass.jpeg"
           alt="Jeroen caring for a dog outdoors"
           fill
           priority
           sizes="100vw"
-          className="premium-hero-image object-cover object-[center_47%] opacity-55"
+          className="premium-hero-image object-cover object-[center_85%] opacity-55"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
         <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">
@@ -232,7 +232,7 @@ export function AboutPageContent() {
           <ScrollReveal>
             <div className="motion-media premium-image-reveal relative min-h-[300px] sm:min-h-[440px] overflow-hidden rounded-xl">
             <Image
-              src="/images/dogs/menola.jpeg"
+              src="/images/dogs/melakta1.jpeg"
               alt="A calm outdoor dog care moment"
               fill
               sizes="(min-width: 1024px) 560px, 100vw"

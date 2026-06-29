@@ -1,7 +1,7 @@
 // Shared data types used by website content files. Editing this changes TypeScript shapes only, not visible page copy.
 import type { LucideIcon } from "lucide-react";
 
-export type PageName = "home" | "about" | "services" | "contact" | "policies";
+export type PageName = "home" | "about" | "services" | "contact" | "policies" | "portal";
 
 export type IconCard = {
   title: string;
