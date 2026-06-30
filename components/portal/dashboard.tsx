@@ -1,23 +1,12 @@
+"use client";
+
 import { ArrowRight, CalendarDays, Camera, Check, Heart, MapPin, MessageCircle, PawPrint } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { CountdownTimer } from "./countdown-timer";
-import { portalDashboardData } from "./portal-data";
-
-const data = portalDashboardData;
-
-const journey = [
-  [Check, "Booking", data.upcomingBooking.status, true],
-  [Heart, "Care plan", "Shared with Jeroen", true],
-  [Camera, "Session day", formatDate(data.upcomingBooking.startsAt), false],
-  [MessageCircle, "Live updates", "Shared during care", false],
-] as const;
-
-const nextSteps = [
-  [CalendarDays, data.upcomingBooking.serviceName, `Jeroen arrives for ${formatTime(data.upcomingBooking.startsAt)} – ${formatTime(data.upcomingBooking.endsAt)}.`],
-  [Camera, "Photo update", "Session photos and notes appear here as soon as they are shared."],
-] as const;
+import { mapPortalDashboardRow, portalDashboardData, type PortalDashboardData, type PortalDashboardViewRow } from "./portal-data";
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("en-IE", { dateStyle: "full" }).format(new Date(date));
@@ -48,8 +37,83 @@ function PortalCard({
 }
 
 export function Dashboard() {
+  const [data, setData] = useState<PortalDashboardData>(portalDashboardData);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadDashboardData() {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseAnonKey) {
+        setError("Connect Supabase to show live portal data.");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${supabaseUrl.replace(/\/$/, "")}/rest/v1/portal_dashboard?select=*&limit=1`,
+          {
+            headers: {
+              apikey: supabaseAnonKey,
+              Authorization: `Bearer ${supabaseAnonKey}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error(`Supabase returned ${response.status}`);
+        }
+
+        const rows = (await response.json()) as PortalDashboardViewRow[];
+        const row = rows[0];
+
+        if (!isMounted) return;
+
+        if (row) {
+          setData(mapPortalDashboardRow(row));
+          setError(null);
+        } else {
+          setError("No portal dashboard records were returned yet.");
+        }
+      } catch (loadError) {
+        if (!isMounted) return;
+        setError(loadError instanceof Error ? loadError.message : "Unable to load portal data.");
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    void loadDashboardData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const journey = [
+    [Check, "Booking", data.upcomingBooking.status, true],
+    [Heart, "Care plan", "Shared with Jeroen", true],
+    [Camera, "Session day", formatDate(data.upcomingBooking.startsAt), false],
+    [MessageCircle, "Live updates", "Shared during care", false],
+  ] as const;
+
+  const nextSteps = [
+    [CalendarDays, data.upcomingBooking.serviceName, `Jeroen arrives for ${formatTime(data.upcomingBooking.startsAt)} – ${formatTime(data.upcomingBooking.endsAt)}.`],
+    [Camera, "Photo update", "Session photos and notes appear here as soon as they are shared."],
+  ] as const;
+
   return (
     <div className="px-4 py-5 sm:px-8 lg:px-10 lg:py-8">
+      {(isLoading || error) && (
+        <div className="mx-auto mb-5 max-w-6xl rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70] shadow-[0_12px_30px_rgba(29,23,40,0.06)]">
+          {isLoading ? "Loading live portal data from Supabase…" : `${error} Showing the fallback portal preview until live data is available.`}
+        </div>
+      )}
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-4">
         <div>
           <Link href="/" className="mb-3 inline-flex lg:hidden">

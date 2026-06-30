@@ -42,16 +42,20 @@ npm run test         # Run Vitest tests
 
 ## Environment variables
 
-### Public site and chat settings
+### Public site, chat, and portal settings
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://jeroenandpaws.com
 NEXT_PUBLIC_WHATSAPP_NUMBER=00353872473099
 NEXT_PUBLIC_WHATSAPP_CHAT_URL=https://wa.me/353872473099
 NEXT_PUBLIC_LIVE_CHAT_URL=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 `NEXT_PUBLIC_WHATSAPP_NUMBER` is preferred when you want service-card buttons to create prefilled WhatsApp messages. If `NEXT_PUBLIC_WHATSAPP_CHAT_URL` is used, messages are appended only for WhatsApp-compatible URLs.
+
+The portal dashboard reads from the `public.portal_dashboard` Supabase view created by `supabase/portal-dashboard.sql`. Add your project URL and anon key to the public Supabase variables above so the dashboard can replace the fallback preview with live booking and session data.
 
 ### Contact form email setup
 
