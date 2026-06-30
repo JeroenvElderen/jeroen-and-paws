@@ -36,7 +36,7 @@ function PortalCard({
   );
 }
 
-export function Dashboard() {
+export function Dashboard({ accessToken }: { accessToken?: string }) {
   const [data, setData] = useState<PortalDashboardData>(portalDashboardData);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export function Dashboard() {
           {
             headers: {
               apikey: supabaseAnonKey,
-              Authorization: `Bearer ${supabaseAnonKey}`,
+              Authorization: `Bearer ${accessToken ?? supabaseAnonKey}`,
             },
           },
         );
@@ -93,7 +93,7 @@ export function Dashboard() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [accessToken]);
 
   const journey = [
     [Check, "Booking", data.upcomingBooking.status, true],
