@@ -1,36 +1,57 @@
 export const dogPlaceholderImage =
   "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1400&q=80";
 
-export const portalDashboardData = {
-  clientName: "Sarah",
-  dogName: "Teddy",
-  dogPhotoUrl: dogPlaceholderImage,
-  heroPhotoUrl: dogPlaceholderImage,
-  upcomingBooking: {
-    serviceName: "Premium",
-    startsAt: "2026-07-12T10:00:00+01:00",
-    endsAt: "2026-07-12T12:00:00+01:00",
-    location: "Greystones, County Wicklow",
-    imageUrl: dogPlaceholderImage,
-    status: "Confirmed",
-  },
-  latestSession: {
-    serviceName: "Premium",
-    sessionDate: "2026-06-18T10:00:00+01:00",
-    imageUrl: dogPlaceholderImage,
-    status: "Gallery delivered ✓",
-  },
-  latestUpdate:
-    "You will receive live notes, photos, and arrival updates here as soon as Jeroen shares them from Supabase.",
+export type PortalDashboardData = {
+  clientId: string | null;
+  clientName: string;
+  clientFirstName: string;
+  clientSince: string;
+  avatarUrl: string;
+  dogNames: string;
+  dogPhotoUrl: string;
+  heroPhotoUrl: string;
+  upcomingBooking: null | {
+    id: string;
+    serviceName: string;
+    startsAt: string;
+    endsAt: string;
+    location: string;
+    imageUrl: string;
+    status: string;
+  };
+  latestSession: null | {
+    serviceName: string;
+    sessionDate: string;
+    imageUrl: string;
+    status: string;
+  };
+  latestUpdate: string;
 };
 
-export type PortalDashboardData = typeof portalDashboardData;
+export const emptyPortalDashboardData: PortalDashboardData = {
+  clientId: null,
+  clientName: "there",
+  clientFirstName: "there",
+  clientSince: new Date().toISOString(),
+  avatarUrl: dogPlaceholderImage,
+  dogNames: "your dog",
+  dogPhotoUrl: dogPlaceholderImage,
+  heroPhotoUrl: dogPlaceholderImage,
+  upcomingBooking: null,
+  latestSession: null,
+  latestUpdate: "Live notes, photos, and arrival updates appear here as soon as Jeroen shares them.",
+};
 
 export type PortalDashboardViewRow = {
+  client_id: string | null;
   client_name: string | null;
-  dog_name: string | null;
+  client_first_name: string | null;
+  client_since: string | null;
+  avatar_url: string | null;
+  dog_names: string | null;
   dog_photo_url: string | null;
   hero_photo_url: string | null;
+  upcoming_booking_id: string | null;
   service_name: string | null;
   starts_at: string | null;
   ends_at: string | null;
@@ -43,35 +64,38 @@ export type PortalDashboardViewRow = {
   latest_update_shared_at: string | null;
 };
 
-export function mapPortalDashboardRow(row: PortalDashboardViewRow): PortalDashboardData {
-  const dogName = row.dog_name?.trim() || "your dog";
-  const serviceName = row.service_name?.trim() || "Upcoming care";
-  const startsAt = row.starts_at || new Date().toISOString();
-  const endsAt = row.ends_at || startsAt;
+export function mapPortalDashboardRows(rows: unknown): PortalDashboardData {
+  const row = Array.isArray(rows) ? (rows[0] as PortalDashboardViewRow | undefined) : undefined;
+  if (!row) return emptyPortalDashboardData;
+
+  const dogNames = row.dog_names?.trim() || "your dog";
   const imageUrl = row.booking_image_url || row.dog_photo_url || dogPlaceholderImage;
 
   return {
-    clientName: firstName(row.client_name) || "there",
-    dogName,
+    clientId: row.client_id,
+    clientName: row.client_name?.trim() || "there",
+    clientFirstName: row.client_first_name?.trim() || firstName(row.client_name) || "there",
+    clientSince: row.client_since || new Date().toISOString(),
+    avatarUrl: row.avatar_url || dogPlaceholderImage,
+    dogNames,
     dogPhotoUrl: row.dog_photo_url || dogPlaceholderImage,
     heroPhotoUrl: row.hero_photo_url || row.dog_photo_url || dogPlaceholderImage,
-    upcomingBooking: {
-      serviceName,
-      startsAt,
-      endsAt,
+    upcomingBooking: row.upcoming_booking_id && row.starts_at && row.ends_at ? {
+      id: row.upcoming_booking_id,
+      serviceName: row.service_name?.trim() || "Upcoming care",
+      startsAt: row.starts_at,
+      endsAt: row.ends_at,
       location: row.location?.trim() || "Location to be confirmed",
       imageUrl,
       status: formatStatus(row.booking_status) || "Confirmed",
-    },
-    latestSession: {
-      serviceName: row.latest_update_title?.trim() || serviceName,
-      sessionDate: row.latest_update_shared_at || startsAt,
+    } : null,
+    latestSession: row.latest_update_shared_at ? {
+      serviceName: row.latest_update_title?.trim() || row.service_name?.trim() || "Session update",
+      sessionDate: row.latest_update_shared_at,
       imageUrl: row.latest_update_image_url || imageUrl,
-      status: row.latest_update_title ? "Update shared ✓" : "Awaiting first update",
-    },
-    latestUpdate:
-      row.latest_update_body?.trim() ||
-      "You will receive live notes, photos, and arrival updates here as soon as Jeroen shares them.",
+      status: row.latest_update_title ? "Update shared ✓" : "Gallery update ✓",
+    } : null,
+    latestUpdate: row.latest_update_body?.trim() || "Live notes, photos, and arrival updates appear here as soon as Jeroen shares them.",
   };
 }
 
@@ -81,9 +105,5 @@ function firstName(value: string | null) {
 
 function formatStatus(value: string | null) {
   if (!value) return "";
-  return value
-    .replace(/[-_]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/^./, (letter) => letter.toUpperCase());
+  return value.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim().replace(/^./, (letter) => letter.toUpperCase());
 }
