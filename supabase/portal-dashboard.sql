@@ -382,3 +382,27 @@ select
   i.notes
 from public.portal_outlook_imports i
 where i.linked_booking_id is null;
+-- Profile tab live-data fields and write policies.
+alter table public.portal_clients
+  add column if not exists phone text,
+  add column if not exists address text,
+  add column if not exists profile_photo_url text;
+
+alter table public.portal_dogs
+  add column if not exists breed text,
+  add column if not exists birth_date date;
+
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_clients' and policyname = 'Clients can update their own portal profile') then
+    execute 'create policy "Clients can update their own portal profile" on public.portal_clients for update using (auth.uid() = auth_user_id) with check (auth.uid() = auth_user_id)';
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Clients can add their dogs') then
+    execute 'create policy "Clients can add their dogs" on public.portal_dogs for insert with check (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Clients can update their dogs') then
+    execute 'create policy "Clients can update their dogs" on public.portal_dogs for update using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid())) with check (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
+  end if;
+end $$;

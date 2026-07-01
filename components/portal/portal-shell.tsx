@@ -380,7 +380,7 @@ export function PortalShell() {
     }
     if (activeView === "invoices") return <Invoices />;
     if (activeView === "profile") {
-      return <Profile onBackToDashboard={() => setActiveView("dashboard")} />;
+      return <Profile accessToken={portalSession.accessToken} onBackToDashboard={() => setActiveView("dashboard")} />;
     }
     if (activeView === "faq") {
       return <FAQ onBackToDashboard={() => setActiveView("dashboard")} />;
