@@ -1,6 +1,20 @@
 "use client";
 
-import { ArrowLeft, Bell, CalendarDays, ChevronRight, Edit3, FileText, Heart, ImageIcon, LockKeyhole, Mail, MapPin, PawPrint, Phone, Plus, Save, ShieldCheck } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronRight,
+  Edit3,
+  FileText,
+  ImageIcon,
+  LockKeyhole,
+  Mail,
+  MapPin,
+  PawPrint,
+  Phone,
+  Plus,
+  Save,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -8,9 +22,28 @@ import { useState } from "react";
 import { dogPlaceholderImage } from "./portal-data";
 import { useSupabaseLiveQuery } from "./use-supabase-live-query";
 
-type DogRow = { id: string; name: string; breed: string | null; age: string | null; status: string | null; profile_photo_url: string | null; notes: string | null; };
-type ProfileRow = { client_id: string; full_name: string; email: string; phone: string | null; address: string | null; avatar_url: string | null; created_at: string; dog_names: string | null; dog_photo_url: string | null; dogs: DogRow[] | null; };
-type ActivityRow = { id: string; activity_type: string; title: string; body: string | null; created_at: string; };
+type DogRow = {
+  id: string;
+  name: string;
+  breed: string | null;
+  age: string | null;
+  status: string | null;
+  profile_photo_url: string | null;
+  notes: string | null;
+};
+type ProfileRow = {
+  client_id: string;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  address: string | null;
+  avatar_url: string | null;
+  created_at: string;
+  dog_names: string | null;
+  dog_photo_url: string | null;
+  dogs: DogRow[] | null;
+};
+type ActivityRow = { id: string; activity_type: string; title: string; body: string | null; created_at: string };
 type ProfileData = { profile: ProfileRow | null; activity: ActivityRow[] };
 
 function mapProfileRows(rows: unknown): ProfileData {
@@ -23,8 +56,18 @@ function Panel({ children, className = "" }: { children: React.ReactNode; classN
   return <section className={`rounded-[1.1rem] border border-[#24163f]/8 bg-white shadow-[0_18px_55px_rgba(29,23,40,0.07)] ${className}`}>{children}</section>;
 }
 
-function SectionTitle({ children, action = "Edit" }: { children: React.ReactNode; action?: string }) {
-  return <div className="flex items-start justify-between gap-4"><h2 className="font-serif text-2xl text-[#241f30]">{children}</h2><button type="button" className="inline-flex items-center gap-2 text-sm font-semibold text-[#5b2aa0]"><Edit3 className="size-4" />{action}</button></div>;
+function SectionTitle({ children, action = "Edit", onAction, showIcon = true }: { children: React.ReactNode; action?: string; onAction?: () => void; showIcon?: boolean }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <h2 className="font-serif text-2xl text-[#241f30]">{children}</h2>
+      {onAction ? (
+        <button type="button" onClick={onAction} className="inline-flex items-center gap-2 text-sm font-semibold text-[#5b2aa0]">
+          {showIcon ? <Edit3 className="size-4" /> : null}
+          {action}
+        </button>
+      ) : null}
+    </div>
+  );
 }
 
 function formatSince(value?: string) {
@@ -39,20 +82,26 @@ function formatActivityTime(value: string) {
 }
 
 function InfoLine({ label, value }: { label: string; value: string }) {
-  return <div className="border-b border-[#24163f]/10 pb-4 last:border-0"><p className="text-sm font-semibold text-[#17132a]">{label}</p><p className="mt-2 text-sm text-[#2f2938]">{value}</p></div>;
+  return (
+    <div className="border-b border-[#24163f]/10 pb-4 last:border-0">
+      <p className="text-sm font-semibold text-[#17132a]">{label}</p>
+      <p className="mt-2 text-sm text-[#2f2938]">{value}</p>
+    </div>
+  );
 }
 
-const preferences = [
-  [Bell, "Notification Preferences", "Email, SMS"],
-  [PawPrint, "Service Preferences", "Walks, Training, Drop-ins"],
-  [Heart, "Dog Preferences", "Size, Breed experience, Behaviour"],
-  [ShieldCheck, "Privacy Settings", "Manage your data and privacy"],
-] as const;
-
 export function Profile({ accessToken, onBackToDashboard }: { accessToken?: string; onBackToDashboard: () => void }) {
-  const { data, isLoading, error } = useSupabaseLiveQuery({ accessToken, fallback: { profile: null, activity: [] } as ProfileData, path: "/rest/v1/portal_profile?select=*&limit=1", realtimeTables: ["portal_clients", "portal_dogs", "portal_client_activity"], map: mapProfileRows });
+  const { data, isLoading, error } = useSupabaseLiveQuery({
+    accessToken,
+    fallback: { profile: null, activity: [] } as ProfileData,
+    path: "/rest/v1/portal_profile?select=*&limit=1",
+    realtimeTables: ["portal_clients", "portal_dogs", "portal_client_activity"],
+    map: mapProfileRows,
+  });
   const [message, setMessage] = useState<string | null>(null);
   const [isDogFormOpen, setIsDogFormOpen] = useState(false);
+  const [isProfileFormOpen, setIsProfileFormOpen] = useState(false);
+  const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
 
   function getSupabaseWriteConfig() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
@@ -73,8 +122,53 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
     if (!config) return;
     const { url, key, accessToken } = config;
     const formData = new FormData(event.currentTarget);
-    const response = await fetch(`${url}/rest/v1/portal_clients?id=eq.${data.profile.client_id}`, { method: "PATCH", headers: { apikey: key, Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ full_name: formData.get("full_name"), phone: formData.get("phone"), address: formData.get("address"), avatar_url: formData.get("avatar_url") }) });
+    const response = await fetch(`${url}/rest/v1/portal_clients?id=eq.${data.profile.client_id}`, {
+      method: "PATCH",
+      headers: { apikey: key, Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({
+        full_name: formData.get("full_name"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        address: formData.get("address"),
+        avatar_url: formData.get("avatar_url"),
+      }),
+    });
     setMessage(response.ok ? "Profile saved. Realtime will refresh this page automatically." : "Unable to save profile.");
+    if (response.ok) setIsProfileFormOpen(false);
+  }
+
+  async function savePassword(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const config = getSupabaseWriteConfig();
+    if (!config) return;
+    const { url, key, accessToken } = config;
+    const formData = new FormData(event.currentTarget);
+    const password = String(formData.get("password") ?? "");
+    const confirmPassword = String(formData.get("confirm_password") ?? "");
+
+    if (password.length < 6) {
+      setMessage("Choose a password with at least 6 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+
+    const response = await fetch(`${url}/auth/v1/user`, {
+      method: "PUT",
+      headers: { apikey: key, Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+
+    if (response.ok) {
+      event.currentTarget.reset();
+      setIsPasswordFormOpen(false);
+      setMessage("Password updated successfully.");
+    } else {
+      setMessage("Unable to update password. Please try again.");
+    }
   }
 
   async function saveDog(event: React.FormEvent<HTMLFormElement>) {
@@ -115,10 +209,126 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
     }
   }
 
-
   const profile = data.profile;
   const dogs = profile?.dogs?.length ? profile.dogs : [];
-  return <div className="px-4 py-6 text-[#17132a] sm:px-8 lg:px-10 lg:py-10">
-    <div className="mx-auto mt-8 max-w-6xl space-y-6">{(isLoading || error || !profile) ? <p className="rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70]">{isLoading ? "Loading live profile…" : error ?? "No profile data yet."}</p> : null}{profile ? <><Panel className="overflow-hidden p-6 sm:p-8"><div className="grid gap-8 lg:grid-cols-[14rem_1fr_18rem] lg:items-center"><div className="relative mx-auto size-44 lg:mx-0"><Image src={profile.avatar_url || profile.dog_photo_url || dogPlaceholderImage} alt={`${profile.full_name} profile`} fill sizes="176px" className="rounded-full object-cover ring-4 ring-[#ead9b8]" /><span className="absolute bottom-3 right-0 grid size-12 place-items-center rounded-full bg-white text-[#4d2e91] shadow-[0_12px_28px_rgba(29,23,40,0.18)]"><Edit3 className="size-5" /></span></div><div><h2 className="font-serif text-3xl text-[#241f30]">{profile.full_name}</h2><div className="mt-6 space-y-4 text-sm text-[#2f2938]"><p className="flex items-center gap-3"><Mail className="size-4 text-[#4d2e91]" />{profile.email}</p><p className="flex items-center gap-3"><Phone className="size-4 text-[#4d2e91]" />{profile.phone || "Add a phone number"}</p><p className="flex items-center gap-3"><MapPin className="size-4 text-[#4d2e91]" />{profile.address || "Add an address"}</p></div><span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#f0e8f8] px-5 py-2 text-sm font-semibold text-[#4d2e91]"><PawPrint className="size-4" />Member since {formatSince(profile.created_at)}</span></div><div className="relative rounded-xl bg-[#faf7fb] p-6"><div className="absolute right-3 top-3 text-6xl leading-none text-[#d8c7ef]">♡</div><p className="relative text-lg leading-8">“Making tails wag<br />and lives better,<br />one walk at a time.”</p><p className="mt-5 font-serif text-2xl text-[#4d2e91]">Jeroen <PawPrint className="inline size-4" /></p></div></div></Panel><div className="grid gap-6 lg:grid-cols-[1fr_1fr]"><div className="space-y-6"><Panel className="p-6 sm:p-7"><SectionTitle>Personal Information</SectionTitle><form onSubmit={saveProfile} className="mt-6 grid gap-4"><InfoLine label="Full Name" value={profile.full_name} /><InfoLine label="Email Address" value={profile.email} /><InfoLine label="Phone Number" value={profile.phone || "Add a phone number"} /><InfoLine label="Address" value={profile.address || "Add an address"} /><details className="rounded-xl bg-[#fbf8ff] p-4"><summary className="cursor-pointer font-semibold text-[#5b2aa0]">Update profile details</summary><div className="mt-4 grid gap-3"><input className="rounded border border-[#24163f]/15 px-4 py-3" name="full_name" defaultValue={profile.full_name} placeholder="Full name" /><input className="rounded border border-[#24163f]/15 px-4 py-3" name="phone" defaultValue={profile.phone ?? ""} placeholder="Phone" /><input className="rounded border border-[#24163f]/15 px-4 py-3" name="address" defaultValue={profile.address ?? ""} placeholder="Address" /><input className="rounded border border-[#24163f]/15 px-4 py-3" name="avatar_url" defaultValue={profile.avatar_url ?? ""} placeholder="Uploaded profile picture URL" /><button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save profile</button>{message ? <p className="text-sm text-[#665d70]">{message}</p> : null}</div></details><button type="button" className="mt-1 flex items-center justify-between rounded-xl bg-[#fbf8ff] p-4 text-left text-sm"><span className="flex items-center gap-4"><Mail className="size-8 text-[#5b2aa0]" /><span><span className="block font-semibold">Email Preferences</span><span className="mt-1 block text-[#665d70]">Choose what updates you want to receive from us.</span></span></span><ChevronRight className="size-4 text-[#5b2aa0]" /></button></form></Panel><Panel className="p-6 sm:p-7"><SectionTitle>Preferences</SectionTitle><div className="mt-6 divide-y divide-[#24163f]/10">{preferences.map(([Icon, title, copy]) => <button type="button" key={title} className="flex w-full items-center justify-between gap-4 py-4 text-left first:pt-0 last:pb-0"><span className="flex items-center gap-4"><span className="grid size-10 place-items-center rounded-full bg-[#f4eef8] text-[#5b2aa0]"><Icon className="size-5" /></span><span><span className="block text-sm font-semibold">{title}</span><span className="text-sm text-[#665d70]">{copy}</span></span></span><ChevronRight className="size-4 text-[#5b2aa0]" /></button>)}</div></Panel></div><div className="space-y-6"><Panel className="p-6 sm:p-7"><SectionTitle>Security</SectionTitle><div className="mt-6 divide-y divide-[#24163f]/10"><div className="flex items-center justify-between py-4 first:pt-0"><span className="flex items-center gap-4"><span className="grid size-12 place-items-center rounded-full bg-[#f4eef8] text-[#5b2aa0]"><LockKeyhole className="size-5" /></span><span><span className="block font-semibold">Password</span><span className="text-sm text-[#665d70]">************</span></span></span><ChevronRight className="size-4 text-[#5b2aa0]" /></div><div className="flex items-center justify-between py-4 last:pb-0"><span className="flex items-center gap-4"><span className="grid size-12 place-items-center rounded-full bg-[#f4eef8] text-[#5b2aa0]"><ShieldCheck className="size-5" /></span><span><span className="block font-semibold">Two-Factor Authentication</span><span className="text-sm text-emerald-700">Enabled</span></span></span><span className="h-7 w-12 rounded-full bg-[#5b2aa0] p-1"><span className="ml-auto block size-5 rounded-full bg-white" /></span></div></div></Panel><Panel className="p-6 sm:p-7"><SectionTitle>My Dogs</SectionTitle><div className="mt-6 divide-y divide-[#24163f]/10">{dogs.map((dog) => <article key={dog.id} className="flex items-center justify-between gap-4 py-5 first:pt-0"><span className="flex items-center gap-4"><span className="relative size-16 overflow-hidden rounded-full"><Image src={dog.profile_photo_url || dogPlaceholderImage} alt={dog.name} fill sizes="64px" className="object-cover" /></span><span><span className="font-serif text-2xl text-[#241f30]">{dog.name}</span><span className="mt-1 block text-sm text-[#665d70]">{dog.breed || "Dog"}{dog.age ? ` • ${dog.age}` : ""}</span></span></span><span className="rounded-full bg-[#f0e8f8] px-4 py-1 text-xs font-semibold text-[#5b2aa0]">{dog.status || "Active"}</span></article>)}{!dogs.length ? <p className="py-5 text-sm text-[#665d70]">Add your dog here and it will be saved in Supabase.</p> : null}</div><button type="button" onClick={() => setIsDogFormOpen((isOpen) => !isOpen)} className="mt-4 inline-flex w-full items-center justify-center gap-3 rounded-md border border-[#5b2aa0]/40 px-5 py-3 text-sm font-semibold text-[#5b2aa0]"><Plus className="size-4" />{isDogFormOpen ? "Close Dog Form" : "Add a Dog"}</button>{isDogFormOpen ? <form onSubmit={saveDog} className="mt-4 grid gap-3 rounded-xl bg-[#fbf8ff] p-4"><input className="rounded border border-[#24163f]/15 px-4 py-3" name="name" placeholder="Dog name" required /><input className="rounded border border-[#24163f]/15 px-4 py-3" name="breed" placeholder="Breed" /><input className="rounded border border-[#24163f]/15 px-4 py-3" name="age" placeholder="Age" /><input className="rounded border border-[#24163f]/15 px-4 py-3" name="profile_photo_url" placeholder="Photo URL" /><textarea className="min-h-24 rounded border border-[#24163f]/15 px-4 py-3" name="notes" placeholder="Notes, routines, behaviour, or care instructions" /><button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save dog</button></form> : null}</Panel></div></div><Panel className="p-6 sm:p-7"><div className="flex items-start justify-between"><h2 className="font-serif text-2xl text-[#241f30]">Recent Activity</h2><button type="button" className="text-sm font-semibold text-[#5b2aa0]">View all activity →</button></div><div className="mt-6 divide-y divide-[#24163f]/10">{data.activity.length ? data.activity.map((item) => <article key={item.id} className="grid gap-3 py-3 first:pt-0 last:pb-0 sm:grid-cols-[2.5rem_1fr_auto] sm:items-center"><span className="grid size-10 place-items-center rounded-full bg-[#f4eef8] text-[#4d2e91]">{item.activity_type === "gallery" ? <ImageIcon className="size-5" /> : item.activity_type === "invoice" ? <FileText className="size-5" /> : <CalendarDays className="size-5" />}</span><div><h3 className="font-semibold text-[#241f30]">{item.title}</h3><p className="mt-1 text-sm text-[#665d70]">{item.body}</p></div><p className="text-sm text-[#665d70]">{formatActivityTime(item.created_at)}</p></article>) : <p className="text-sm text-[#665d70]">No recent activity yet.</p>}</div></Panel><section className="flex flex-col gap-4 rounded-[1.1rem] bg-[#f5effb] p-6 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-5"><span className="grid size-16 place-items-center rounded-full bg-[#5b2aa0] text-white"><PawPrint className="size-9" /></span><div><h2 className="font-serif text-2xl text-[#241f30]">We’re here for you and your pup!</h2><p className="text-sm text-[#2f2938]">Need anything? Our team is just a message away.</p></div></div><Link href="/contact" className="inline-flex items-center justify-center gap-3 rounded-md bg-[#5b2aa0] px-8 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">Send a message <PawPrint className="size-4" /></Link></section></> : null}</div>
-  </div>;
+  
+  return (
+    <div className="px-4 py-6 text-[#17132a] sm:px-8 lg:px-10 lg:py-10">
+      <div className="mx-auto mt-8 max-w-6xl space-y-6">
+        <button type="button" onClick={onBackToDashboard} className="text-sm font-semibold text-[#5b2aa0]">
+          ← Back to dashboard
+        </button>
+        {isLoading || error || !profile ? (
+          <p className="rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70]">{isLoading ? "Loading live profile…" : error ?? "No profile data yet."}</p>
+        ) : null}
+        {profile ? (
+          <>
+            <Panel className="overflow-hidden p-6 sm:p-8">
+              <div className="grid gap-8 lg:grid-cols-[14rem_1fr_18rem] lg:items-center">
+                <button type="button" onClick={() => setIsProfileFormOpen(true)} className="relative mx-auto size-44 lg:mx-0" aria-label="Edit profile picture and details">
+                  <Image src={profile.avatar_url || profile.dog_photo_url || dogPlaceholderImage} alt={`${profile.full_name} profile`} fill sizes="176px" className="rounded-full object-cover ring-4 ring-[#ead9b8]" />
+                  <span className="absolute bottom-3 right-0 grid size-12 place-items-center rounded-full bg-white text-[#4d2e91] shadow-[0_12px_28px_rgba(29,23,40,0.18)]">
+                    <Edit3 className="size-5" />
+                  </span>
+                </button>
+                <div>
+                  <h2 className="font-serif text-3xl text-[#241f30]">{profile.full_name}</h2>
+                  <div className="mt-6 space-y-4 text-sm text-[#2f2938]">
+                    <p className="flex items-center gap-3"><Mail className="size-4 text-[#4d2e91]" />{profile.email}</p>
+                    <p className="flex items-center gap-3"><Phone className="size-4 text-[#4d2e91]" />{profile.phone || "Add a phone number"}</p>
+                    <p className="flex items-center gap-3"><MapPin className="size-4 text-[#4d2e91]" />{profile.address || "Add an address"}</p>
+                  </div>
+                  <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#f0e8f8] px-5 py-2 text-sm font-semibold text-[#4d2e91]"><PawPrint className="size-4" />Member since {formatSince(profile.created_at)}</span>
+                </div>
+                <div className="relative rounded-xl bg-[#faf7fb] p-6">
+                  <div className="absolute right-3 top-3 text-6xl leading-none text-[#d8c7ef]">♡</div>
+                  <p className="relative text-lg leading-8">“Making tails wag<br />and lives better,<br />one walk at a time.”</p>
+                  <p className="mt-5 font-serif text-2xl text-[#4d2e91]">Jeroen <PawPrint className="inline size-4" /></p>
+                </div>
+              </div>
+            </Panel>
+
+            <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+              <div className="space-y-6">
+                <Panel className="p-6 sm:p-7">
+                  <SectionTitle action={isProfileFormOpen ? "Close" : "Edit"} onAction={() => setIsProfileFormOpen((isOpen) => !isOpen)}>{"Personal Information"}</SectionTitle>
+                  <div className="mt-6 grid gap-4">
+                    <InfoLine label="Full Name" value={profile.full_name} />
+                    <InfoLine label="Email Address" value={profile.email} />
+                    <InfoLine label="Phone Number" value={profile.phone || "Add a phone number"} />
+                    <InfoLine label="Address" value={profile.address || "Add an address"} />
+                  </div>
+                  {isProfileFormOpen ? (
+                    <form onSubmit={saveProfile} className="mt-6 grid gap-3 rounded-xl bg-[#fbf8ff] p-4">
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="full_name" defaultValue={profile.full_name} placeholder="Full name" />
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="email" type="email" defaultValue={profile.email} placeholder="Email address" />
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="phone" defaultValue={profile.phone ?? ""} placeholder="Phone" />
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="address" defaultValue={profile.address ?? ""} placeholder="Address" />
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="avatar_url" defaultValue={profile.avatar_url ?? ""} placeholder="Uploaded profile picture URL" />
+                      <div className="flex flex-wrap gap-3">
+                        <button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save profile</button>
+                        <button type="button" onClick={() => setIsProfileFormOpen(false)} className="inline-flex w-fit items-center gap-2 rounded border border-[#5b2aa0]/30 px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#5b2aa0]"><X className="size-4" />Cancel</button>
+                      </div>
+                    </form>
+                  ) : null}
+                  {message ? <p className="mt-4 text-sm text-[#665d70]">{message}</p> : null}
+                </Panel>
+              </div>
+
+              <div className="space-y-6">
+                <Panel className="p-6 sm:p-7">
+                  <SectionTitle showIcon={false}>Security</SectionTitle>
+                  <div className="mt-6 divide-y divide-[#24163f]/10">
+                    <button type="button" onClick={() => setIsPasswordFormOpen((isOpen) => !isOpen)} className="flex w-full items-center justify-between py-4 text-left first:pt-0">
+                      <span className="flex items-center gap-4"><span className="grid size-12 place-items-center rounded-full bg-[#f4eef8] text-[#5b2aa0]"><LockKeyhole className="size-5" /></span><span><span className="block font-semibold">Password</span><span className="text-sm text-[#665d70]">************</span></span></span>
+                      <ChevronRight className={`size-4 text-[#5b2aa0] transition-transform ${isPasswordFormOpen ? "rotate-90" : ""}`} />
+                    </button>
+                  </div>
+                  {isPasswordFormOpen ? (
+                    <form onSubmit={savePassword} className="mt-4 grid gap-3 rounded-xl bg-[#fbf8ff] p-4">
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="password" type="password" placeholder="New password" minLength={6} required />
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="confirm_password" type="password" placeholder="Confirm new password" minLength={6} required />
+                      <button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save password</button>
+                    </form>
+                  ) : null}
+                </Panel>
+
+                <Panel className="p-6 sm:p-7">
+                  <SectionTitle>My Dogs</SectionTitle>
+                  <div className="mt-6 divide-y divide-[#24163f]/10">
+                    {dogs.map((dog) => (
+                      <article key={dog.id} className="flex items-center justify-between gap-4 py-5 first:pt-0">
+                        <span className="flex items-center gap-4"><span className="relative size-16 overflow-hidden rounded-full"><Image src={dog.profile_photo_url || dogPlaceholderImage} alt={dog.name} fill sizes="64px" className="object-cover" /></span><span><span className="font-serif text-2xl text-[#241f30]">{dog.name}</span><span className="mt-1 block text-sm text-[#665d70]">{dog.breed || "Dog"}{dog.age ? ` • ${dog.age}` : ""}</span></span></span>
+                        <span className="rounded-full bg-[#f0e8f8] px-4 py-1 text-xs font-semibold text-[#5b2aa0]">{dog.status || "Active"}</span>
+                      </article>
+                    ))}
+                    {!dogs.length ? <p className="py-5 text-sm text-[#665d70]">Add your dog here and it will be saved in Supabase.</p> : null}
+                  </div>
+                  <button type="button" onClick={() => setIsDogFormOpen((isOpen) => !isOpen)} className="mt-4 inline-flex w-full items-center justify-center gap-3 rounded-md border border-[#5b2aa0]/40 px-5 py-3 text-sm font-semibold text-[#5b2aa0]"><Plus className="size-4" />{isDogFormOpen ? "Close Dog Form" : "Add a Dog"}</button>
+                  {isDogFormOpen ? (
+                    <form onSubmit={saveDog} className="mt-4 grid gap-3 rounded-xl bg-[#fbf8ff] p-4">
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="name" placeholder="Dog name" required />
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="breed" placeholder="Breed" />
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="age" placeholder="Age" />
+                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="profile_photo_url" placeholder="Photo URL" />
+                      <textarea className="min-h-24 rounded border border-[#24163f]/15 px-4 py-3" name="notes" placeholder="Notes, routines, behaviour, or care instructions" />
+                      <button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save dog</button>
+                    </form>
+                  ) : null}
+                </Panel>
+              </div>
+            </div>
+
+            <Panel className="p-6 sm:p-7">
+              <div className="flex items-start justify-between"><h2 className="font-serif text-2xl text-[#241f30]">Recent Activity</h2><button type="button" className="text-sm font-semibold text-[#5b2aa0]">View all activity →</button></div>
+              <div className="mt-6 divide-y divide-[#24163f]/10">
+                {data.activity.length ? data.activity.map((item) => <article key={item.id} className="grid gap-3 py-3 first:pt-0 last:pb-0 sm:grid-cols-[2.5rem_1fr_auto] sm:items-center"><span className="grid size-10 place-items-center rounded-full bg-[#f4eef8] text-[#4d2e91]">{item.activity_type === "gallery" ? <ImageIcon className="size-5" /> : item.activity_type === "invoice" ? <FileText className="size-5" /> : <CalendarDays className="size-5" />}</span><div><h3 className="font-semibold text-[#241f30]">{item.title}</h3><p className="mt-1 text-sm text-[#665d70]">{item.body}</p></div><p className="text-sm text-[#665d70]">{formatActivityTime(item.created_at)}</p></article>) : <p className="text-sm text-[#665d70]">No recent activity yet.</p>}
+              </div>
+            </Panel>
+            <section className="flex flex-col gap-4 rounded-[1.1rem] bg-[#f5effb] p-6 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-5"><span className="grid size-16 place-items-center rounded-full bg-[#5b2aa0] text-white"><PawPrint className="size-9" /></span><div><h2 className="font-serif text-2xl text-[#241f30]">We’re here for you and your pup!</h2><p className="text-sm text-[#2f2938]">Need anything? Our team is just a message away.</p></div></div><Link href="/contact" className="inline-flex items-center justify-center gap-3 rounded-md bg-[#5b2aa0] px-8 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">Send a message <PawPrint className="size-4" /></Link></section>
+          </>
+        ) : null}
+      </div>
+    </div>
+  );
 }
