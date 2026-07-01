@@ -87,7 +87,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
 
       <div className="mx-auto mt-7 max-w-6xl space-y-6">
         <section className="relative overflow-hidden rounded-[1.6rem] bg-[#080b10] px-6 py-12 text-white shadow-2xl shadow-[#1d1728]/15 sm:px-12 lg:min-h-[24rem]">
-          <Image src={data.heroPhotoUrl} alt={`${data.dogNames} enjoying a Jeroen & Paws session`} fill priority sizes="(min-width: 1024px) 1120px, 100vw" className="object-cover object-center opacity-60" />
+          <Image src={data.heroPhotoUrl} alt={`${data.dogNames} enjoying a Jeroen & Paws session`} fill priority loading="eager" sizes="(min-width: 1024px) 1120px, 100vw" className="object-cover object-center opacity-60" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.92),rgba(8,11,16,.62),rgba(8,11,16,.18))]" />
           <div className="relative max-w-xl">
             <p className="text-xs font-black uppercase tracking-[0.32em] text-[#c4b5fd]">Your dog&apos;s care, beautifully organised.</p>

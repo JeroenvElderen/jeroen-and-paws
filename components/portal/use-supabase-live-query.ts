@@ -10,6 +10,16 @@ type LiveQueryOptions<T> = {
   map: (rows: unknown) => T;
 };
 
+async function getSupabaseErrorMessage(response: Response) {
+  const fallback = `Supabase returned ${response.status}`;
+  const payload = await response.json().catch(() => null) as { message?: string; hint?: string; details?: string } | null;
+  const details = [payload?.message, payload?.hint, payload?.details].filter(Boolean).join(" ");
+
+  if (!details) return fallback;
+
+  return `${fallback}: ${details}`;
+}
+
 function getConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -40,7 +50,10 @@ export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeT
           cache: "no-store",
           headers: { apikey: config.key, Authorization: `Bearer ${token}` },
         });
-        if (!response.ok) throw new Error(`Supabase returned ${response.status}`);
+        if (!response.ok) {
+          const message = await getSupabaseErrorMessage(response);
+          throw new Error(message);
+        }
         const rows = await response.json();
         if (!isMounted) return;
         setData(map(rows));

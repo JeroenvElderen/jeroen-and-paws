@@ -342,27 +342,28 @@ function PlaceholderView({ title }: { title: string }) {
 }
 
 export function PortalShell() {
-  const [portalSession, setPortalSession] = useState<PortalSession | null>(() => {
-    if (typeof window === "undefined") return null;
-
-    const storedSession = window.localStorage.getItem(portalSessionStorageKey);
-
-    if (!storedSession) return null;
-
-    try {
-      const parsedSession = JSON.parse(storedSession) as PortalSession;
-
-      if (parsedSession.accessToken && parsedSession.email) {
-        return parsedSession;
-      }
-    } catch {
-      window.localStorage.removeItem(portalSessionStorageKey);
-    }
-
-    return null;
-  });
-
+  const [portalSession, setPortalSession] = useState<PortalSession | null>(null);
   const [activeView, setActiveView] = useState<PortalView>("dashboard");
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      const storedSession = window.localStorage.getItem(portalSessionStorageKey);
+
+      if (!storedSession) return;
+
+      try {
+        const parsedSession = JSON.parse(storedSession) as PortalSession;
+
+        if (parsedSession.accessToken && parsedSession.email) {
+          setPortalSession(parsedSession);
+        } else {
+          window.localStorage.removeItem(portalSessionStorageKey);
+        }
+      } catch {
+        window.localStorage.removeItem(portalSessionStorageKey);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ left: 0, top: 0 });
