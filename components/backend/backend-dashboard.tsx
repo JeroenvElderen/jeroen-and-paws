@@ -24,10 +24,18 @@ import { useState } from "react";
 import { BackendBookings } from "./backend-bookings";
 import { BackendDashboardOverview } from "./backend-dashboard-overview";
 import { BackendPlaceholder } from "./backend-placeholder";
+import { BackendServices } from "./backend-services";
+import { BackendDogs } from "./backend-dogs";
+import { BackendClients } from "./backend-clients";
+import { BackendCalendar } from "./backend-calendar";
+import { BackendInvoices } from "./backend-invoices";
+import { BackendPhotoUpdates } from "./backend-photo-updates";
+import { BackendFAQ } from "./backend-faq";
+import { BackendSettings } from "./backend-settings";
 
 const navGroups = [
   { label: "", items: [["dashboard", Home, "Dashboard"]] },
-  { label: "Manage", items: [["bookings", CalendarDays, "Bookings"], ["services", PawPrint, "Services"], ["dogs", Dog, "Dogs"], ["clients", Users, "Clients"], ["walkers", UserRound, "Walkers & Trainers"], ["calendar", CalendarDays, "Calendar"]] },
+  { label: "Manage", items: [["bookings", CalendarDays, "Bookings"], ["services", PawPrint, "Services"], ["dogs", Dog, "Dogs"], ["clients", Users, "Clients"], ["calendar", CalendarDays, "Calendar"]] },
   { label: "Business", items: [["invoices", FileText, "Invoices"]] },
   { label: "Content", items: [["photo-updates", ImageIcon, "Photo Updates"], ["reviews", Star, "Reviews"], ["faq", HelpCircle, "FAQ"]] },
   { label: "Settings", items: [["settings", Settings, "Settings"]] },
@@ -52,6 +60,14 @@ export function BackendDashboard() {
   const ActiveContent = (() => {
     if (activeView === "dashboard") return <BackendDashboardOverview />;
     if (activeView === "bookings") return <BackendBookings />;
+    if (activeView === "services") return <BackendServices />;
+    if (activeView === "dogs") return <BackendDogs />;
+    if (activeView === "clients") return <BackendClients />;
+    if (activeView === "calendar") return <BackendCalendar />;
+    if (activeView === "invoices") return <BackendInvoices />;
+    if (activeView === "photo-updates") return <BackendPhotoUpdates />;
+    if (activeView === "faq") return <BackendFAQ />;
+    if (activeView === "settings") return <BackendSettings />;
 
     return <BackendPlaceholder title={activeTitle} />;
   })();
@@ -60,7 +76,7 @@ export function BackendDashboard() {
     <main className="min-h-screen bg-[#fbfaf8] text-[#151124]">
       <div className="grid min-h-screen xl:grid-cols-[18rem_1fr]">
         <aside className="hidden bg-[#070a14] px-6 py-8 text-white xl:flex xl:flex-col">
-          <div className="font-serif text-3xl leading-tight">Jereen<br />And Paws <PawPrint className="inline size-6 text-[#b8a1ff]" /></div>
+          <div className="font-serif text-3xl leading-tight">jeroen<br />And Paws <PawPrint className="inline size-6 text-[#b8a1ff]" /></div>
           <nav className="mt-10 flex flex-1 flex-col gap-7" aria-label="Backend portal navigation">
             {navGroups.map((group) => (
               <div key={group.label || "main"}>
@@ -85,11 +101,6 @@ export function BackendDashboard() {
               </div>
             ))}
           </nav>
-          <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
-            <Image src="/images/dogs/Johnny/Johnny.jpeg" alt="Jereen profile" width={44} height={44} className="size-11 rounded-full object-cover" />
-            <div className="min-w-0 flex-1"><p className="font-semibold">Jereen</p><p className="text-xs text-white/60">Administrator</p></div><ChevronDown className="size-4" />
-          </div>
-          <ChevronsLeft className="ml-auto mt-5 size-5 text-white/60" />
         </aside>
 
         <div className="min-w-0">
