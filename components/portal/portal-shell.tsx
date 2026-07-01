@@ -376,11 +376,11 @@ export function PortalShell() {
     if (activeView === "dashboard") return <Dashboard accessToken={portalSession.accessToken} />;
     if (activeView === "bookings") return <MyBookings accessToken={portalSession.accessToken} />;
     if (activeView === "photos") {
-      return <SessionGalleries onBackToDashboard={() => setActiveView("dashboard")} />;
+      return <SessionGalleries accessToken={portalSession.accessToken} onBackToDashboard={() => setActiveView("dashboard")} />;
     }
     if (activeView === "invoices") return <Invoices />;
     if (activeView === "profile") {
-      return <Profile onBackToDashboard={() => setActiveView("dashboard")} />;
+      return <Profile accessToken={portalSession.accessToken} onBackToDashboard={() => setActiveView("dashboard")} />;
     }
     if (activeView === "faq") {
       return <FAQ onBackToDashboard={() => setActiveView("dashboard")} />;
