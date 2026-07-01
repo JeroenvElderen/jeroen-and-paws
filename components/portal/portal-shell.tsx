@@ -25,11 +25,15 @@ type PortalView = (typeof navItems)[number][0];
 
 type PortalSession = {
   accessToken: string;
+  refreshToken: string;
   email: string;
+  expiresAt: number;
 };
 
 type SupabaseAuthResponse = {
   access_token?: string;
+  refresh_token?: string;
+  expires_in?: number;
   user?: {
     email?: string;
   };
@@ -72,6 +76,34 @@ async function getSupabaseAuthPayload(response: Response, fallback: string) {
 
 function getPortalEmailRedirectTo() {
   return typeof window !== "undefined" ? `${window.location.origin}/portal` : undefined;
+}
+
+async function refreshPortalSession(session: PortalSession) {
+  const authConfig = getSupabaseAuthConfig();
+
+  if (!authConfig) return null;
+
+  const response = await fetch(`${authConfig.supabaseUrl}/auth/v1/token?grant_type=refresh_token`, {
+    method: "POST",
+    headers: {
+      apikey: authConfig.supabaseAnonKey,
+      Authorization: `Bearer ${authConfig.supabaseAnonKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ refresh_token: session.refreshToken }),
+  });
+  const payload = await getSupabaseAuthPayload(response, "Unable to refresh your portal session.");
+
+  if (!response.ok || !payload.access_token) {
+    throw new Error(getSupabaseAuthError(payload, "Unable to refresh your portal session."));
+  }
+
+  return {
+    accessToken: payload.access_token,
+    refreshToken: payload.refresh_token ?? session.refreshToken,
+    email: payload.user?.email ?? session.email,
+    expiresAt: Date.now() + ((payload.expires_in ?? 3600) * 1000),
+  } satisfies PortalSession;
 }
 
 function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: PortalSession) => void }) {
@@ -142,7 +174,16 @@ function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: Port
         throw new Error("Unable to log in. Please confirm your email address first.");
       }
 
-      const session = { accessToken: payload.access_token, email: payload.user?.email ?? email };
+      if (!payload.refresh_token) {
+        throw new Error("Unable to keep you logged in. Please try again.");
+      }
+
+      const session = {
+        accessToken: payload.access_token,
+        refreshToken: payload.refresh_token,
+        email: payload.user?.email ?? email,
+        expiresAt: Date.now() + ((payload.expires_in ?? 3600) * 1000),
+      };
       window.localStorage.setItem(portalSessionStorageKey, JSON.stringify(session));
       onAuthenticated(session);
     } catch (authError) {
@@ -354,7 +395,7 @@ export function PortalShell() {
       try {
         const parsedSession = JSON.parse(storedSession) as PortalSession;
 
-        if (parsedSession.accessToken && parsedSession.email) {
+        if (parsedSession.accessToken && parsedSession.email && parsedSession.refreshToken) {
           setPortalSession(parsedSession);
         } else {
           window.localStorage.removeItem(portalSessionStorageKey);
@@ -365,6 +406,26 @@ export function PortalShell() {
     });
   }, []);
 
+   useEffect(() => {
+    if (!portalSession) return;
+
+    const refreshDelay = Math.max(0, portalSession.expiresAt - Date.now() - 120_000);
+    const refreshTimer = window.setTimeout(() => {
+      refreshPortalSession(portalSession)
+        .then((refreshedSession) => {
+          if (!refreshedSession) return;
+          window.localStorage.setItem(portalSessionStorageKey, JSON.stringify(refreshedSession));
+          setPortalSession(refreshedSession);
+        })
+        .catch(() => {
+          window.localStorage.removeItem(portalSessionStorageKey);
+          setPortalSession(null);
+        });
+    }, refreshDelay);
+
+    return () => window.clearTimeout(refreshTimer);
+  }, [portalSession]);
+  
   useEffect(() => {
     window.scrollTo({ left: 0, top: 0 });
   }, [activeView]);

@@ -60,14 +60,14 @@ export function Header({ activePage }: { activePage: PageName }) {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link
+          {/*<Link
             href="/portal"
             aria-label="Open customer profile portal"
             aria-current={activePage === "portal" ? "page" : undefined}
             className={`grid size-11 place-items-center rounded-full border transition ${activePage === "portal" ? "border-[#8b5cf6]/50 bg-[#24163f] text-[#ddd6fe]" : "border-[#8b5cf6]/25 bg-[#111821] text-[#c4b5fd] hover:border-[#8b5cf6]/45 hover:bg-[#171f2a]"}`}
           >
             <UserCircle aria-hidden="true" className="size-5" />
-          </Link>
+          </Link>*/}
           <ButtonLink href="/contact" className="hidden max-md:hidden md:inline-flex">
             Book a Free Meet & Greet
           </ButtonLink>
