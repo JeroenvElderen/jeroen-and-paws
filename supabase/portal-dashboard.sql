@@ -23,6 +23,55 @@ where calendar_feed_token is null;
 alter table public.portal_clients
   alter column calendar_feed_token set default encode(gen_random_bytes(24), 'hex');
 
+create or replace function public.sync_auth_user_to_portal_client()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+begin
+  insert into public.portal_clients (auth_user_id, full_name, email)
+  values (
+    new.id,
+    coalesce(nullif(new.raw_user_meta_data ->> 'full_name', ''), new.email, 'Portal client'),
+    new.email
+  )
+  on conflict (email) do update
+  set
+    auth_user_id = excluded.auth_user_id,
+    full_name = case
+      when public.portal_clients.full_name is null or public.portal_clients.full_name = '' then excluded.full_name
+      else public.portal_clients.full_name
+    end
+  where public.portal_clients.auth_user_id is null
+    or public.portal_clients.auth_user_id = excluded.auth_user_id;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists sync_auth_user_to_portal_client on auth.users;
+create trigger sync_auth_user_to_portal_client
+after insert on auth.users
+for each row execute function public.sync_auth_user_to_portal_client();
+
+insert into public.portal_clients (auth_user_id, full_name, email)
+select
+  u.id,
+  coalesce(nullif(u.raw_user_meta_data ->> 'full_name', ''), u.email, 'Portal client'),
+  u.email
+from auth.users u
+where u.email is not null
+on conflict (email) do update
+set
+  auth_user_id = excluded.auth_user_id,
+  full_name = case
+    when public.portal_clients.full_name is null or public.portal_clients.full_name = '' then excluded.full_name
+    else public.portal_clients.full_name
+  end
+where public.portal_clients.auth_user_id is null
+  or public.portal_clients.auth_user_id = excluded.auth_user_id;
+
 create table if not exists public.portal_dogs (
   id uuid primary key default gen_random_uuid(),
   client_id uuid not null references public.portal_clients(id) on delete cascade,

@@ -55,6 +55,25 @@ function getSupabaseAuthError(payload: SupabaseAuthResponse, fallback: string) {
   return payload.msg ?? payload.error_description ?? payload.error ?? fallback;
 }
 
+async function getSupabaseAuthPayload(response: Response, fallback: string) {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    return (await response.json().catch(() => ({ error: fallback }))) as SupabaseAuthResponse;
+  }
+
+  const text = await response.text().catch(() => "");
+  const error = text.trim().startsWith("<")
+    ? `${fallback} The server returned an HTML error page instead of JSON.`
+    : text || fallback;
+
+  return { error } satisfies SupabaseAuthResponse;
+}
+
+function getPortalEmailRedirectTo() {
+  return typeof window !== "undefined" ? `${window.location.origin}/portal` : undefined;
+}
+
 function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: PortalSession) => void }) {
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [fullName, setFullName] = useState("");
@@ -65,6 +84,8 @@ function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: Port
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResendingConfirmation, setIsResendingConfirmation] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,25 +107,39 @@ function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: Port
     setIsSubmitting(true);
 
     try {
-      const endpoint = authMode === "login" ? "/auth/v1/token?grant_type=password" : "/auth/v1/signup";
-      const response = await fetch(`${authConfig.supabaseUrl}${endpoint}`, {
-        method: "POST",
-        headers: {
-          apikey: authConfig.supabaseAnonKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(authMode === "signup" ? { email, password, data: { full_name: fullName } } : { email, password }),
-      });
-      const payload = (await response.json()) as SupabaseAuthResponse;
+      const emailRedirectTo = getPortalEmailRedirectTo();
+      const response = authMode === "signup"
+        ? await fetch("/api/portal/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fullName, email, password, redirectTo: emailRedirectTo }),
+        })
+        : await fetch(`${authConfig.supabaseUrl}/auth/v1/token?grant_type=password`, {
+          method: "POST",
+          headers: {
+            apikey: authConfig.supabaseAnonKey,
+            Authorization: `Bearer ${authConfig.supabaseAnonKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+      const payload = await getSupabaseAuthPayload(response, authMode === "login" ? "Unable to log in." : "Unable to sign up.");
 
       if (!response.ok) {
         throw new Error(getSupabaseAuthError(payload, authMode === "login" ? "Unable to log in." : "Unable to sign up."));
       }
 
-      if (!payload.access_token) {
-        setStatusMessage("Account created. Please check your email to confirm your account, then log in.");
+      if (authMode === "signup") {
+        setConfirmationEmail(email);
+        setStatusMessage("Account created. Please check your email and click the confirmation button, then log in.");
         setAuthMode("login");
+        setPassword("");
+        setConfirmPassword("");
         return;
+      }
+
+      if (!payload.access_token) {
+        throw new Error("Unable to log in. Please confirm your email address first.");
       }
 
       const session = { accessToken: payload.access_token, email: payload.user?.email ?? email };
@@ -114,6 +149,46 @@ function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: Port
       setErrorMessage(authError instanceof Error ? authError.message : "Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleResendConfirmation() {
+    const authConfig = getSupabaseAuthConfig();
+    const resendEmail = (confirmationEmail || email).trim();
+
+    setErrorMessage(null);
+    setStatusMessage(null);
+
+    if (!authConfig) {
+      setErrorMessage("Connect Supabase before resending confirmation emails.");
+      return;
+    }
+
+    if (!resendEmail) {
+      setErrorMessage("Enter your email address first, then resend the confirmation email.");
+      return;
+    }
+
+    setIsResendingConfirmation(true);
+
+    try {
+      const response = await fetch("/api/portal/resend-confirmation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resendEmail, redirectTo: getPortalEmailRedirectTo() }),
+      });
+      const payload = await getSupabaseAuthPayload(response, "Unable to resend the confirmation email right now.");
+
+      if (!response.ok) {
+        throw new Error(getSupabaseAuthError(payload, "Unable to resend the confirmation email right now."));
+      }
+
+      setConfirmationEmail(resendEmail);
+      setStatusMessage("Confirmation email sent again. Please check your inbox and spam folder.");
+    } catch (resendError) {
+      setErrorMessage(resendError instanceof Error ? resendError.message : "Unable to resend the confirmation email right now.");
+    } finally {
+      setIsResendingConfirmation(false);
     }
   }
 
@@ -230,6 +305,11 @@ function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: Port
               {authMode === "login" && <button type="button" className="ml-auto block text-sm font-bold text-[#5b2aa0]">Forgot password?</button>}
               {errorMessage && <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{errorMessage}</p>}
               {statusMessage && <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{statusMessage}</p>}
+              {authMode === "login" && (confirmationEmail || statusMessage?.toLowerCase().includes("confirm")) && (
+                <button type="button" onClick={handleResendConfirmation} disabled={isResendingConfirmation} className="w-full rounded-xl border border-[#d8c7ef] bg-[#f7f1ff] px-4 py-3 text-sm font-bold text-[#5b2aa0] transition hover:border-[#b288d8] hover:bg-[#efe2ff] disabled:cursor-not-allowed disabled:opacity-60">
+                  {isResendingConfirmation ? "Resending confirmation email…" : "Resend confirmation email"}
+                </button>
+              )}
 
               <button type="submit" disabled={isSubmitting} className="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-[#4c1d95] px-6 py-5 text-lg font-bold text-white shadow-lg shadow-[#4c1d95]/20 transition hover:-translate-y-0.5 hover:bg-[#5b2aa0] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0">
                 {isSubmitting ? "Please wait…" : authMode === "login" ? "Log In" : "Sign Up"}<PawPrint aria-hidden="true" className="ml-auto size-7" />
