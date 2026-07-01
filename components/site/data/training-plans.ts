@@ -2,6 +2,12 @@
 import { Dog, GraduationCap, PawPrint, Timer } from "lucide-react";
 import type { PricingPlan } from "./types";
 
+export const trainingImages = {
+  serviceCard: "/images/dogs/kaiser/kaiser1.jpeg",
+  hero: "/images/dogs/kaiser/kaiser1.jpeg",
+  feature: "/images/dogs/aslan/aslan.jpg",
+} as const;
+
 export const trainingPlans: PricingPlan[] = [
   {
     title: "Introductory Training Session",

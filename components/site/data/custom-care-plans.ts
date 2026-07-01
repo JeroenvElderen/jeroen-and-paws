@@ -2,6 +2,11 @@
 import { ShieldCheck } from "lucide-react";
 import type { PricingPlan } from "./types";
 
+export const customCareImages = {
+  hero: "/images/dogs/leia1.jpg",
+  feature: "/images/dogs/nola.jpg",
+} as const;
+
 export const customCarePlans: PricingPlan[] = [
   {
     title: "Custom & tailored care",

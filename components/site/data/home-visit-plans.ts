@@ -2,6 +2,12 @@
 import { HandHeart, Home } from "lucide-react";
 import type { PricingPlan } from "./types";
 
+export const homeVisitImages = {
+  serviceCard: "/images/dogs/lola/lola1.jpeg",
+  hero: "/images/dogs/lola/lola1.jpeg",
+  feature: "/images/dogs/kaiser.jpg",
+} as const;
+
 export const homeVisitPlans: PricingPlan[] = [
   {
     title: "Essential Home Visit",

@@ -2,6 +2,12 @@
 import { Dog, Timer } from "lucide-react";
 import type { PricingPlan } from "./types";
 
+export const dailyStrollImages = {
+  serviceCard: "/images/dogs/Nola/Nola-1.jpg",
+  hero: "/images/dogs/Nola/Nola-1.jpg",
+  feature: "/images/dogs/ace.jpg",
+} as const;
+
 export const dailyStrollPlans: PricingPlan[] = [
   {
     title: "Standard stroll",

@@ -15,12 +15,18 @@ import {
 } from "lucide-react";
 
 import {
+  customCareImages,
   customCarePlans,
   dayCareAndOvernightPlans,
+  groupAdventureImages,
   groupAdventurePlans,
+  homeVisitImages,
   homeVisitPlans,
+  trainingImages,
   trainingPlans,
   walksAndSoloAdventurePlans,
+  dailyStrollImages,
+  overnightSupportImages,
   type PricingPlan,
 } from "@/components/site/data";
 
@@ -82,9 +88,9 @@ export const serviceDetails: ServiceDetail[] = [
     intro:
       "From gentle neighbourhood strolls to fuller solo adventures, every walk is planned with care, safety, and joy.",
     ctaLabel: "Book a walk",
-    heroImage: "/images/dogs/Nola/Nola-1.jpg",
+    heroImage: dailyStrollImages.hero,
     heroAlt: "Dog enjoying an enriching outdoor walk",
-    featureImage: "/images/dogs/ace.jpg",
+    featureImage: dailyStrollImages.feature,
     featureAlt: "Happy dog running along a woodland path",
     priceFrom: "€18",
     priceUnit: "/ walk",
@@ -116,9 +122,9 @@ export const serviceDetails: ServiceDetail[] = [
     intro:
       "Home check-ins cover the essentials with calm companionship, fresh water, feeding if needed, toilet breaks, and reassuring updates.",
     ctaLabel: "Book a visit",
-    heroImage: "/images/dogs/lola/lola1.jpeg",
+    heroImage: homeVisitImages.hero,
     heroAlt: "Dog relaxing during a reassuring home visit",
-    featureImage: "/images/dogs/kaiser.jpg",
+    featureImage: homeVisitImages.feature,
     featureAlt: "Relaxed dog receiving attentive care",
     priceFrom: "€18",
     priceUnit: "/ visit",
@@ -150,9 +156,9 @@ export const serviceDetails: ServiceDetail[] = [
     intro:
       "Training sessions use positive, practical support for real-life goals, from puppy foundations to behaviour reinforcement.",
     ctaLabel: "Book training",
-    heroImage: "/images/dogs/kaiser/kaiser1.jpeg",
+    heroImage: trainingImages.hero,
     heroAlt: "Dog training session in an outdoor setting",
-    featureImage: "/images/dogs/aslan/aslan.jpg",
+    featureImage: trainingImages.feature,
     featureAlt: "Focused dog during personalised training",
     priceFrom: "€35",
     priceUnit: "/ session",
@@ -184,9 +190,9 @@ export const serviceDetails: ServiceDetail[] = [
     intro:
       "Group walks are matched thoughtfully so dogs enjoy outdoor time, enrichment, and companionship in a safe, supervised way.",
     ctaLabel: "Book a group walk",
-    heroImage: "/images/dogs/Johnny/Johnny.jpeg",
+    heroImage: groupAdventureImages.hero,
     heroAlt: "Dog enjoying a group adventure outdoors",
-    featureImage: "/images/dogs/lakta/lakta1.jpg",
+    featureImage: groupAdventureImages.feature,
     featureAlt: "Dog exploring during a structured group outing",
     priceFrom: "€45",
     priceUnit: "/ outing",
@@ -218,9 +224,9 @@ export const serviceDetails: ServiceDetail[] = [
     intro:
       "Whether your dog needs daytime supervision or overnight care, stays are calm, attentive, and shaped around what helps them settle.",
     ctaLabel: "Book care",
-    heroImage: "/images/dogs/pancho/pancho1.jpeg",
+    heroImage: overnightSupportImages.hero,
     heroAlt: "Dog resting comfortably during an overnight stay",
-    featureImage: "/images/dogs/rufus.jpg",
+    featureImage: overnightSupportImages.feature,
     featureAlt: "Relaxed dog enjoying home-from-home care",
     priceFrom: "€25",
     priceUnit: "/ day",
@@ -252,9 +258,9 @@ export const serviceDetails: ServiceDetail[] = [
     intro:
       "If your dog needs a service outside the standard options, we can create a calm, practical plan around their exact requirements.",
     ctaLabel: "Plan custom care",
-    heroImage: "/images/dogs/leia1.jpg",
+    heroImage: customCareImages.hero,
     heroAlt: "Dog receiving bespoke personalised care",
-    featureImage: "/images/dogs/nola.jpg",
+    featureImage: customCareImages.feature,
     featureAlt: "Dog enjoying tailored care outdoors",
     priceFrom: "Custom",
     priceUnit: "quote",

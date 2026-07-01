@@ -2,6 +2,10 @@
 import { CalendarCheck, CloudSun } from "lucide-react";
 import type { PricingPlan } from "./types";
 
+export const daytimeCareImages = {
+  serviceCard: "/images/dogs/lakta/lakta1.jpg",
+} as const;
+
 export const daytimeCarePlans: PricingPlan[] = [
   {
     title: "Half-day stay",

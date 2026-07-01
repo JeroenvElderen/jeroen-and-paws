@@ -2,6 +2,12 @@
 import { CloudSun, Route, Users } from "lucide-react";
 import type { PricingPlan } from "./types";
 
+export const groupAdventureImages = {
+  serviceCard: "/images/dogs/Johnny/Johnny.jpeg",
+  hero: "/images/dogs/Johnny/Johnny.jpeg",
+  feature: "/images/dogs/lakta/lakta1.jpg",
+} as const;
+
 export const groupAdventurePlans: PricingPlan[] = [
   {
     title: "2-Hour Adventure",
