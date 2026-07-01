@@ -42,6 +42,8 @@ npm run test         # Run Vitest tests
 
 ## Environment variables
 
+For the full calendar, Supabase, Outlook, and Microsoft Graph setup guide, see `docs/calendar-outlook-supabase-setup.md`.
+
 ### Public site, chat, and portal settings
 
 ```bash
@@ -51,11 +53,13 @@ NEXT_PUBLIC_WHATSAPP_CHAT_URL=https://wa.me/353872473099
 NEXT_PUBLIC_LIVE_CHAT_URL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+ADMIN_CALENDAR_FEED_TOKEN=
 ```
 
 `NEXT_PUBLIC_WHATSAPP_NUMBER` is preferred when you want service-card buttons to create prefilled WhatsApp messages. If `NEXT_PUBLIC_WHATSAPP_CHAT_URL` is used, messages are appended only for WhatsApp-compatible URLs.
 
-The portal dashboard reads from the `public.portal_dashboard` Supabase view created by `supabase/portal-dashboard.sql`. Add your project URL and anon key to the public Supabase variables above so the dashboard can replace the fallback preview with live booking and session data.
+The portal dashboard and calendars read from the Supabase tables/views created by `supabase/portal-dashboard.sql`. Add your project URL and anon key for customer portal reads, and add `SUPABASE_SERVICE_ROLE_KEY` server-side so backend calendar, Outlook sync, and private `.ics` feeds can read/write booking data. Do not expose the service-role key to the browser.
 
 ### Contact form email setup
 
@@ -75,7 +79,7 @@ NEXT_PUBLIC_OUTLOOK_CALENDAR_EMAIL=
 
 Email routing defaults to `CONTACT_NOTIFICATION_EMAIL` for delivery, then falls back to `ADMIN_EMAIL`, `JEROEN_AND_PAWS_EMAIL`, or the public business email. The sender mailbox defaults to `BOOKING_NOTIFICATION_EMAIL`, then falls back to `JEROEN_AND_PAWS_EMAIL`, `OUTLOOK_CALENDAR_EMAIL`, or the legacy `NEXT_PUBLIC_OUTLOOK_CALENDAR_EMAIL` fallback.
 
-In Microsoft Entra/Azure, the app registration must be allowed to send mail with Microsoft Graph for the sender mailbox used above.
+In Microsoft Entra/Azure, the app registration must be allowed to send mail with Microsoft Graph for the sender mailbox used above. For calendar sync, the same app also needs Microsoft Graph calendar permissions for `OUTLOOK_CALENDAR_EMAIL`. Website-created bookings can be pushed to Outlook through `/api/outlook/bookings/[id]`, and Outlook-created events that start with `[JP]` can be imported through `/api/outlook/sync`.
 
 ## Contact-form safeguards
 

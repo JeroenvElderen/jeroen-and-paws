@@ -294,7 +294,7 @@ export function PortalShell() {
 
   const ActiveContent = (() => {
     if (activeView === "dashboard") return <Dashboard accessToken={portalSession.accessToken} />;
-    if (activeView === "bookings") return <MyBookings />;
+    if (activeView === "bookings") return <MyBookings accessToken={portalSession.accessToken} />;
     if (activeView === "photos") {
       return <SessionGalleries onBackToDashboard={() => setActiveView("dashboard")} />;
     }

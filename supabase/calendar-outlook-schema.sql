@@ -173,23 +173,23 @@ begin
     execute 'create policy "Clients can read their own portal profile" on public.portal_clients for select using (auth.uid() = auth_user_id)';
   end if;
 
-if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Clients can read their dogs') then
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Clients can read their dogs') then
     execute 'create policy "Clients can read their dogs" on public.portal_dogs for select using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
   end if;
 
-if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_bookings' and policyname = 'Clients can read their bookings') then
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_bookings' and policyname = 'Clients can read their bookings') then
     execute 'create policy "Clients can read their bookings" on public.portal_bookings for select using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
   end if;
 
-if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_session_updates' and policyname = 'Clients can read their updates') then
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_session_updates' and policyname = 'Clients can read their updates') then
     execute 'create policy "Clients can read their updates" on public.portal_session_updates for select using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
   end if;
 
-if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_gallery_items' and policyname = 'Clients can read their gallery') then
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_gallery_items' and policyname = 'Clients can read their gallery') then
     execute 'create policy "Clients can read their gallery" on public.portal_gallery_items for select using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
   end if;
 
-if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_outlook_imports' and policyname = 'Admins manage outlook imports with service role') then
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_outlook_imports' and policyname = 'Admins manage outlook imports with service role') then
     execute 'create policy "Admins manage outlook imports with service role" on public.portal_outlook_imports for all using (auth.role() = ''service_role'') with check (auth.role() = ''service_role'')';
   end if;
 end $$;
