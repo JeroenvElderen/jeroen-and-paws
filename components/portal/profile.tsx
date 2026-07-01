@@ -115,26 +115,59 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
     return { url, key, accessToken };
   }
 
+  async function uploadPortalImage(config: { url: string; key: string; accessToken: string }, file: File, folder: "avatars" | "dogs") {
+    if (!file.size) return null;
+    if (!file.type.startsWith("image/")) {
+      throw new Error("Please choose an image file.");
+    }
+
+    const extension = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+    const objectPath = `${folder}/${crypto.randomUUID()}.${extension}`;
+    const response = await fetch(`${config.url}/storage/v1/object/portal-images/${objectPath}`, {
+      method: "POST",
+      headers: {
+        apikey: config.key,
+        Authorization: `Bearer ${config.accessToken}`,
+        "Content-Type": file.type || "application/octet-stream",
+        "x-upsert": "true",
+      },
+      body: file,
+    });
+
+    if (!response.ok) {
+      throw new Error("Unable to upload image. Please try again.");
+    }
+
+    return `${config.url}/storage/v1/object/public/portal-images/${objectPath}`;
+  }
+
   async function saveProfile(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!data.profile) return;
     const config = getSupabaseWriteConfig();
     if (!config) return;
-    const { url, key, accessToken } = config;
-    const formData = new FormData(event.currentTarget);
-    const response = await fetch(`${url}/rest/v1/portal_clients?id=eq.${data.profile.client_id}`, {
-      method: "PATCH",
-      headers: { apikey: key, Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", Prefer: "return=minimal" },
-      body: JSON.stringify({
-        full_name: formData.get("full_name"),
-        email: formData.get("email"),
-        phone: formData.get("phone"),
-        address: formData.get("address"),
-        avatar_url: formData.get("avatar_url"),
-      }),
-    });
-    setMessage(response.ok ? "Profile saved. Realtime will refresh this page automatically." : "Unable to save profile.");
-    if (response.ok) setIsProfileFormOpen(false);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const avatarFile = formData.get("avatar_file");
+      const uploadedAvatarUrl = avatarFile instanceof File ? await uploadPortalImage(config, avatarFile, "avatars") : null;
+      const response = await fetch(`${config.url}/rest/v1/portal_clients?id=eq.${data.profile.client_id}`, {
+        method: "PATCH",
+        headers: { apikey: config.key, Authorization: `Bearer ${config.accessToken}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({
+          full_name: String(formData.get("full_name") ?? "").trim(),
+          email: String(formData.get("email") ?? "").trim(),
+          phone: String(formData.get("phone") ?? "").trim() || null,
+          address: String(formData.get("address") ?? "").trim() || null,
+          avatar_url: uploadedAvatarUrl ?? data.profile.avatar_url,
+        }),
+      });
+      setMessage(response.ok ? "Profile saved. Realtime will refresh this page automatically." : "Unable to save profile.");
+      if (response.ok) setIsProfileFormOpen(false);
+    } catch (uploadError) {
+      setMessage(uploadError instanceof Error ? uploadError.message : "Unable to upload image.");
+    }
   }
 
   async function savePassword(event: React.FormEvent<HTMLFormElement>) {
@@ -186,26 +219,32 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
       return;
     }
 
-    const response = await fetch(`${url}/rest/v1/portal_dogs`, {
-      method: "POST",
-      headers: { apikey: key, Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", Prefer: "return=minimal" },
-      body: JSON.stringify({
-        client_id: data.profile.client_id,
-        name: dogName,
-        breed: String(formData.get("breed") ?? "").trim() || null,
-        age: String(formData.get("age") ?? "").trim() || null,
-        profile_photo_url: String(formData.get("profile_photo_url") ?? "").trim() || null,
-        notes: String(formData.get("notes") ?? "").trim() || null,
-        status: "active",
-      }),
-    });
+    try {
+      const photoFile = formData.get("profile_photo_file");
+      const uploadedPhotoUrl = photoFile instanceof File ? await uploadPortalImage(config, photoFile, "dogs") : null;
+      const response = await fetch(`${url}/rest/v1/portal_dogs`, {
+        method: "POST",
+        headers: { apikey: key, Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({
+          client_id: data.profile.client_id,
+          name: dogName,
+          breed: String(formData.get("breed") ?? "").trim() || null,
+          age: String(formData.get("age") ?? "").trim() || null,
+          profile_photo_url: uploadedPhotoUrl,
+          notes: String(formData.get("notes") ?? "").trim() || null,
+          status: "active",
+        }),
+      });
 
-    if (response.ok) {
-      form.reset();
-      setIsDogFormOpen(false);
-      setMessage("Dog saved. Realtime will refresh this page automatically.");
-    } else {
-      setMessage("Unable to save dog. Please try again.");
+      if (response.ok) {
+        form.reset();
+        setIsDogFormOpen(false);
+        setMessage("Dog saved. Realtime will refresh this page automatically.");
+      } else {
+        setMessage("Unable to save dog. Please try again.");
+      }
+    } catch (uploadError) {
+      setMessage(uploadError instanceof Error ? uploadError.message : "Unable to upload dog photo.");
     }
   }
 
@@ -252,25 +291,26 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
               <div className="space-y-6">
                 <Panel className="p-6 sm:p-7">
                   <SectionTitle action={isProfileFormOpen ? "Close" : "Edit"} onAction={() => setIsProfileFormOpen((isOpen) => !isOpen)}>{"Personal Information"}</SectionTitle>
-                  <div className="mt-6 grid gap-4">
-                    <InfoLine label="Full Name" value={profile.full_name} />
-                    <InfoLine label="Email Address" value={profile.email} />
-                    <InfoLine label="Phone Number" value={profile.phone || "Add a phone number"} />
-                    <InfoLine label="Address" value={profile.address || "Add an address"} />
-                  </div>
                   {isProfileFormOpen ? (
-                    <form onSubmit={saveProfile} className="mt-6 grid gap-3 rounded-xl bg-[#fbf8ff] p-4">
-                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="full_name" defaultValue={profile.full_name} placeholder="Full name" />
-                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="email" type="email" defaultValue={profile.email} placeholder="Email address" />
-                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="phone" defaultValue={profile.phone ?? ""} placeholder="Phone" />
-                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="address" defaultValue={profile.address ?? ""} placeholder="Address" />
-                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="avatar_url" defaultValue={profile.avatar_url ?? ""} placeholder="Uploaded profile picture URL" />
+                    <form onSubmit={saveProfile} className="mt-6 grid gap-4 rounded-xl bg-[#fbf8ff] p-4">
+                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Full Name<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="full_name" defaultValue={profile.full_name} placeholder="Full name" /></label>
+                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Email Address<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="email" type="email" defaultValue={profile.email} placeholder="Email address" /></label>
+                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Phone Number<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="phone" defaultValue={profile.phone ?? ""} placeholder="Phone" /></label>
+                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Address<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="address" defaultValue={profile.address ?? ""} placeholder="Address" /></label>
+                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Profile picture<input className="rounded border border-[#24163f]/15 bg-white px-4 py-3 font-normal" name="avatar_file" type="file" accept="image/*" /></label>
                       <div className="flex flex-wrap gap-3">
                         <button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save profile</button>
                         <button type="button" onClick={() => setIsProfileFormOpen(false)} className="inline-flex w-fit items-center gap-2 rounded border border-[#5b2aa0]/30 px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#5b2aa0]"><X className="size-4" />Cancel</button>
                       </div>
                     </form>
-                  ) : null}
+                  ) : (
+                    <div className="mt-6 grid gap-4">
+                      <InfoLine label="Full Name" value={profile.full_name} />
+                      <InfoLine label="Email Address" value={profile.email} />
+                      <InfoLine label="Phone Number" value={profile.phone || "Add a phone number"} />
+                      <InfoLine label="Address" value={profile.address || "Add an address"} />
+                    </div>
+                  )}
                   {message ? <p className="mt-4 text-sm text-[#665d70]">{message}</p> : null}
                 </Panel>
               </div>
@@ -310,7 +350,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                       <input className="rounded border border-[#24163f]/15 px-4 py-3" name="name" placeholder="Dog name" required />
                       <input className="rounded border border-[#24163f]/15 px-4 py-3" name="breed" placeholder="Breed" />
                       <input className="rounded border border-[#24163f]/15 px-4 py-3" name="age" placeholder="Age" />
-                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="profile_photo_url" placeholder="Photo URL" />
+                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Dog photo<input className="rounded border border-[#24163f]/15 bg-white px-4 py-3 font-normal" name="profile_photo_file" type="file" accept="image/*" /></label>
                       <textarea className="min-h-24 rounded border border-[#24163f]/15 px-4 py-3" name="notes" placeholder="Notes, routines, behaviour, or care instructions" />
                       <button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save dog</button>
                     </form>
