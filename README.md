@@ -54,12 +54,14 @@ NEXT_PUBLIC_LIVE_CHAT_URL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=Jeroen & Paws <onboarding@yourdomain.com>
 ADMIN_CALENDAR_FEED_TOKEN=
 ```
 
 `NEXT_PUBLIC_WHATSAPP_NUMBER` is preferred when you want service-card buttons to create prefilled WhatsApp messages. If `NEXT_PUBLIC_WHATSAPP_CHAT_URL` is used, messages are appended only for WhatsApp-compatible URLs.
 
-The portal dashboard and calendars read from the Supabase tables/views created by `supabase/portal-dashboard.sql`. Add your project URL and anon key for customer portal reads, and add `SUPABASE_SERVICE_ROLE_KEY` server-side so backend calendar, Outlook sync, and private `.ics` feeds can read/write booking data. Do not expose the service-role key to the browser.
+The portal dashboard and calendars read from the Supabase tables/views created by `supabase/portal-dashboard.sql`. Add your project URL and anon key for customer portal reads, and add `SUPABASE_SERVICE_ROLE_KEY` server-side so backend calendar, Outlook sync, and private `.ics` feeds can read/write booking data. Do not expose the service-role key to the browser. The schema also installs an `auth.users` trigger that creates or links matching `public.portal_clients` rows, so customer portal accounts appear in the app tables after signup.
 
 ### Contact form email setup
 
@@ -80,6 +82,20 @@ NEXT_PUBLIC_OUTLOOK_CALENDAR_EMAIL=
 Email routing defaults to `CONTACT_NOTIFICATION_EMAIL` for delivery, then falls back to `ADMIN_EMAIL`, `JEROEN_AND_PAWS_EMAIL`, or the public business email. The sender mailbox defaults to `BOOKING_NOTIFICATION_EMAIL`, then falls back to `JEROEN_AND_PAWS_EMAIL`, `OUTLOOK_CALENDAR_EMAIL`, or the legacy `NEXT_PUBLIC_OUTLOOK_CALENDAR_EMAIL` fallback.
 
 In Microsoft Entra/Azure, the app registration must be allowed to send mail with Microsoft Graph for the sender mailbox used above. For calendar sync, the same app also needs Microsoft Graph calendar permissions for `OUTLOOK_CALENDAR_EMAIL`. Website-created bookings can be pushed to Outlook through `/api/outlook/bookings/[id]`, and Outlook-created events that start with `[JP]` can be imported through `/api/outlook/sync`.
+
+
+### Resend confirmation email setup
+
+Portal signups now send the branded confirmation email through Resend instead of Supabase's built-in mailer. The app asks Supabase Admin Auth to generate the signup confirmation link, renders `supabase/email-templates/confirm-signup.html`, replaces `{{ .ConfirmationURL }}` with that link, and sends the email through Resend.
+
+To enable this flow:
+
+1. Create a Resend API key and verify the sending domain/address you want to use.
+2. Add `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `SUPABASE_SERVICE_ROLE_KEY` to the server environment.
+3. In Supabase Authentication → URL Configuration, allow `/portal` or your production portal URL as a redirect URL.
+4. Send a test signup from `/portal`. If delivery fails, check the application logs for the Resend or Supabase Admin Auth error message.
+
+Portal signups show the login form after account creation instead of opening the dashboard immediately, and the login screen includes a Resend-powered confirmation action if the email does not arrive. Only after the confirmation button is clicked does the visitor land back on the customer portal.
 
 ## Contact-form safeguards
 
