@@ -259,6 +259,16 @@
     top: var(--section-stack-top, var(--site-header-height));
     z-index: var(--section-stack-z, 1);
   }
+
+  main[data-section-stack="ready"] > section:not(:first-child) {
+    padding-bottom: clamp(7rem, 18vh, 12rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  main[data-section-stack="ready"] > section:not(:first-child) {
+    padding-bottom: clamp(8rem, 20vh, 15rem);
+  }
 }
 
 footer {
