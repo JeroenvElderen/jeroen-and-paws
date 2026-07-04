@@ -141,7 +141,7 @@ export function ContactPageContent({
         </div>
       </section>
 
-      <section className="premium-dark-section grid bg-[#080b10] lg:grid-cols-2">
+      <section data-section-stack-spacing="none" className="premium-dark-section grid bg-[#080b10] lg:grid-cols-2">
         <ScrollReveal className="flex items-center px-5 py-12 sm:px-8 sm:py-16 lg:justify-end lg:py-24">
           <div className="w-full max-w-xl lg:pr-16">
             <h2 className="text-4xl font-semibold leading-tight tracking-[-0.03em] text-[#fff7e8] sm:text-5xl">

@@ -260,13 +260,13 @@
     z-index: var(--section-stack-z, 1);
   }
 
-  main[data-section-stack="ready"] > section:not(:first-child) {
+  main[data-section-stack="ready"] > section:not(:first-child):not([data-section-stack-spacing="none"]) {
     padding-bottom: clamp(7rem, 18vh, 12rem);
   }
 }
 
 @media (min-width: 1024px) {
-  main[data-section-stack="ready"] > section:not(:first-child) {
+  main[data-section-stack="ready"] > section:not(:first-child):not([data-section-stack-spacing="none"]) {
     padding-bottom: clamp(8rem, 20vh, 15rem);
   }
 }

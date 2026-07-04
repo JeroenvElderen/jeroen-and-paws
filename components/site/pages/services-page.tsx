@@ -317,7 +317,7 @@ export function ServicesPageContent() {
         </div>
       </section>
 
-      <section className="premium-cream-texture grid bg-[#f7f4ef] text-[#1d1728] lg:grid-cols-2">
+      <section data-section-stack-spacing="none" className="premium-cream-texture grid bg-[#f7f4ef] text-[#1d1728] lg:grid-cols-2">
         <div className="px-5 py-14 sm:px-12 sm:py-20 lg:px-20">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
             HERE TO HELP

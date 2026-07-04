@@ -32,14 +32,14 @@ const serviceOptions = [
     matches: ["overnight", "day", "care", "stay"],
   },
   {
-    value: "other",
-    label: "Not sure yet",
-    matches: ["adventure", "custom", "tailored"],
-  },
-  {
     value: "training",
     label: "Training help (from €35)",
     matches: ["training", "puppy"],
+  },
+  {
+    value: "other",
+    label: "Not sure yet",
+    matches: ["adventure", "custom", "tailored"],
   },
 ];
 
