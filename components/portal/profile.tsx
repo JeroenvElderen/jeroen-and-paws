@@ -46,10 +46,19 @@ type ProfileRow = {
 type ActivityRow = { id: string; activity_type: string; title: string; body: string | null; created_at: string };
 type ProfileData = { profile: ProfileRow | null; activity: ActivityRow[] };
 
+const profileFallback: ProfileData = { profile: null, activity: [] };
+const profileRealtimeTables = ["portal_clients", "portal_dogs", "portal_client_activity"];
+const dogFallback: DogRow[] = [];
+const dogRealtimeTables = ["portal_dogs"];
+
 function mapProfileRows(rows: unknown): ProfileData {
   const list = Array.isArray(rows) ? (rows as (ProfileRow & { recent_activity: ActivityRow[] | null })[]) : [];
   const row = list[0];
   return { profile: row ?? null, activity: row?.recent_activity ?? [] };
+}
+
+function mapDogRows(rows: unknown): DogRow[] {
+  return Array.isArray(rows) ? (rows as DogRow[]) : [];
 }
 
 function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -93,10 +102,17 @@ function InfoLine({ label, value }: { label: string; value: string }) {
 export function Profile({ accessToken, onBackToDashboard }: { accessToken?: string; onBackToDashboard: () => void }) {
   const { data, isLoading, error } = useSupabaseLiveQuery({
     accessToken,
-    fallback: { profile: null, activity: [] } as ProfileData,
+    fallback: profileFallback,
     path: "/rest/v1/portal_profile?select=*&limit=1",
-    realtimeTables: ["portal_clients", "portal_dogs", "portal_client_activity"],
+    realtimeTables: profileRealtimeTables,
     map: mapProfileRows,
+  });
+  const { data: dogRows, error: dogError } = useSupabaseLiveQuery({
+    accessToken,
+    fallback: dogFallback,
+    path: "/rest/v1/portal_dogs?select=id,name,breed,age,status,profile_photo_url,notes&order=created_at.asc",
+    realtimeTables: dogRealtimeTables,
+    map: mapDogRows,
   });
   const [message, setMessage] = useState<string | null>(null);
   const [isDogFormOpen, setIsDogFormOpen] = useState(false);
@@ -259,7 +275,8 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
   }
 
   const profile = data.profile;
-  const dogs = profile?.dogs?.length ? profile.dogs : [];
+  const dogs = dogRows.length ? dogRows : profile?.dogs?.length ? profile.dogs : [];
+  const profileError = error ?? dogError;
   
   return (
     <div className="px-4 py-6 text-[#17132a] sm:px-8 lg:px-10 lg:py-10">
@@ -267,8 +284,8 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
         <button type="button" onClick={onBackToDashboard} className="text-sm font-semibold text-[#5b2aa0]">
           ← Back to dashboard
         </button>
-        {isLoading || error || !profile ? (
-          <p className="rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70]">{isLoading ? "Loading live profile…" : error ?? "No profile data yet."}</p>
+        {isLoading || profileError || !profile ? (
+          <p className="rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70]">{isLoading ? "Loading live profile…" : profileError ?? "No profile data yet."}</p>
         ) : null}
         {profile ? (
           <>

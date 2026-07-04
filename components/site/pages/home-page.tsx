@@ -1,4 +1,4 @@
-import { CalendarCheck, Heart, PawPrint } from "lucide-react";
+import { CalendarCheck, Heart, PawPrint, MessageCircle, MapPin, CalendarDays } from "lucide-react";
 import Image from "next/image";
 import type { CSSProperties } from "react";
 
@@ -14,6 +14,33 @@ const carePromises = [
   "Complimentary Meet & Greet",
   "Regular Photo Updates",
 ];
+
+const prepSteps = [
+  [
+    MessageCircle,
+    "01",
+    "Meet & Greet",
+    "We start with a relaxed conversation about your dog's routine, personality, and what matters most to you.",
+  ],
+  [
+    PawPrint,
+    "02",
+    "Understanding Your Dog",
+    "Together we learn what helps your dog feel confident, comfortable, and relaxed.",
+  ],
+  [
+    MapPin,
+    "03",
+    "Create a Care Plan",
+    "Every visit is planned around your dog's routine, energy level, and individual needs.",
+  ],
+  [
+    CalendarDays,
+    "04",
+    "Tailored to Your Dog",
+    "Every experience is personalised so your dog feels safe, relaxed, and completely at ease.",
+  ],
+] as const;
 
 const steps = [
   [PawPrint, "01", "Meet & Greet", "We begin with a complimentary meet-and-greet, giving us time to get to know each other and understand your dog's personality, routine, and individual needs."],
@@ -118,29 +145,34 @@ export function HomePage() {
       </section>
 
       <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
-        <div className="mx-auto max-w-6xl text-center">
-          <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
-            How it works
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
-            Simple booking, elevated care, thoughtful updates.
-          </h2>
-          <div className="mt-10 grid gap-8 sm:mt-14 md:grid-cols-3">
-            {steps.map(([Icon, number, title, text]) => (
-              <ScrollReveal key={title} delay={Number(number) * 90}>
-                <article>
-                <div className="mx-auto grid size-16 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
-                  <Icon aria-hidden="true" />
+              <div className="mx-auto max-w-6xl text-center">
+                <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
+                  BEFORE WE BEGIN
+                </p>
+                <h2 className="mt-3 text-4xl font-semibold">
+                  Every great experience starts
+                  <br />
+                  with <span className="text-[#7c3aed]">understanding </span>
+                  your dog.
+                </h2>
+                <div className="mt-14 grid gap-8 md:grid-cols-4">
+                  {prepSteps.map(([Icon, number, title, text], index) => (
+                    <ScrollReveal key={title} delay={index * 80}>
+                    <article className="relative">
+                      <div className="mx-auto grid size-16 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
+                        <Icon />
+                      </div>
+                      <p className="mt-5 text-xs font-black text-[#8b5cf6]">
+                        {number}
+                      </p>
+                      <h3 className="mt-2 font-semibold">{title}</h3>
+                      <p className="mt-3 text-sm leading-6 text-[#4f4857]">{text}</p>
+                    </article>
+                    </ScrollReveal>
+                  ))}
                 </div>
-                <p className="mt-5 text-xs font-black text-[#8b5cf6]">{number}</p>
-                <h3 className="mt-2 font-semibold">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-[#4f4857]">{text}</p>
-              </article>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
+              </div>
+            </section>
 
       <section className="premium-dark-section bg-[#100d19] px-5 py-14 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-6xl">

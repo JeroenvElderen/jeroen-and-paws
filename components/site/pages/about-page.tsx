@@ -178,7 +178,7 @@ const personalNotes = [
     PawPrint,
     "Outdoors",
     "Fresh air, muddy boots, and dogs convinced we've only just started the walk.",
-    "/images/dogs/leia.jpg",
+    "/images/dogs/lakta1.jpeg",
   ],
   [
     Coffee,
@@ -190,7 +190,7 @@ const personalNotes = [
     Mountain,
     "Adventure Seeker",
     "Always searching for the next trail. The dogs usually find it before I do.",
-    "/images/dogs/lakta1.jpeg",
+    "/images/dogs/rufus.jpg",
   ],
 ] as const;
 
@@ -199,12 +199,12 @@ export function AboutPageContent() {
     <SiteShell activePage="about">
       <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
-          src="/images/dogs/melaktacompass.jpeg"
+          src="/images/dogs/echome1.jpg"
           alt="Jeroen caring for a dog outdoors"
           fill
           priority
           sizes="100vw"
-          className="premium-hero-image object-cover object-[center_85%] opacity-55"
+          className="premium-hero-image object-cover object-[center_50%] opacity-55 scale-x-[-1]"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.94),rgba(8,11,16,.52),rgba(8,11,16,.2))]" />
         <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">
@@ -324,28 +324,45 @@ export function AboutPageContent() {
       </section>
 
       <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
-        <div className="mx-auto max-w-6xl text-center">
-          <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
-            BEFORE WE BEGIN
-          </p>
-          <h2 className="mt-3 text-4xl font-semibold">
-            Every great experience starts
-            <br />
-            with <span className="text-[#7c3aed]">understanding </span>
-            your dog.
-          </h2>
-          <div className="mt-14 grid gap-8 md:grid-cols-4">
-            {prepSteps.map(([Icon, number, title, text], index) => (
-              <ScrollReveal key={title} delay={index * 80}>
-              <article className="relative">
-                <div className="mx-auto grid size-16 place-items-center rounded-full bg-[#eee8f7] text-[#6d4b9b]">
-                  <Icon />
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center">
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
+              Beyond the leash
+            </p>
+            <h2 className="mt-3 text-4xl font-semibold">
+              A calm presence behind{" "}
+              <span className="text-[#7c3aed]">Jeroen & Paws.</span>
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl leading-8 text-[#4f4857]">
+              When I&apos;m not caring for clients&apos; dogs, I&apos;m usually
+              out exploring the Wicklow trails with my own dog. It&apos;s where
+              I recharge—and where I&apos;m reminded why calm, enriching time
+              outdoors matters so much to dogs.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {personalNotes.map(([Icon, title, text, src], index) => (
+              <ScrollReveal key={title} delay={index * 90}>
+              <article
+                key={title}
+                className="motion-card motion-card-light overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
+              >
+                <div className="motion-media relative h-44 sm:h-56">
+                  <Image
+                    src={src}
+                    alt={`${title} dog care detail`}
+                    fill
+                    sizes="(min-width: 1024px) 360px, 100vw"
+                    className="object-cover"
+                  />
                 </div>
-                <p className="mt-5 text-xs font-black text-[#8b5cf6]">
-                  {number}
-                </p>
-                <h3 className="mt-2 font-semibold">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-[#4f4857]">{text}</p>
+                <div className="p-6">
+                  <Icon className="motion-icon text-[#7c3aed]" />
+                  <h3 className="mt-4 text-xl font-semibold">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#4f4857]">
+                    {text}
+                  </p>
+                </div>
               </article>
               </ScrollReveal>
             ))}
@@ -354,39 +371,48 @@ export function AboutPageContent() {
       </section>
 
       <section className="premium-dark-section grid bg-[#100d19] lg:grid-cols-2">
-        <div className="relative min-h-[300px] sm:min-h-[440px]">
-          <Image
-            src="/images/dogs/shadow.jpg"
-            alt="A dog enjoying a calm outdoor adventure"
-            fill
-            className="object-cover"
-          />
-        </div>
         <div className="px-5 py-14 sm:px-12 sm:py-20 lg:px-20">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
-            THE DAY OF THE VISIT
+            Experience that matters
           </p>
           <h2 className="mt-4 text-5xl font-semibold leading-tight">
-            No rushing. No pressure.
+            Experience you can trust.
             <br />
-            Just <span className="text-[#a78bfa]">your dog&apos;s pace.</span>
+            Care your dog will feel.
           </h2>
-          <p className="mt-6 max-w-xl leading-8 text-[#d8cab8]">
-            Every visit is led by your dog&apos;s pace. Whether they want to
-            explore, sniff, play, or simply enjoy a quiet walk, I adapt the
-            experience to help them feel relaxed, confident, and happy.
+          <p className="mt-6 leading-8 text-[#d8cab8]">
+            Every dog is different. Years of hands-on experience with dogs of
+            all breeds, ages, and personalities helps me adapt my approach to
+            each individual dog—creating calm, safe, and enjoyable experiences
+            every time.
           </p>
-          <div className="mt-10 grid gap-8 sm:grid-cols-2">
-            {experienceValues.map(([Icon, title, text]) => (
-              <div key={title} className="flex gap-4">
-                <Icon className="h-9 w-9 shrink-0 text-[#a78bfa]" />
-                <div>
-                  <h3 className="font-semibold">{title}</h3>
-                  <p className="mt-1 text-sm text-[#d8cab8]">{text}</p>
-                </div>
-              </div>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            {[
+              "Years of hands-on experience",
+              "Positive reinforcement methods",
+              "Calm, patient handling",
+              "Understanding canine body language",
+              "Safe introductions & group management",
+              "Fully tailored to every dog",
+            ].map((item) => (
+              <p
+                key={item}
+                className="flex items-center gap-2 text-sm text-[#f5e9d5]"
+              >
+                <CheckCircle2 className="h-4 w-4 text-[#a78bfa]" />
+                {item}
+              </p>
             ))}
           </div>
+        </div>
+        <div className="motion-media relative min-h-[300px] sm:min-h-[440px]">
+          <Image
+            src="/images/dogs/fiadh2.jpg"
+            alt="Dogs walking together in a forest"
+            fill
+            className="object-cover"
+            style={{ objectPosition: "center 25%" }}
+          />
         </div>
       </section>
 
@@ -433,47 +459,39 @@ export function AboutPageContent() {
       </section>
 
       <section className="premium-dark-section grid bg-[#100d19] lg:grid-cols-2">
-        <div className="px-5 py-14 sm:px-12 sm:py-20 lg:px-20">
-          <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
-            Experience that matters
-          </p>
-          <h2 className="mt-4 text-5xl font-semibold leading-tight">
-            Experience you can trust.
-            <br />
-            Care your dog will feel.
-          </h2>
-          <p className="mt-6 leading-8 text-[#d8cab8]">
-            Every dog is different. Years of hands-on experience with dogs of
-            all breeds, ages, and personalities helps me adapt my approach to
-            each individual dog—creating calm, safe, and enjoyable experiences
-            every time.
-          </p>
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
-            {[
-              "Years of hands-on experience",
-              "Positive reinforcement methods",
-              "Calm, patient handling",
-              "Understanding canine body language",
-              "Safe introductions & group management",
-              "Fully tailored to every dog",
-            ].map((item) => (
-              <p
-                key={item}
-                className="flex items-center gap-2 text-sm text-[#f5e9d5]"
-              >
-                <CheckCircle2 className="h-4 w-4 text-[#a78bfa]" />
-                {item}
-              </p>
-            ))}
-          </div>
-        </div>
-        <div className="motion-media relative min-h-[300px] sm:min-h-[440px]">
+        <div className="relative min-h-[300px] sm:min-h-[440px]">
           <Image
-            src="/images/dogs/pancho/pancho1.jpeg"
-            alt="Dogs walking together in a forest"
+            src="/images/dogs/shadow.jpg"
+            alt="A dog enjoying a calm outdoor adventure"
             fill
             className="object-cover"
           />
+        </div>
+        <div className="px-5 py-14 sm:px-12 sm:py-20 lg:px-20">
+          <p className="text-xs font-black uppercase tracking-[0.35em] text-[#a78bfa]">
+            THE DAY OF THE VISIT
+          </p>
+          <h2 className="mt-4 text-5xl font-semibold leading-tight">
+            No rushing. No pressure.
+            <br />
+            Just <span className="text-[#a78bfa]">your dog&apos;s pace.</span>
+          </h2>
+          <p className="mt-6 max-w-xl leading-8 text-[#d8cab8]">
+            Every visit is led by your dog&apos;s pace. Whether they want to
+            explore, sniff, play, or simply enjoy a quiet walk, I adapt the
+            experience to help them feel relaxed, confident, and happy.
+          </p>
+          <div className="mt-10 grid gap-8 sm:grid-cols-2">
+            {experienceValues.map(([Icon, title, text]) => (
+              <div key={title} className="flex gap-4">
+                <Icon className="h-9 w-9 shrink-0 text-[#a78bfa]" />
+                <div>
+                  <h3 className="font-semibold">{title}</h3>
+                  <p className="mt-1 text-sm text-[#d8cab8]">{text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -565,53 +583,6 @@ export function AboutPageContent() {
             <ButtonLink href="/contact" className="mt-8 sm:mt-10">
               Book a meet & greet
             </ButtonLink>
-          </div>
-        </div>
-      </section>
-
-      <section className="premium-cream-texture bg-[#f7f4ef] px-5 py-14 text-[#1d1728] sm:px-8 sm:py-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center">
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-[#8b5cf6]">
-              Beyond the leash
-            </p>
-            <h2 className="mt-3 text-4xl font-semibold">
-              A calm presence behind{" "}
-              <span className="text-[#7c3aed]">Jeroen & Paws.</span>
-            </h2>
-            <p className="mx-auto mt-5 max-w-2xl leading-8 text-[#4f4857]">
-              When I&apos;m not caring for clients&apos; dogs, I&apos;m usually
-              out exploring the Wicklow trails with my own dog. It&apos;s where
-              I recharge—and where I&apos;m reminded why calm, enriching time
-              outdoors matters so much to dogs.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {personalNotes.map(([Icon, title, text, src], index) => (
-              <ScrollReveal key={title} delay={index * 90}>
-              <article
-                key={title}
-                className="motion-card motion-card-light overflow-hidden rounded-xl bg-white shadow-xl shadow-black/5"
-              >
-                <div className="motion-media relative h-44 sm:h-56">
-                  <Image
-                    src={src}
-                    alt={`${title} dog care detail`}
-                    fill
-                    sizes="(min-width: 1024px) 360px, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-6">
-                  <Icon className="motion-icon text-[#7c3aed]" />
-                  <h3 className="mt-4 text-xl font-semibold">{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#4f4857]">
-                    {text}
-                  </p>
-                </div>
-              </article>
-              </ScrollReveal>
-            ))}
           </div>
         </div>
       </section>

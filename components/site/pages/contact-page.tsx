@@ -51,12 +51,12 @@ export function ContactPageContent({
     <SiteShell activePage="contact">
       <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:flex lg:items-center lg:py-28">
         <Image
-          src="/images/dogs/walkaslan.jpg"
+          src="/images/dogs/melakta.jpeg"
           alt="Happy dog enjoying a calm outdoor session with Jeroen & Paws"
           fill
           priority
           sizes="100vw"
-          className="premium-hero-image object-cover object-[center_74%] opacity-80"
+          className="premium-hero-image object-cover object-[center_55%] opacity-80"
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,0.9)_0%,rgba(8,11,16,0.66)_38%,rgba(8,11,16,0.18)_74%,rgba(8,11,16,0.46)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#080b10] to-transparent" />

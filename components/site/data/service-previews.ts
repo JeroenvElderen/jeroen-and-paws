@@ -9,6 +9,7 @@ export const servicePreviews = [
     alt: "Lola enjoying a neighbourhood walk",
     imageSrc: "/images/dogs/leia.jpg",
     href: "/services/dog-walking",
+    imagePosition: "center 45%",
   },
   {
     title: "Home check-ins",
@@ -16,8 +17,9 @@ export const servicePreviews = [
       "Reassuring visits that keep your dog comfortable, settled, and cared for while you're away.",
     price: "From €18",
     alt: "Nola relaxing during a home check-in",
-    imageSrc: "/images/dogs/kaiser.jpg",
+    imageSrc: "/images/dogs/fiadh2.jpg",
     href: "/services/home-check-ins",
+    imagePosition: "center 25%",
   },
   {
     title: "Overnight stays",

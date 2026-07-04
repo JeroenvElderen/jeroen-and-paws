@@ -17,6 +17,7 @@ export function ServicesPreview() {
               alt={service.alt}
               sizes="(min-width: 768px) 33vw, 100vw"
               src={service.imageSrc}
+              imagePosition={service.imagePosition}
             />
           </div>
           <div className="p-5 sm:p-7">

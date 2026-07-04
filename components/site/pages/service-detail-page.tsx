@@ -18,6 +18,9 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
           priority
           sizes="100vw"
           className="premium-hero-image object-cover opacity-60"
+          style={{
+            objectPosition: service.heroImagePosition ?? "center",
+          }}
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.96),rgba(8,11,16,.58),rgba(8,11,16,.18))]" />
         <div className="relative mx-auto max-w-6xl pt-0 sm:pt-8">
@@ -114,6 +117,9 @@ export function ServiceDetailPage({ service }: { service: ServiceDetail }) {
                 fill
                 sizes="(min-width: 1024px) 620px, 100vw"
                 className="object-cover"
+                style={{
+                  objectPosition: service.featureImagePosition ?? "center",
+                }}
               />
             </div>
             </ScrollReveal>

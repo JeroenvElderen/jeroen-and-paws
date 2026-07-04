@@ -32,7 +32,8 @@ const serviceCards = [
     slug: "dog-walking",
     text: "Calm, enriching walks tailored to your dog's personality, routine, and energy.",
     note: "Solo walks • Photo updates • Tailored routines",
-    src: "/images/dogs/Nola/Nola-1.jpg",
+    src: "/images/dogs/honey.jpg",
+    imagePosition: "center 50%",
     icon: Mountain,
   },
   {
@@ -40,7 +41,8 @@ const serviceCards = [
     slug: "home-check-ins",
     text: "Reassuring home visits to keep your dog comfortable, settled, and cared for while you're away.",
     note: "Flexible visits • Feeding • Regular updates",
-    src: "/images/dogs/lola/lola1.jpeg",
+    src: "/images/dogs/pancho.jpg",
+    imagePosition: "center 80%",
     icon: Heart,
   },
   {
@@ -48,7 +50,8 @@ const serviceCards = [
     slug: "dog-training",
     text: "Positive, personalised training that builds confidence, communication, and lasting habits.",
     note: "Positive methods • Owner coaching • Behaviour support",
-    src: "/images/dogs/kaiser/kaiser1.jpeg",
+    src: "/images/dogs/rufus1.jpg",
+    imagePosition: "center 68%",
     icon: Camera,
   },
   {
@@ -56,7 +59,8 @@ const serviceCards = [
     slug: "group-walks",
     text: "Carefully matched group walks that encourage socialisation, confidence, and plenty of exploration.",
     note: "Carefully matched groups • Enrichment • Photo updates",
-    src: "/images/dogs/Johnny/Johnny.jpeg",
+    src: "/images/dogs/melaktacompass.jpeg",
+    imagePosition: "center 80%",
     icon: PawPrint,
   },
   {
@@ -64,7 +68,8 @@ const serviceCards = [
     slug: "daytime-care-overnight-stays",
     text: "A calm, structured day filled with play, rest, enrichment, and plenty of individual attention.",
     note: "Play • Rest • Enrichment",
-    src: "/images/dogs/lakta/lakta1.jpg",
+    src: "/images/dogs/millie.jpg",
+    imagePosition: "center 45%",
     icon: PawPrint,
   },
   {
@@ -161,7 +166,7 @@ export function ServicesPageContent() {
     <SiteShell activePage="services">
       <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
-          src="/images/dogs/walk.jpeg"
+          src="/images/dogs/melaktacompass.jpeg"
           alt="Dog training and care in a calm outdoor setting"
           fill
           priority
@@ -214,6 +219,9 @@ export function ServicesPageContent() {
                       fill
                       sizes="(min-width: 1024px) 360px, (min-width: 768px) 50vw, 100vw"
                       className="object-cover"
+                      style={{
+                        objectPosition: card.imagePosition ?? "center",
+                      }}
                     />
                   </div>
                   <div className="flex flex-1 flex-col p-6">

@@ -34,8 +34,10 @@ export type ServiceDetail = {
   ctaLabel: string;
   heroImage: string;
   heroAlt: string;
+  heroImagePosition?: string;
   featureImage: string;
   featureAlt: string;
+  featureImagePosition?: string;
   priceFrom: string;
   priceUnit: string;
   includedTitle: string;
@@ -82,7 +84,8 @@ export const serviceDetails: ServiceDetail[] = [
     intro:
       "From gentle neighbourhood strolls to fuller solo adventures, every walk is planned with care, safety, and joy.",
     ctaLabel: "Book a walk",
-    heroImage: "/images/dogs/Nola/Nola-1.jpg",
+    heroImage: "/images/dogs/echome1.jpg",
+    heroImagePosition: "center 40%",
     heroAlt: "Dog enjoying an enriching outdoor walk",
     featureImage: "/images/dogs/ace.jpg",
     featureAlt: "Happy dog running along a woodland path",
@@ -152,7 +155,8 @@ export const serviceDetails: ServiceDetail[] = [
     ctaLabel: "Book training",
     heroImage: "/images/dogs/kaiser/kaiser1.jpeg",
     heroAlt: "Dog training session in an outdoor setting",
-    featureImage: "/images/dogs/aslan/aslan.jpg",
+    featureImage: "/images/dogs/compass1.jpeg",
+    featureImagePosition: "center 30%",
     featureAlt: "Focused dog during personalised training",
     priceFrom: "€35",
     priceUnit: "/ session",
@@ -184,7 +188,8 @@ export const serviceDetails: ServiceDetail[] = [
     intro:
       "Group walks are matched thoughtfully so dogs enjoy outdoor time, enrichment, and companionship in a safe, supervised way.",
     ctaLabel: "Book a group walk",
-    heroImage: "/images/dogs/Johnny/Johnny.jpeg",
+    heroImage: "/images/dogs/melaktacompass.jpeg",
+    heroImagePosition: "center 80%",
     heroAlt: "Dog enjoying a group adventure outdoors",
     featureImage: "/images/dogs/lakta/lakta1.jpg",
     featureAlt: "Dog exploring during a structured group outing",
