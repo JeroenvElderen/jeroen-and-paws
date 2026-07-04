@@ -76,10 +76,20 @@ create table if not exists public.portal_dogs (
   id uuid primary key default gen_random_uuid(),
   client_id uuid not null references public.portal_clients(id) on delete cascade,
   name text not null,
+  breed text,
+  age text,
+  status text not null default 'active',
   profile_photo_url text,
   hero_photo_url text,
+  notes text,
   created_at timestamptz not null default now()
 );
+
+alter table public.portal_dogs
+  add column if not exists breed text,
+  add column if not exists age text,
+  add column if not exists status text not null default 'active',
+  add column if not exists notes text;
 
 create table if not exists public.portal_bookings (
   id uuid primary key default gen_random_uuid(),
@@ -226,6 +236,14 @@ if not exists (select 1 from pg_policies where schemaname = 'public' and tablena
     execute 'create policy "Clients can read their dogs" on public.portal_dogs for select using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
   end if;
 
+if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Clients can add their dogs') then
+    execute 'create policy "Clients can add their dogs" on public.portal_dogs for insert with check (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
+  end if;
+
+if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Clients can update their dogs') then
+    execute 'create policy "Clients can update their dogs" on public.portal_dogs for update using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid())) with check (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
+  end if;
+
 if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_bookings' and policyname = 'Clients can read their bookings') then
     execute 'create policy "Clients can read their bookings" on public.portal_bookings for select using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
   end if;
@@ -242,6 +260,11 @@ if not exists (select 1 from pg_policies where schemaname = 'public' and tablena
     execute 'create policy "Admins manage outlook imports with service role" on public.portal_outlook_imports for all using (auth.role() = ''service_role'') with check (auth.role() = ''service_role'')';
   end if;
 end $$;
+
+drop view if exists public.admin_booking_calendar cascade;
+drop view if exists public.portal_calendar_feed cascade;
+drop view if exists public.portal_booking_list cascade;
+drop view if exists public.portal_dashboard cascade;
 
 create or replace view public.portal_dashboard
 with (security_invoker = true) as
