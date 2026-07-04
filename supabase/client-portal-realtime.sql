@@ -28,6 +28,72 @@ create table if not exists public.portal_client_activity (
 
 alter table public.portal_client_activity enable row level security;
 
+-- Explicit API grants for Supabase PostgREST roles. RLS still limits rows to the
+-- signed-in portal client, while these privileges allow PostgREST to reach RLS.
+grant usage on schema public to anon, authenticated;
+grant select on public.portal_clients, public.portal_dogs, public.portal_bookings, public.portal_session_updates, public.portal_gallery_items, public.portal_client_activity to authenticated;
+grant insert, delete on public.portal_dogs to authenticated;
+grant update (full_name, email, first_name, phone, address, avatar_url) on public.portal_clients to authenticated;
+grant update (name, breed, age, status, profile_photo_url, hero_photo_url, notes) on public.portal_dogs to authenticated;
+
+alter table public.portal_dogs enable row level security;
+
+drop policy if exists "Clients can read their dogs" on public.portal_dogs;
+drop policy if exists "Clients can add their dogs" on public.portal_dogs;
+drop policy if exists "Clients can update their dogs" on public.portal_dogs;
+drop policy if exists "Clients can delete their dogs" on public.portal_dogs;
+
+create policy "Clients can read their dogs"
+on public.portal_dogs
+for select
+using (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+);
+
+create policy "Clients can add their dogs"
+on public.portal_dogs
+for insert
+with check (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+);
+
+create policy "Clients can update their dogs"
+on public.portal_dogs
+for update
+using (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+)
+with check (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+);
+
+create policy "Clients can delete their dogs"
+on public.portal_dogs
+for delete
+using (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+);
+
 do $$
 begin
   if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_clients' and policyname = 'Clients can update their own portal profile') then
@@ -114,11 +180,13 @@ select
   c.created_at,
   dogs.dog_names,
   dogs.dog_photo_url,
+  coalesce(dogs.items, '[]'::jsonb) as dogs,
   coalesce(activity.items, '[]'::jsonb) as recent_activity
 from public.portal_clients c
 left join lateral (
   select string_agg(d.name, ' and ' order by d.created_at) as dog_names,
-         (array_agg(d.profile_photo_url order by d.created_at))[1] as dog_photo_url
+         (array_agg(d.profile_photo_url order by d.created_at))[1] as dog_photo_url,
+         jsonb_agg(to_jsonb(d) order by d.created_at) as items
   from public.portal_dogs d where d.client_id = c.id
 ) dogs on true
 left join lateral (
@@ -126,6 +194,8 @@ left join lateral (
   from (select * from public.portal_client_activity a where a.client_id = c.id order by a.created_at desc limit 10) a
 ) activity on true
 where c.auth_user_id = auth.uid();
+
+grant select on public.portal_dashboard, public.portal_gallery, public.portal_profile to authenticated;
 
 do $$
 begin

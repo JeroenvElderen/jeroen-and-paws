@@ -115,6 +115,12 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
     return { url, key, accessToken };
   }
 
+  async function getSupabaseWriteError(response: Response) {
+    const payload = await response.json().catch(() => null) as { message?: string; hint?: string; details?: string; code?: string } | null;
+    const detail = [payload?.message, payload?.hint, payload?.details, payload?.code ? `Code: ${payload.code}` : null].filter(Boolean).join(" ");
+    return detail ? `Supabase ${response.status}: ${detail}` : `Supabase ${response.status}: ${response.statusText || "Request failed"}`;
+  }
+
   async function uploadPortalImage(config: { url: string; key: string; accessToken: string }, file: File, folder: "avatars" | "dogs") {
     if (!file.size) return null;
     if (!file.type.startsWith("image/")) {
@@ -163,8 +169,12 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
           avatar_url: uploadedAvatarUrl ?? data.profile.avatar_url,
         }),
       });
-      setMessage(response.ok ? "Profile saved. Realtime will refresh this page automatically." : "Unable to save profile.");
-      if (response.ok) setIsProfileFormOpen(false);
+      if (response.ok) {
+        setMessage("Profile saved. Realtime will refresh this page automatically.");
+        setIsProfileFormOpen(false);
+      } else {
+        setMessage(await getSupabaseWriteError(response));
+      }
     } catch (uploadError) {
       setMessage(uploadError instanceof Error ? uploadError.message : "Unable to upload image.");
     }
@@ -200,7 +210,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
       setIsPasswordFormOpen(false);
       setMessage("Password updated successfully.");
     } else {
-      setMessage("Unable to update password. Please try again.");
+      setMessage(await getSupabaseWriteError(response));
     }
   }
 
@@ -241,7 +251,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
         setIsDogFormOpen(false);
         setMessage("Dog saved. Realtime will refresh this page automatically.");
       } else {
-        setMessage("Unable to save dog. Please try again.");
+        setMessage(await getSupabaseWriteError(response));
       }
     } catch (uploadError) {
       setMessage(uploadError instanceof Error ? uploadError.message : "Unable to upload dog photo.");
@@ -311,7 +321,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                       <InfoLine label="Address" value={profile.address || "Add an address"} />
                     </div>
                   )}
-                  {message ? <p className="mt-4 text-sm text-[#665d70]">{message}</p> : null}
+                  {message ? <p className="mt-4 rounded-lg border border-[#5b2aa0]/20 bg-[#fbf8ff] px-4 py-3 text-sm text-[#4a3d58]">{message}</p> : null}
                 </Panel>
               </div>
 

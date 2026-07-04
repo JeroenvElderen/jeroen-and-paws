@@ -226,22 +226,77 @@ alter table public.portal_session_updates enable row level security;
 alter table public.portal_gallery_items enable row level security;
 alter table public.portal_outlook_imports enable row level security;
 
+-- Explicit API grants for Supabase PostgREST roles. RLS still controls which rows
+-- authenticated portal users can read or write, but PostgREST returns 403 before
+-- evaluating RLS when these privileges are missing.
+grant usage on schema public to anon, authenticated;
+grant select on public.portal_clients, public.portal_dogs, public.portal_bookings, public.portal_session_updates, public.portal_gallery_items to authenticated;
+grant insert, delete on public.portal_dogs to authenticated;
+grant update (full_name, email) on public.portal_clients to authenticated;
+grant update (name, breed, age, status, profile_photo_url, hero_photo_url, notes) on public.portal_dogs to authenticated;
+
+alter table public.portal_dogs enable row level security;
+
+drop policy if exists "Clients can read their dogs" on public.portal_dogs;
+drop policy if exists "Clients can add their dogs" on public.portal_dogs;
+drop policy if exists "Clients can update their dogs" on public.portal_dogs;
+drop policy if exists "Clients can delete their dogs" on public.portal_dogs;
+
+create policy "Clients can read their dogs"
+on public.portal_dogs
+for select
+using (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+);
+
+create policy "Clients can add their dogs"
+on public.portal_dogs
+for insert
+with check (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+);
+
+create policy "Clients can update their dogs"
+on public.portal_dogs
+for update
+using (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+)
+with check (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+);
+
+create policy "Clients can delete their dogs"
+on public.portal_dogs
+for delete
+using (
+  client_id in (
+    select id
+    from public.portal_clients
+    where auth_user_id = auth.uid()
+  )
+);
+
 do $$
 begin
   if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_clients' and policyname = 'Clients can read their own portal profile') then
     execute 'create policy "Clients can read their own portal profile" on public.portal_clients for select using (auth.uid() = auth_user_id)';
-  end if;
-
-if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Clients can read their dogs') then
-    execute 'create policy "Clients can read their dogs" on public.portal_dogs for select using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
-  end if;
-
-if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Clients can add their dogs') then
-    execute 'create policy "Clients can add their dogs" on public.portal_dogs for insert with check (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
-  end if;
-
-if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Clients can update their dogs') then
-    execute 'create policy "Clients can update their dogs" on public.portal_dogs for update using (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid())) with check (exists (select 1 from public.portal_clients c where c.id = client_id and c.auth_user_id = auth.uid()))';
   end if;
 
 if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_bookings' and policyname = 'Clients can read their bookings') then
@@ -405,3 +460,5 @@ select
   i.notes
 from public.portal_outlook_imports i
 where i.linked_booking_id is null;
+
+grant select on public.portal_dashboard, public.portal_booking_list, public.portal_calendar_feed to authenticated;

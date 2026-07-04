@@ -45,7 +45,7 @@ export function HomePage() {
             </span>
           </h1>
           <p className="mt-4 max-w-xl text-[0.98rem] leading-7 text-[#f5e9d5] sm:mt-5 sm:text-lg sm:leading-8">
-            A boutique dog walking, home visit, day care, boarding, and training service shaped around your dog&apos;s character, comfort, and routine—with thoughtful updates every step of the way.
+            Boutique dog walking, home visits, day care, boarding, and training services tailored to your dog&apos;s personality, comfort, and routine—with thoughtful updates every step of the way.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:flex-wrap sm:gap-4">
             <ButtonLink href="/contact">Book a Complimentary Meet &amp; Greet</ButtonLink>
@@ -86,7 +86,7 @@ export function HomePage() {
               Considered care, designed around your dog&apos;s world.
             </h2>
             <p className="mt-6 leading-8 text-[#4f4857]">
-              Every detail matters: the route we choose, the pace we set, the way your dog prefers to be greeted, and the updates you receive afterwards. Jeroen & Paws offers calm, premium care for dogs who deserve more than a standard service—and for owners who want complete confidence while they&apos;re away.
+              Every detail matters—from the routes we choose to the pace we set and the way your dog prefers to be greeted. At Jeroen & Paws, every service is tailored to your dog&apos;s personality, routine, and comfort, with thoughtful updates that give you complete peace of mind while you&apos;re away.
             </p>
             <ButtonLink href="/about" className="mt-8">
               Meet Jeroen
