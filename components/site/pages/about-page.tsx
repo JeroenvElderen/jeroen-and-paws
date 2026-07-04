@@ -199,7 +199,7 @@ export function AboutPageContent() {
     <SiteShell activePage="about">
       <section className="premium-hero-orb relative isolate min-h-[calc(100svh-9rem)] overflow-hidden bg-[#080b10] px-5 py-12 sm:min-h-[calc(100svh-5rem)] sm:px-8 sm:py-24 lg:py-32">
         <Image
-          src="/images/dogs/echome1.jpg"
+          src="/images/dogs/echome1.JPG"
           alt="Jeroen caring for a dog outdoors"
           fill
           priority
