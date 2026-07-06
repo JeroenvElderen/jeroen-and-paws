@@ -232,3 +232,21 @@ begin
   alter publication supabase_realtime add table public.portal_outlook_imports;
 exception when duplicate_object then null;
 end $$;
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_clients' and policyname = 'Backend admin can read clients') then
+    execute 'create policy "Backend admin can read clients" on public.portal_clients for select using ((auth.jwt() ->> ''email'') = ''jeroen@jeroenandpaws.com'')';
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_dogs' and policyname = 'Backend admin can read dogs') then
+    execute 'create policy "Backend admin can read dogs" on public.portal_dogs for select using ((auth.jwt() ->> ''email'') = ''jeroen@jeroenandpaws.com'')';
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_bookings' and policyname = 'Backend admin can read bookings') then
+    execute 'create policy "Backend admin can read bookings" on public.portal_bookings for select using ((auth.jwt() ->> ''email'') = ''jeroen@jeroenandpaws.com'')';
+  end if;
+
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_session_updates' and policyname = 'Backend admin can read session updates') then
+    execute 'create policy "Backend admin can read session updates" on public.portal_session_updates for select using ((auth.jwt() ->> ''email'') = ''jeroen@jeroenandpaws.com'')';
+  end if;
+end $$;

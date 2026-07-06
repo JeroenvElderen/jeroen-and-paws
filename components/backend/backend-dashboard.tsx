@@ -343,7 +343,7 @@ export function BackendDashboard() {
     if (activeView === "dashboard") return <BackendDashboardOverview />;
     if (activeView === "bookings") return <BackendBookings />;
     if (activeView === "services") return <BackendServices />;
-    if (activeView === "dogs") return <BackendDogs />;
+    if (activeView === "dogs") return <BackendDogs accessToken={backendSession.accessToken} />;
     if (activeView === "clients") return <BackendClients />;
     if (activeView === "calendar") return <BackendCalendar />;
     if (activeView === "invoices") return <BackendInvoices />;
