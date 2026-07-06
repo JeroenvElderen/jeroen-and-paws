@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { ServiceDetailPage } from "@/components/site/pages/service-detail-page";
+import { buildPageMetadata, serviceKeywords } from "@/components/site/seo";
 import { getServiceDetail, serviceDetails } from "@/components/site/service-details";
 
 export function generateStaticParams() {
@@ -19,10 +20,13 @@ export async function generateMetadata({
     return {};
   }
 
-  return {
-    title: service.title,
-    description: service.intro,
-  };
+  return buildPageMetadata({
+    title: `${service.title} in Bray, Dublin & Leinster`,
+    description: `${service.intro} Available from ${service.priceFrom}${service.priceUnit} with Jeroen & Paws in Bray, Dublin, County Wicklow, County Meath, and nearby Leinster areas.`,
+    path: `/services/${service.slug}`,
+    image: service.heroImage,
+    keywords: serviceKeywords(service),
+  });
 }
 
 export default async function ServicePage({

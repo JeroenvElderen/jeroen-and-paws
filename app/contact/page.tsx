@@ -1,11 +1,14 @@
 import { ContactPageContent } from "@/components/site/pages/contact-page";
+import { buildPageMetadata } from "@/components/site/seo";
 import type { SelectedServiceDetails } from "@/components/site/sections/contact-form";
 
-export const metadata = {
-  title: "Contact & Book a Free Meet and Greet",
+export const metadata = buildPageMetadata({
+  title: "Contact Jeroen & Paws | Book Dog Care in Bray",
   description:
-    "Contact Jeroen & Paws to talk about training, walks, day care, boarding, home check-ins, and personalised dog care in Greystones and County Wicklow.",
-};
+    "Contact Jeroen & Paws to book a free meet-and-greet for training, walks, day care, boarding, home check-ins, and personalised dog care in Bray, Dublin, County Wicklow, County Meath, and nearby Leinster areas.",
+  path: "/contact",
+  keywords: ["book dog walker Bray", "contact dog trainer Wicklow", "book dog care Dublin", "book dog care County Meath", "free dog care meet and greet"],
+});
 
 type ContactPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;

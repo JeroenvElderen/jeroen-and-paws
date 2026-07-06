@@ -8,7 +8,7 @@ export const businessInfo = {
   instagramUrl: "https://www.instagram.com/jeroen_and_paws/",
   siteUrl: "https://jeroenandpaws.com",
   serviceAreaSummary:
-    "Dog walking, training, day care, boarding, and home check-ins by appointment for dog families in Greystones and surrounding County Wicklow areas.",
+    "Dog walking, training, day care, boarding, and home check-ins by appointment for dog families in Bray, Dublin, County Wicklow, County Meath, and nearby Leinster areas.",
   responseTime: "Jeroen aims to reply within 24 hours.",
   hours: "Monday - Sunday: 8:00 AM - 10:00 PM",
 };

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import { businessInfo } from "@/components/site/data";
+import { localKeywords } from "@/components/site/seo";
 import { StructuredData } from "@/components/site/structured-data";
 
 import "./globals.css";
@@ -19,14 +20,31 @@ export const metadata: Metadata = {
     template: "%s | Jeroen & Paws",
   },
   description:
-    "Jeroen & Paws offers personalised dog walking, training, day care, home check-ins, and boarding with warm, dependable care by appointment in Greystones and County Wicklow.",
+    "Jeroen & Paws offers personalised dog walking, training, day care, home check-ins, and boarding with warm, dependable care by appointment in Bray, Dublin, County Wicklow, County Meath, and nearby Leinster areas.",
+  applicationName: businessInfo.name,
+  authors: [{ name: businessInfo.name, url: siteUrl }],
+  creator: businessInfo.name,
+  publisher: businessInfo.name,
+  category: "Pet services",
+  keywords: localKeywords,
   alternates: {
     canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
   openGraph: {
     title: "Jeroen & Paws | Personalised Dog Care & Training",
     description:
-      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Greystones and County Wicklow.",
+      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Bray, Dublin, County Wicklow, County Meath, and nearby Leinster areas.",
     url: siteUrl,
     siteName: businessInfo.name,
     images: [
@@ -44,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Jeroen & Paws | Personalised Dog Care & Training",
     description:
-      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Greystones and County Wicklow.",
+      "Personalised dog walking, training, day care, home check-ins, and boarding by appointment in Bray, Dublin, County Wicklow, County Meath, and nearby Leinster areas.",
     images: ["/images/dogs/lakta/lakta1.jpg"],
   },
 };

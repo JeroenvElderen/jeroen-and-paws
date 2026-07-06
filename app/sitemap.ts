@@ -19,6 +19,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${siteUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: route === "/" ? ("weekly" as const) : ("monthly" as const),
-    priority: route === "/" ? 1 : 0.7,
+    priority: route === "/" ? 1 : route.startsWith("/services") ? 0.9 : 0.7,
   }));
 }

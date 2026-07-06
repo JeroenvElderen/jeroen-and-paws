@@ -20,8 +20,8 @@ const contactMethods = [
   },
   {
     title: "Location",
-    body: "County Wicklow",
-    detail: "Serving Greystones and surrounding areas.",
+    body: "Bray, Dublin & Leinster",
+    detail: "Serving Bray, Dublin, County Wicklow, County Meath, and nearby areas by appointment.",
     icon: MapPin,
   },
   {
