@@ -8,6 +8,7 @@ type LiveQueryOptions<T> = {
   path: string;
   realtimeTables: string[];
   map: (rows: unknown) => T;
+  load?: (token?: string) => Promise<T>;
 };
 
 async function getSupabaseErrorMessage(response: Response) {
@@ -26,7 +27,7 @@ function getConfig() {
   return url && key ? { url, key } : null;
 }
 
-export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeTables, map }: LiveQueryOptions<T>) {
+export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeTables, map, load: loadOverride }: LiveQueryOptions<T>) {
   const [data, setData] = useState<T>(fallback);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,9 +37,24 @@ export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeT
     let isMounted = true;
     let socket: WebSocket | null = null;
     let heartbeat: ReturnType<typeof setInterval> | null = null;
+    let poll: ReturnType<typeof setInterval> | null = null;
     const token = accessToken ?? config?.key;
 
     async function load() {
+      if (loadOverride) {
+        try {
+          const nextData = await loadOverride(token);
+          if (!isMounted) return;
+          setData(nextData);
+          setError(null);
+        } catch (queryError) {
+          if (isMounted) setError(queryError instanceof Error ? queryError.message : "Unable to load data.");
+        } finally {
+          if (isMounted) setIsLoading(false);
+        }
+        return;
+      }
+
       if (!config || !token) {
         setError("Connect Supabase to show live portal data.");
         setIsLoading(false);
@@ -67,6 +83,10 @@ export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeT
 
     void load();
 
+    if (loadOverride) {
+      poll = setInterval(() => void load(), 30000);
+    }
+
     if (config && token && realtimeTables.length) {
       const wsUrl = `${config.url.replace(/^http/, "ws")}/realtime/v1/websocket?apikey=${encodeURIComponent(config.key)}&vsn=1.0.0`;
       socket = new WebSocket(wsUrl);
@@ -87,9 +107,10 @@ export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeT
     return () => {
       isMounted = false;
       if (heartbeat) clearInterval(heartbeat);
+      if (poll) clearInterval(poll);
       socket?.close();
     };
-  }, [accessToken, fallback, map, path, realtimeTables]);
+  }, [accessToken, fallback, loadOverride, map, path, realtimeTables]);
 
   return { data, isLoading, error };
 }

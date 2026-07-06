@@ -227,3 +227,8 @@ begin
   alter publication supabase_realtime add table public.portal_client_activity;
 exception when duplicate_object then null;
 end $$;
+do $$
+begin
+  alter publication supabase_realtime add table public.portal_outlook_imports;
+exception when duplicate_object then null;
+end $$;

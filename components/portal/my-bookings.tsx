@@ -22,11 +22,13 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
     const timer = window.setInterval(() => setNow(Date.now()), 60000);
     return () => window.clearInterval(timer);
   }, []);
+  const fallbackBookings = useMemo(() => [] as CalendarBooking[], []);
+  const realtimeTables = useMemo(() => ["portal_bookings", "portal_dogs", "portal_session_updates", "portal_gallery_items"], []);
   const { data: bookings, isLoading, error } = useSupabaseLiveQuery({
     accessToken,
-    fallback: [] as CalendarBooking[],
+    fallback: fallbackBookings,
     path: "/rest/v1/portal_booking_list?select=*&order=starts_at.asc",
-    realtimeTables: ["portal_bookings", "portal_dogs", "portal_session_updates", "portal_gallery_items"],
+    realtimeTables,
     map: mapBookingRows,
   });
 

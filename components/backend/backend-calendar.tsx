@@ -1,9 +1,10 @@
 "use client";
 
 import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Clock3, ExternalLink, GraduationCap, Heart, Home, PawPrint, Plus, RefreshCw } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { fallbackBookings, formatBookingDate, formatBookingTime, type CalendarBooking } from "@/utils/bookings";
+import { useSupabaseLiveQuery } from "@/components/portal/use-supabase-live-query";
 import { Card } from "./card";
 
 const serviceStyles = {
@@ -43,35 +44,24 @@ function EventCard({ booking }: { booking: CalendarBooking }) {
 }
 
 export function BackendCalendar() {
-  const [bookings, setBookings] = useState<CalendarBooking[]>(fallbackBookings);
   const [isFallback, setIsFallback] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadBookings() {
-      try {
-        const response = await fetch("/api/bookings?scope=admin", { cache: "no-store" });
-        const payload = (await response.json()) as BookingResponse;
-        if (!isMounted) return;
-        setBookings(payload.bookings.length ? payload.bookings : fallbackBookings);
-        setIsFallback(payload.isFallback || payload.bookings.length === 0);
-      } catch (error) {
-        if (!isMounted) return;
-        setMessage(error instanceof Error ? error.message : "Unable to load bookings.");
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    }
-
-    void loadBookings();
-
-    return () => {
-      isMounted = false;
-    };
+  const realtimeTables = useMemo(() => ["portal_bookings", "portal_outlook_imports", "portal_clients", "portal_dogs"], []);
+  const fallback = useMemo(() => fallbackBookings, []);
+  const mapFallbackBookings = useCallback(() => fallbackBookings, []);
+  const loadBookings = useCallback(async () => {
+    const response = await fetch("/api/bookings?scope=admin", { cache: "no-store" });
+    const payload = (await response.json()) as BookingResponse;
+    setIsFallback(payload.isFallback || payload.bookings.length === 0);
+    return payload.bookings.length ? payload.bookings : fallbackBookings;
   }, []);
+  const { data: bookings, isLoading, error } = useSupabaseLiveQuery({
+    fallback,
+    path: "/api/bookings?scope=admin",
+    realtimeTables,
+    map: mapFallbackBookings,
+    load: loadBookings,
+  });
 
   const weekStart = useMemo(() => {
     const first = new Date(bookings[0]?.startsAt ?? new Date());
@@ -104,18 +94,18 @@ export function BackendCalendar() {
   return (
     <div className="p-5 md:p-10">
       <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
-        <div><h1 className="font-serif text-3xl">Calendar <PawPrint className="inline size-6 text-[#6c38c2]" /></h1><p className="mt-1 text-sm text-[#6d667a]">Real bookings from Supabase with Outlook sync status.</p></div>
+        <div><h1 className="font-serif text-3xl">Calendar <PawPrint className="inline size-6 text-[#6c38c2]" /></h1><p className="mt-1 text-sm text-[#6d667a]">Live Supabase bookings and Outlook imports refresh as soon as calendar data changes.</p></div>
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <button className="rounded-lg border border-[#151124]/10 bg-white px-5 py-3 font-semibold">Today</button>
           <button className="grid size-11 place-items-center rounded-lg border border-[#151124]/10 bg-white"><ChevronLeft className="size-4" /></button>
           <button className="grid size-11 place-items-center rounded-lg border border-[#151124]/10 bg-white"><ChevronRight className="size-4" /></button>
           <button className="rounded-lg border border-[#151124]/10 bg-white px-5 py-3 font-semibold">{formatBookingDate(days[0].toISOString(), { day: "numeric", month: "short" })} - {formatBookingDate(days[6].toISOString(), { day: "numeric", month: "short", year: "numeric" })} <ChevronDown className="ml-3 inline size-4" /></button>
           <button onClick={syncFromOutlook} className="rounded-lg border border-[#151124]/10 bg-white px-5 py-3 font-semibold"><RefreshCw className="mr-2 inline size-4" />Sync Outlook</button>
-          <button className="rounded-lg bg-[#4f2c91] px-6 py-3 font-semibold text-white shadow-lg shadow-[#4f2c91]/25"><Plus className="mr-2 inline size-4" />New Booking</button>
+          <a href="https://outlook.office.com/calendar/" target="_blank" rel="noreferrer" className="rounded-lg bg-[#4f2c91] px-6 py-3 font-semibold text-white shadow-lg shadow-[#4f2c91]/25"><Plus className="mr-2 inline size-4" />Book in Outlook</a>
         </div>
       </div>
 
-      {(isLoading || isFallback || message) && <p className="mt-5 rounded-xl border border-[#151124]/10 bg-white px-5 py-4 text-sm text-[#6d667a]">{isLoading ? "Loading bookings…" : message || "Showing fallback preview until Supabase/service-role access is configured."}</p>}
+      {(isLoading || isFallback || message || error) && <p className="mt-5 rounded-xl border border-[#151124]/10 bg-white px-5 py-4 text-sm text-[#6d667a]">{isLoading ? "Loading live bookings…" : message || error || "Showing fallback preview until Supabase/service-role access is configured."}</p>}
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map(({ label, value, icon: Icon }) => <Card key={label} className="p-6"><div className="flex items-center gap-6"><span className="grid size-14 place-items-center rounded-full bg-[#f0e9fb] text-[#5b2aa0]"><Icon className="size-7" /></span><div><p className="text-sm text-[#6d667a]">{label}</p><p className="mt-1 font-serif text-3xl">{value}</p></div></div></Card>)}
@@ -136,7 +126,7 @@ export function BackendCalendar() {
         </Card>
 
         <aside className="space-y-5">
-          <Card className="p-5"><h2 className="font-serif text-lg">Two-way sync rules</h2><p className="mt-3 text-sm leading-6 text-[#6d667a]">Create Outlook bookings with <strong>[JP]</strong> in the title. Imported events are marked needs review until linked to a client and dog.</p></Card>
+          <Card className="p-5"><h2 className="font-serif text-lg">Booking source rules</h2><p className="mt-3 text-sm leading-6 text-[#6d667a]">Create confirmed bookings only in this backend or in Outlook with <strong>[JP]</strong> in the title. Client requests stay as enquiries until you turn them into backend or Outlook bookings.</p></Card>
           <Card className="overflow-hidden"><div className="flex items-center justify-between p-5"><h2 className="font-serif text-lg">Upcoming</h2><Clock3 className="size-4 text-[#4f2c91]" /></div>{bookings.slice(0, 5).map((booking) => <div key={booking.id} className="border-t border-[#151124]/10 px-5 py-3"><p className="text-sm font-semibold">{booking.serviceName}</p><p className="text-xs text-[#6d667a]">{booking.dogName} · {formatBookingDate(booking.startsAt, { day: "numeric", month: "short" })} {formatBookingTime(booking.startsAt)}</p>{booking.outlookWebLink && <a href={booking.outlookWebLink} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[#4f2c91]">Open in Outlook <ExternalLink className="size-3" /></a>}</div>)}</Card>
         </aside>
       </div>
