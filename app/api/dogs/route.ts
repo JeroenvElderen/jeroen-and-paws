@@ -61,12 +61,12 @@ type SupabaseAuthUser = {
 
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
 
-async function verifyBackendAdmin(request: Request) {
+async function getVerifiedBackendAdminToken(request: Request) {
   const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!accessToken || !supabaseUrl || !anonKey) return false;
+  if (!accessToken || !supabaseUrl || !anonKey) return null;
 
   const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
     cache: "no-store",
@@ -76,16 +76,18 @@ async function verifyBackendAdmin(request: Request) {
     },
   });
 
-  if (!response.ok) return false;
+  if (!response.ok) return null;
 
   const payload = (await response.json().catch(() => null)) as SupabaseAuthUser | null;
   const email = payload?.email ?? payload?.user?.email;
 
-  return email?.toLowerCase() === backendAdminEmail;
+  return email?.toLowerCase() === backendAdminEmail ? accessToken : null;
 }
 
 export async function GET(request: Request) {
-  if (!(await verifyBackendAdmin(request))) {
+  const adminAccessToken = await getVerifiedBackendAdminToken(request);
+
+  if (!adminAccessToken) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -93,11 +95,20 @@ export async function GET(request: Request) {
     const rows = (await supabaseRestFetch(
       "/rest/v1/portal_dogs?select=id,name,breed,age,status,profile_photo_url,notes,created_at,portal_clients(full_name,email,phone),portal_bookings(service_name,starts_at,status),portal_session_updates(id)&portal_bookings.order=starts_at.desc&portal_session_updates.limit=10&order=created_at.asc",
       { cache: "no-store" },
+    adminAccessToken,
     )) as AdminDogRow[];
 
     return NextResponse.json({ dogs: rows.map(mapDog), isFallback: false });
   } catch (error) {
-    console.error("Dog data fallback", { route: "/api/dogs", error });
-    return NextResponse.json({ dogs: [], isFallback: true });
+    const message = error instanceof Error ? error.message : "Unable to load dogs from Supabase.";
+    console.error("Dog data unavailable", { route: "/api/dogs", error });
+
+    return NextResponse.json(
+      {
+        error: "Unable to load dogs from Supabase.",
+        details: process.env.NODE_ENV === "production" ? undefined : message,
+      },
+      { status: 502 },
+    );
   }
 }
