@@ -13,6 +13,10 @@ type MicrosoftTokenResponse = {
 };
 
 type GraphErrorResponse = { error?: { code?: string; message?: string } };
+type GraphCalendarViewResponse = {
+  value?: OutlookCalendarEvent[];
+  "@odata.nextLink"?: string;
+};
 
 export type OutlookCalendarEvent = {
   id: string;
@@ -110,9 +114,9 @@ function buildEventPayload(input: OutlookEventInput) {
   };
 }
 
-async function graphFetch(config: MicrosoftGraphCalendarConfig, path: string, init: RequestInit = {}) {
+async function graphFetchUrl(config: MicrosoftGraphCalendarConfig, url: string, init: RequestInit = {}) {
   const accessToken = await getAccessToken(config);
-  const response = await fetchWithTimeout(`https://graph.microsoft.com/v1.0/users/${encodeURIComponent(config.calendarEmail)}${path}`, {
+  const response = await fetchWithTimeout(url, {
     ...init,
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -128,6 +132,10 @@ async function graphFetch(config: MicrosoftGraphCalendarConfig, path: string, in
   if (response.status === 204) return null;
 
   return response.json();
+}
+
+async function graphFetch(config: MicrosoftGraphCalendarConfig, path: string, init: RequestInit = {}) {
+  return graphFetchUrl(config, `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(config.calendarEmail)}${path}`, init);
 }
 
 export function getGraphCalendarConfig() {
@@ -167,6 +175,14 @@ export async function listOutlookEvents(config: MicrosoftGraphCalendarConfig, st
     $orderby: "start/dateTime",
   });
 
-  const result = (await graphFetch(config, `/calendarView?${params.toString()}`)) as { value?: OutlookCalendarEvent[] };
-  return result.value || [];
+  const events: OutlookCalendarEvent[] = [];
+  let nextUrl: string | undefined = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(config.calendarEmail)}/calendarView?${params.toString()}`;
+
+  while (nextUrl) {
+    const result = (await graphFetchUrl(config, nextUrl)) as GraphCalendarViewResponse;
+    events.push(...(result.value || []));
+    nextUrl = result["@odata.nextLink"];
+  }
+
+  return events;
 }

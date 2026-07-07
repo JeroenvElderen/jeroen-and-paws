@@ -90,11 +90,21 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
     const config = getSupabaseRealtimeConfig();
     if (!config || !accessToken) return;
 
+    let isActive = true;
     let heartbeat: ReturnType<typeof setInterval> | null = null;
     const socket = new WebSocket(`${config.url.replace(/^http/, "ws")}/realtime/v1/websocket?apikey=${encodeURIComponent(config.key)}&vsn=1.0.0`);
     socket.addEventListener("open", () => {
+      if (!isActive || socket.readyState !== WebSocket.OPEN) {
+        socket.close();
+        return;
+      }
+
       socket.send(JSON.stringify({ topic: "realtime:backend-dogs", event: "phx_join", payload: { config: { postgres_changes: ["portal_dogs", "portal_clients", "portal_bookings", "portal_session_updates"].map((table) => ({ event: "*", schema: "public", table })) }, access_token: accessToken }, ref: "1" }));
-      heartbeat = setInterval(() => socket.send(JSON.stringify({ topic: "phoenix", event: "heartbeat", payload: {}, ref: String(Date.now()) })), 25000);
+      heartbeat = setInterval(() => {
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({ topic: "phoenix", event: "heartbeat", payload: {}, ref: String(Date.now()) }));
+        }
+      }, 25000);
     });
     socket.addEventListener("message", (event) => {
       try {
@@ -106,8 +116,9 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
     });
 
     return () => {
+      isActive = false;
       if (heartbeat) clearInterval(heartbeat);
-      socket.close();
+      if (socket.readyState === WebSocket.OPEN) socket.close();
     };
   }, [accessToken, loadDogs]);
 

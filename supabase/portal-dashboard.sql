@@ -314,6 +314,9 @@ if not exists (select 1 from pg_policies where schemaname = 'public' and tablena
 if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_outlook_imports' and policyname = 'Admins manage outlook imports with service role') then
     execute 'create policy "Admins manage outlook imports with service role" on public.portal_outlook_imports for all using (auth.role() = ''service_role'') with check (auth.role() = ''service_role'')';
   end if;
+if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_outlook_imports' and policyname = 'Backend admin can read outlook imports') then
+    execute 'create policy "Backend admin can read outlook imports" on public.portal_outlook_imports for select using ((auth.jwt() ->> ''email'') = ''jeroen@jeroenandpaws.com'')';
+  end if;
 end $$;
 
 drop view if exists public.admin_booking_calendar cascade;
@@ -461,7 +464,8 @@ select
 from public.portal_outlook_imports i
 where i.linked_booking_id is null;
 
-grant select on public.portal_dashboard, public.portal_booking_list, public.portal_calendar_feed to authenticated;
+grant select on public.portal_dashboard, public.portal_booking_list, public.portal_calendar_feed, public.admin_booking_calendar to authenticated;
+grant select on public.admin_booking_calendar to service_role;
 -- Backend dashboard realtime read access for the Jeroen & Paws admin account.
 do $$
 begin

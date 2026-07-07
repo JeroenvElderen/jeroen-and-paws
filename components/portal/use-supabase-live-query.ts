@@ -91,8 +91,17 @@ export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeT
       const wsUrl = `${config.url.replace(/^http/, "ws")}/realtime/v1/websocket?apikey=${encodeURIComponent(config.key)}&vsn=1.0.0`;
       socket = new WebSocket(wsUrl);
       socket.addEventListener("open", () => {
-        socket?.send(JSON.stringify({ topic: "realtime:portal-live", event: "phx_join", payload: { config: { postgres_changes: realtimeTables.map((table) => ({ event: "*", schema: "public", table })) }, access_token: token }, ref: "1" }));
-        heartbeat = setInterval(() => socket?.send(JSON.stringify({ topic: "phoenix", event: "heartbeat", payload: {}, ref: String(Date.now()) })), 25000);
+        if (!isMounted || socket?.readyState !== WebSocket.OPEN) {
+          socket?.close();
+          return;
+        }
+
+        socket.send(JSON.stringify({ topic: "realtime:portal-live", event: "phx_join", payload: { config: { postgres_changes: realtimeTables.map((table) => ({ event: "*", schema: "public", table })) }, access_token: token }, ref: "1" }));
+        heartbeat = setInterval(() => {
+          if (socket?.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ topic: "phoenix", event: "heartbeat", payload: {}, ref: String(Date.now()) }));
+          }
+        }, 25000);
       });
       socket.addEventListener("message", (event) => {
         try {
@@ -108,7 +117,7 @@ export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeT
       isMounted = false;
       if (heartbeat) clearInterval(heartbeat);
       if (poll) clearInterval(poll);
-      socket?.close();
+      if (socket?.readyState === WebSocket.OPEN) socket.close();
     };
   }, [accessToken, fallback, loadOverride, map, path, realtimeTables]);
 

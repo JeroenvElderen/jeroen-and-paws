@@ -85,6 +85,16 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({})) as { start?: string; end?: string };
   const window = { ...defaultWindow(), ...body };
   const events = await listOutlookEvents(config, window.start, window.end);
+  console.log("Outlook sync scanned subjects", {
+    calendarEmail: config.calendarEmail,
+    window,
+    subjects: events.map((event) => ({
+      id: event.id,
+      subject: event.subject,
+      startsAt: event.start?.dateTime,
+      matchesBookingPrefix: event.subject?.trim().startsWith(OUTLOOK_BOOKING_PREFIX) ?? false,
+    })),
+  });
   const bookingEvents = events.filter((event) => event.subject?.trim().startsWith(OUTLOOK_BOOKING_PREFIX));
   const imported = [];
 
