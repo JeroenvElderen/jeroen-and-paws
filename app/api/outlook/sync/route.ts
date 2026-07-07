@@ -20,11 +20,11 @@ type PortalDogMatchRow = {
   id: string;
   name: string | null;
   client_id: string | null;
-  portal_clients: {
+  portal_clients: Array<{
     id: string;
     full_name: string | null;
     email: string | null;
-  } | null;
+  }> | null;
 };
 
 type AdminCalendarMatchRow = {
@@ -99,15 +99,28 @@ async function findConnectedClient(dogName: string, clientName: string) {
 
   const matches = uniqueMatches([
     ...dogRows
-      .filter((row) => row.client_id && row.portal_clients && namesMatch(row.name, dogName) && namesMatch(row.portal_clients.full_name, clientName))
-      .map((row) => ({
-        clientId: row.client_id as string,
-        clientName: row.portal_clients?.full_name?.trim() || clientName,
-        clientEmail: row.portal_clients?.email ?? null,
-        dogId: row.id,
-        dogName: row.name?.trim() || dogName,
-        source: "portal_dogs" as const,
-      })),
+      .filter((row) => {
+  const client = row.portal_clients?.[0];
+
+  return (
+    row.client_id &&
+    client &&
+    namesMatch(row.name, dogName) &&
+    namesMatch(client.full_name, clientName)
+  );
+})
+      .map((row) => {
+  const client = row.portal_clients?.[0];
+
+  return {
+    clientId: row.client_id as string,
+    clientName: client?.full_name?.trim() || clientName,
+    clientEmail: client?.email ?? null,
+    dogId: row.id,
+    dogName: row.name?.trim() || dogName,
+    source: "portal_dogs" as const,
+  };
+}),
     ...calendarRows
       .filter((row) => row.client_id && row.dog_id && namesMatch(row.dog_name, dogName) && namesMatch(row.client_name, clientName))
       .map((row) => ({
