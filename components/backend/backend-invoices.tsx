@@ -78,11 +78,11 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
   const realtimeTables = useMemo(() => ["portal_invoices"], []);
   const noopMap = useCallback(() => [], []);
   const loadInvoices = useCallback(async () => {
-    const response = await fetch("/api/invoices", { cache: "no-store" });
+    const response = await fetch("/api/invoices", { cache: "no-store", headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined });
     const payload = (await response.json()) as InvoicesResponse;
     setIsFallback(payload.isFallback);
     return payload.invoices;
-  }, []);
+  }, [accessToken]);
   const { data: invoices, isLoading, error } = useSupabaseLiveQuery({
     accessToken,
     fallback,
@@ -112,7 +112,7 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
     setIsSyncing(true);
     setSyncMessage(null);
     try {
-      const response = await fetch("/api/invoices/sync", { method: "POST" });
+      const response = await fetch("/api/invoices/sync", { method: "POST", headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined });
       const payload = (await response.json()) as { matched?: number; scanned?: number; error?: string };
       if (!response.ok) throw new Error(payload.error || "Revolut sync failed.");
       setSyncMessage(`Revolut sync complete: matched ${payload.matched ?? 0} invoice payment(s) from ${payload.scanned ?? 0} transaction(s).`);

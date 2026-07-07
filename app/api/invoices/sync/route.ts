@@ -5,6 +5,13 @@ import { supabaseRestFetch } from "@/utils/supabase-rest";
 
 export const runtime = "nodejs";
 
+const backendAdminEmail = "jeroen@jeroenandpaws.com";
+
+type SupabaseAuthUser = {
+  email?: string;
+  user?: { email?: string };
+};
+
 type RevolutTransaction = {
   id: string;
   state?: string;
@@ -43,13 +50,43 @@ function matchesInvoice(transaction: RevolutTransaction, invoice: InvoiceMatchRo
   return sameReference && sameCurrency && sameAmount;
 }
 
-export async function POST() {
+async function getVerifiedBackendAdminToken(request: Request) {
+  const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!accessToken || !supabaseUrl || !anonKey) return null;
+
+  const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    cache: "no-store",
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) return null;
+
+  const payload = (await response.json().catch(() => null)) as SupabaseAuthUser | null;
+  const email = payload?.email ?? payload?.user?.email;
+
+  return email?.toLowerCase() === backendAdminEmail ? accessToken : null;
+}
+
+export async function POST(request: Request) {
+  const adminAccessToken = await getVerifiedBackendAdminToken(request);
+
+  if (!adminAccessToken && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const from = new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString();
     const transactions = await revolutBusinessGet<RevolutTransaction[]>("/api/1.0/transactions", { from, count: 100 });
     const invoices = (await supabaseRestFetch(
       "/rest/v1/portal_invoices?select=id,invoice_number,payment_reference,amount_cents,currency,status&status=in.(sent,pending,overdue)",
       { cache: "no-store" },
+      adminAccessToken ?? undefined,
     )) as InvoiceMatchRow[];
     const updates = invoices.flatMap((invoice) => {
       const transaction = transactions.find((item) => isCompletedCredit(item) && matchesInvoice(item, invoice));
@@ -69,7 +106,7 @@ export async function POST() {
         method: "POST",
         headers: { Prefer: "resolution=merge-duplicates,return=representation" },
         body: JSON.stringify(updates),
-      });
+      }, adminAccessToken ?? undefined);
     }
 
     return NextResponse.json({ matched: updates.length, scanned: transactions.length });
