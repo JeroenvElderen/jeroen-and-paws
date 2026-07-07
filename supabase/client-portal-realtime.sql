@@ -255,3 +255,14 @@ begin
     execute 'create policy "Backend admin can read session updates" on public.portal_session_updates for select using ((auth.jwt() ->> ''email'') = ''jeroen@jeroenandpaws.com'')';
   end if;
 end $$;
+-- Backend bookings management: allow the authenticated business account to create
+-- bookings directly from the backend dashboard. Realtime publication above makes
+-- newly inserted bookings appear in the backend bookings tab immediately.
+grant insert on public.portal_bookings to authenticated;
+
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'portal_bookings' and policyname = 'Backend admin can create bookings') then
+    execute 'create policy "Backend admin can create bookings" on public.portal_bookings for insert with check ((auth.jwt() ->> ''email'') = ''jeroen@jeroenandpaws.com'')';
+  end if;
+end $$;

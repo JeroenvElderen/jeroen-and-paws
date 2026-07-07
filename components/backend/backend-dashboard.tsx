@@ -341,10 +341,10 @@ export function BackendDashboard() {
 
   const ActiveContent = (() => {
     if (activeView === "dashboard") return <BackendDashboardOverview />;
-    if (activeView === "bookings") return <BackendBookings />;
+    if (activeView === "bookings") return <BackendBookings accessToken={backendSession.accessToken} />;
     if (activeView === "services") return <BackendServices accessToken={backendSession.accessToken} />;
     if (activeView === "dogs") return <BackendDogs accessToken={backendSession.accessToken} />;
-    if (activeView === "clients") return <BackendClients />;
+    if (activeView === "clients") return <BackendClients accessToken={backendSession.accessToken} />;
     if (activeView === "calendar") return <BackendCalendar />;
     if (activeView === "invoices") return <BackendInvoices />;
     if (activeView === "photo-updates") return <BackendPhotoUpdates />;
