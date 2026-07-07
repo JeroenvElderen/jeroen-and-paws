@@ -10,20 +10,14 @@ export async function supabaseRestFetch(path: string, init: RequestInit = {}, ac
   const { supabaseUrl, anonKey, serviceRoleKey } = getSupabaseConfig();
   const token = accessToken || serviceRoleKey || anonKey;
 
-  console.log({
-    hasAnon: !!anonKey,
-    hasServiceRole: !!serviceRoleKey,
-    usingServiceRole: token === serviceRoleKey,
-  });
-  
-  if (!supabaseUrl || !anonKey || !token) {
+  if (!supabaseUrl || !token) {
     throw new Error("Supabase is not configured.");
   }
 
   const response = await fetch(`${supabaseUrl}${path}`, {
     ...init,
     headers: {
-      apikey: anonKey,
+      apikey: token,
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
       Prefer: "return=representation",
@@ -32,8 +26,7 @@ export async function supabaseRestFetch(path: string, init: RequestInit = {}, ac
   });
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || `Supabase returned ${response.status}`);
+    throw new Error(await response.text());
   }
 
   if (response.status === 204) return null;
