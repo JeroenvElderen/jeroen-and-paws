@@ -23,6 +23,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 REVOLUT_CLIENT_ID=
 REVOLUT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
 REVOLUT_REFRESH_TOKEN=
+REVOLUT_REDIRECT_URI=https://www.jeroenandpaws.com/api/revolut/callback
 REVOLUT_JWT_ISSUER=www.jeroenandpaws.com
 ```
 
@@ -31,7 +32,8 @@ REVOLUT_JWT_ISSUER=www.jeroenandpaws.com
 - `REVOLUT_CLIENT_ID`: your Revolut Business Open API client ID.
 - `REVOLUT_PRIVATE_KEY`: the private key that matches the public certificate uploaded to Revolut. Keep newline characters as `\n` if your host stores it on one line.
 - `REVOLUT_REFRESH_TOKEN`: long-lived refresh token from the Revolut Business OAuth flow.
-- `REVOLUT_JWT_ISSUER`: optional; defaults to `www.jeroenandpaws.com`. Set it to the issuer configured in your Revolut Business app.
+- `REVOLUT_REDIRECT_URI`: callback URL registered in Revolut. Use `https://www.jeroenandpaws.com/api/revolut/callback` for production.
+- `REVOLUT_JWT_ISSUER`: issuer configured in your Revolut Business app, for example `www.jeroenandpaws.com`.
 
 ## 3. How payment matching works
 
