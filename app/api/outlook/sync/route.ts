@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getGraphCalendarConfig, listOutlookEvents } from "@/utils/microsoft-graph-calendar";
-import { supabaseRestFetch } from "@/utils/supabase-rest";
+import { getSupabaseConfig, supabaseRestFetch } from "@/utils/supabase-rest";
 
 export const runtime = "nodejs";
 
@@ -76,33 +76,46 @@ async function importOutlookEvent(event: Awaited<ReturnType<typeof listOutlookEv
 }
 
 export async function POST(request: Request) {
-  const config = getGraphCalendarConfig();
+  try {
+    const config = getGraphCalendarConfig();
 
-  if (!config) {
-    return NextResponse.json({ message: "Microsoft Graph calendar is not configured." }, { status: 503 });
+    if (!config) {
+      return NextResponse.json({ message: "Microsoft Graph calendar is not configured." }, { status: 503 });
+    }
+
+    if (!getSupabaseConfig().serviceRoleKey) {
+      return NextResponse.json({ message: "Supabase service role key is required to import Outlook events." }, { status: 503 });
+    }
+
+    const body = await request.json().catch(() => ({})) as { start?: string; end?: string };
+    const window = { ...defaultWindow(), ...body };
+    const events = await listOutlookEvents(config, window.start, window.end);
+    const bookingEvents = events.filter((event) => event.subject?.trim().startsWith(OUTLOOK_BOOKING_PREFIX));
+
+    console.log("Outlook sync scan complete", {
+      calendarEmail: config.calendarEmail,
+      window,
+      scanned: events.length,
+      matched: bookingEvents.length,
+      matchedSubjects: bookingEvents.map((event) => ({
+        id: event.id,
+        subject: event.subject,
+        startsAt: event.start?.dateTime,
+      })),
+    });
+
+    const imported = [];
+
+    for (const event of bookingEvents) {
+      imported.push(await importOutlookEvent(event));
+    }
+
+    return NextResponse.json({ imported, scanned: events.length, matched: bookingEvents.length });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Outlook sync failed.";
+    console.error("Outlook sync failed", error);
+    return NextResponse.json({ message }, { status: 500 });
   }
-
-  const body = await request.json().catch(() => ({})) as { start?: string; end?: string };
-  const window = { ...defaultWindow(), ...body };
-  const events = await listOutlookEvents(config, window.start, window.end);
-  console.log("Outlook sync scanned subjects", {
-    calendarEmail: config.calendarEmail,
-    window,
-    subjects: events.map((event) => ({
-      id: event.id,
-      subject: event.subject,
-      startsAt: event.start?.dateTime,
-      matchesBookingPrefix: event.subject?.trim().startsWith(OUTLOOK_BOOKING_PREFIX) ?? false,
-    })),
-  });
-  const bookingEvents = events.filter((event) => event.subject?.trim().startsWith(OUTLOOK_BOOKING_PREFIX));
-  const imported = [];
-
-  for (const event of bookingEvents) {
-    imported.push(await importOutlookEvent(event));
-  }
-
-  return NextResponse.json({ imported, scanned: events.length, matched: bookingEvents.length });
 }
 
 export async function GET() {

@@ -86,9 +86,14 @@ export function BackendCalendar() {
 
   async function syncFromOutlook() {
     setMessage("Checking Outlook for [JP] booking events…");
-    const response = await fetch("/api/outlook/sync", { method: "POST" });
-    const payload = await response.json();
-    setMessage(response.ok ? `Outlook sync scanned ${payload.scanned} events and matched ${payload.matched}.` : payload.message || "Outlook sync failed.");
+    
+    try {
+      const response = await fetch("/api/outlook/sync", { method: "POST" });
+      const payload = await response.json().catch(() => ({ message: "Outlook sync failed without a response body." }));
+      setMessage(response.ok ? `Outlook sync scanned ${payload.scanned} events and matched ${payload.matched}.` : payload.message || "Outlook sync failed.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Outlook sync failed.");
+    }
   }
 
   return (
