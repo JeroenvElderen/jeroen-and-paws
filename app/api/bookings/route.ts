@@ -29,8 +29,14 @@ type BookingOptionDogRow = {
   name: string | null;
   client_id: string;
   profile_photo_url: string | null;
-  portal_clients: { full_name: string | null } | null;
+  portal_clients: { full_name: string | null } | Array<{ full_name: string | null }> | null;
 };
+
+function getClientFullName(portalClients: BookingOptionDogRow["portal_clients"]) {
+  const client = Array.isArray(portalClients) ? portalClients[0] : portalClients;
+
+  return client?.full_name?.trim() || "Client to confirm";
+}
 
 async function getVerifiedBackendAdminToken(request: Request) {
   const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
@@ -55,7 +61,7 @@ async function getVerifiedBackendAdminToken(request: Request) {
   return email?.toLowerCase() === backendAdminEmail ? accessToken : null;
 }
 
-async function getBookingOptions(accessToken: string) {
+async function getBookingOptions() {
   const { data: dogRows, error } = await supabaseAdmin
     .from("portal_dogs")
     .select("id,name,client_id,profile_photo_url,portal_clients(full_name)")
@@ -67,7 +73,7 @@ async function getBookingOptions(accessToken: string) {
     id: dog.id,
     name: dog.name?.trim() || "Unnamed dog",
     clientId: dog.client_id,
-    clientName: dog.portal_clients?.full_name?.trim() || "Client to confirm",
+    clientName: getClientFullName(dog.portal_clients),
     image: dog.profile_photo_url,
   }));
 }
@@ -75,9 +81,6 @@ async function getBookingOptions(accessToken: string) {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const scope = url.searchParams.get("scope") || "admin";
-  const authHeader = request.headers.get("authorization") || undefined;
-  const accessToken = authHeader?.replace(/^Bearer\s+/i, "");
-
   if (scope === "admin") {
     const adminAccessToken = await getVerifiedBackendAdminToken(request);
     if (!adminAccessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -90,7 +93,7 @@ export async function GET(request: Request) {
 
       if (error) throw error;
 
-      const dogs = await getBookingOptions(adminAccessToken);
+      const dogs = await getBookingOptions();
 
       return NextResponse.json({ bookings: ((rows ?? []) as SupabaseBookingRow[]).map(mapBookingRow), dogs, isFallback: false });
     } catch (error) {
