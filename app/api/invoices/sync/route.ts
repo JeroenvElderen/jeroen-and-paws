@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { revolutBusinessGet } from "@/utils/revolut-business";
-import { supabaseRestFetch } from "@/utils/supabase-rest";
+import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -83,11 +83,14 @@ export async function POST(request: Request) {
   try {
     const from = new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString();
     const transactions = await revolutBusinessGet<RevolutTransaction[]>("/api/1.0/transactions", { from, count: 100 });
-    const invoices = (await supabaseRestFetch(
-      "/rest/v1/portal_invoices?select=id,invoice_number,payment_reference,amount_cents,currency,status&status=in.(sent,pending,overdue)",
-      { cache: "no-store" },
-      adminAccessToken ?? undefined,
-    )) as InvoiceMatchRow[];
+    const { data: invoiceRows, error: invoiceError } = await supabaseAdmin
+      .from("portal_invoices")
+      .select("id,invoice_number,payment_reference,amount_cents,currency,status")
+      .in("status", ["sent", "pending", "overdue"]);
+
+    if (invoiceError) throw invoiceError;
+
+    const invoices = (invoiceRows ?? []) as InvoiceMatchRow[];
     const updates = invoices.flatMap((invoice) => {
       const transaction = transactions.find((item) => isCompletedCredit(item) && matchesInvoice(item, invoice));
       if (!transaction) return [];
@@ -102,11 +105,11 @@ export async function POST(request: Request) {
     });
 
     if (updates.length) {
-      await supabaseRestFetch("/rest/v1/portal_invoices?on_conflict=id", {
-        method: "POST",
-        headers: { Prefer: "resolution=merge-duplicates,return=representation" },
-        body: JSON.stringify(updates),
-      }, adminAccessToken ?? undefined);
+      const { error: updateError } = await supabaseAdmin
+        .from("portal_invoices")
+        .upsert(updates, { onConflict: "id" });
+
+      if (updateError) throw updateError;
     }
 
     return NextResponse.json({ matched: updates.length, scanned: transactions.length });

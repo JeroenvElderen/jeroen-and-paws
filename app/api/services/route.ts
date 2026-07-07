@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { serviceDetails } from "@/components/site/service-details";
-import { supabaseRestFetch } from "@/utils/supabase-rest";
+import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -93,12 +93,14 @@ function buildServices(rows: BookingServiceRow[] = []) {
 
 export async function GET() {
   try {
-    const rows = (await supabaseRestFetch(
-      "/rest/v1/portal_bookings?select=service_name,starts_at,status&order=starts_at.desc",
-      { cache: "no-store" },
-    )) as BookingServiceRow[];
+    const { data: rows, error } = await supabaseAdmin
+      .from("portal_bookings")
+      .select("service_name,starts_at,status")
+      .order("starts_at", { ascending: false });
 
-    return NextResponse.json({ services: buildServices(rows), isFallback: false });
+    if (error) throw error;
+
+    return NextResponse.json({ services: buildServices((rows ?? []) as BookingServiceRow[]), isFallback: false });
   } catch (error) {
     console.error("Service data fallback", { route: "/api/services", error });
     return NextResponse.json({ services: buildServices(), isFallback: true });

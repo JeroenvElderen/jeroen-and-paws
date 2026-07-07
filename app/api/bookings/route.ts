@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { fallbackBookings, mapBookingRow, type BookingStatus, type SupabaseBookingRow } from "@/utils/bookings";
-import { supabaseRestFetch } from "@/utils/supabase-rest";
+import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -56,13 +56,14 @@ async function getVerifiedBackendAdminToken(request: Request) {
 }
 
 async function getBookingOptions(accessToken: string) {
-  const dogRows = (await supabaseRestFetch(
-    "/rest/v1/portal_dogs?select=id,name,client_id,profile_photo_url,portal_clients(full_name)&order=name.asc",
-    { cache: "no-store" },
-    accessToken,
-  )) as BookingOptionDogRow[];
+  const { data: dogRows, error } = await supabaseAdmin
+    .from("portal_dogs")
+    .select("id,name,client_id,profile_photo_url,portal_clients(full_name)")
+    .order("name", { ascending: true });
 
-  return dogRows.map((dog) => ({
+  if (error) throw error;
+
+  return ((dogRows ?? []) as BookingOptionDogRow[]).map((dog) => ({
     id: dog.id,
     name: dog.name?.trim() || "Unnamed dog",
     clientId: dog.client_id,
@@ -82,10 +83,16 @@ export async function GET(request: Request) {
     if (!adminAccessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     try {
-      const rows = (await supabaseRestFetch("/rest/v1/admin_booking_calendar?select=*&order=starts_at.asc", { cache: "no-store" }, adminAccessToken)) as SupabaseBookingRow[];
+      const { data: rows, error } = await supabaseAdmin
+        .from("admin_booking_calendar")
+        .select("*")
+        .order("starts_at", { ascending: true });
+
+      if (error) throw error;
+
       const dogs = await getBookingOptions(adminAccessToken);
 
-      return NextResponse.json({ bookings: rows.map(mapBookingRow), dogs, isFallback: false });
+      return NextResponse.json({ bookings: ((rows ?? []) as SupabaseBookingRow[]).map(mapBookingRow), dogs, isFallback: false });
     } catch (error) {
       console.error("Booking data unavailable", { route: "/api/bookings", scope, error });
       return NextResponse.json({ error: "Unable to load bookings from Supabase." }, { status: 502 });
@@ -93,9 +100,14 @@ export async function GET(request: Request) {
   }
 
   try {
-    const rows = (await supabaseRestFetch("/rest/v1/portal_booking_list?select=*&order=starts_at.asc", { cache: "no-store" }, accessToken)) as SupabaseBookingRow[];
+    const { data: rows, error } = await supabaseAdmin
+      .from("portal_booking_list")
+      .select("*")
+      .order("starts_at", { ascending: true });
 
-    return NextResponse.json({ bookings: rows.map(mapBookingRow), isFallback: false });
+    if (error) throw error;
+
+    return NextResponse.json({ bookings: ((rows ?? []) as SupabaseBookingRow[]).map(mapBookingRow), isFallback: false });
   } catch (error) {
     console.error("Booking data fallback", { route: "/api/bookings", scope, error });
     return NextResponse.json({ bookings: fallbackBookings, isFallback: true });
@@ -115,37 +127,38 @@ export async function POST(request: Request) {
   }
 
   try {
-    const dogRows = (await supabaseRestFetch(
-      `/rest/v1/portal_dogs?select=id,client_id&id=eq.${encodeURIComponent(payload.data.dogId)}&limit=1`,
-      { cache: "no-store" },
-      adminAccessToken,
-    )) as Array<{ id: string; client_id: string }>;
-    const dog = dogRows[0];
+    const { data: dogRows, error: dogError } = await supabaseAdmin
+      .from("portal_dogs")
+      .select("id,client_id")
+      .eq("id", payload.data.dogId)
+      .limit(1);
+
+    if (dogError) throw dogError;
+
+    const dog = (dogRows as Array<{ id: string; client_id: string }> | null)?.[0];
 
     if (!dog) return NextResponse.json({ error: "Selected dog was not found." }, { status: 404 });
 
-    const rows = (await supabaseRestFetch(
-      "/rest/v1/portal_bookings?select=*",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          client_id: dog.client_id,
-          dog_id: dog.id,
-          service_name: payload.data.serviceName,
-          starts_at: payload.data.startsAt,
-          ends_at: payload.data.endsAt,
-          timezone: payload.data.timezone,
-          location: payload.data.location || null,
-          notes: payload.data.notes || null,
-          status: payload.data.status satisfies BookingStatus,
-          source: "admin_import",
-          sync_status: "not_synced",
-        }),
-      },
-      adminAccessToken,
-    )) as SupabaseBookingRow[];
+    const { data: rows, error: insertError } = await supabaseAdmin
+      .from("portal_bookings")
+      .insert({
+        client_id: dog.client_id,
+        dog_id: dog.id,
+        service_name: payload.data.serviceName,
+        starts_at: payload.data.startsAt,
+        ends_at: payload.data.endsAt,
+        timezone: payload.data.timezone,
+        location: payload.data.location || null,
+        notes: payload.data.notes || null,
+        status: payload.data.status satisfies BookingStatus,
+        source: "admin_import",
+        sync_status: "not_synced",
+      })
+      .select("*");
 
-    return NextResponse.json({ booking: rows[0] ? mapBookingRow(rows[0]) : null }, { status: 201 });
+    if (insertError) throw insertError;
+
+    return NextResponse.json({ booking: rows?.[0] ? mapBookingRow(rows[0] as SupabaseBookingRow) : null }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to create booking.";
     console.error("Booking create failed", { route: "/api/bookings", error });
