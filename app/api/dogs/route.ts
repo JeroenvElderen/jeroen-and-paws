@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { supabaseRestFetch } from "@/utils/supabase-rest";
+import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -92,13 +92,16 @@ export async function GET(request: Request) {
   }
 
   try {
-    const rows = (await supabaseRestFetch(
-      "/rest/v1/portal_dogs?select=id,name,breed,age,status,profile_photo_url,notes,created_at,portal_clients(full_name,email,phone),portal_bookings(service_name,starts_at,status),portal_session_updates(id)&portal_bookings.order=starts_at.desc&portal_session_updates.limit=10&order=created_at.asc",
-      { cache: "no-store" },
-    adminAccessToken,
-    )) as AdminDogRow[];
+    const { data: rows, error } = await supabaseAdmin
+      .from("portal_dogs")
+      .select("id,name,breed,age,status,profile_photo_url,notes,created_at,portal_clients(full_name,email,phone),portal_bookings(service_name,starts_at,status),portal_session_updates(id)")
+      .order("starts_at", { referencedTable: "portal_bookings", ascending: false })
+      .limit(10, { referencedTable: "portal_session_updates" })
+      .order("created_at", { ascending: true });
 
-    return NextResponse.json({ dogs: rows.map(mapDog), isFallback: false });
+    if (error) throw error;
+
+    return NextResponse.json({ dogs: ((rows ?? []) as AdminDogRow[]).map(mapDog), isFallback: false });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to load dogs from Supabase.";
     console.error("Dog data unavailable", { route: "/api/dogs", error });

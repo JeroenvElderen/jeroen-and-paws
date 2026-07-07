@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { supabaseRestFetch } from "@/utils/supabase-rest";
+import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -76,13 +76,15 @@ export async function GET(request: Request) {
   }
 
   try {
-    const rows = (await supabaseRestFetch(
-      "/rest/v1/portal_invoices?select=*&order=issued_on.desc,created_at.desc",
-      { cache: "no-store" },
-      adminAccessToken ?? undefined,
-    )) as InvoiceRow[];
+    const { data: rows, error } = await supabaseAdmin
+      .from("portal_invoices")
+      .select("*")
+      .order("issued_on", { ascending: false })
+      .order("created_at", { ascending: false });
 
-    return NextResponse.json({ invoices: rows.map(mapInvoice), isFallback: false });
+    if (error) throw error;
+
+    return NextResponse.json({ invoices: ((rows ?? []) as InvoiceRow[]).map(mapInvoice), isFallback: false });
   } catch (error) {
     console.error("Invoice data fallback", { route: "/api/invoices", error });
     const message = error instanceof Error ? error.message : "Unable to load invoices from Supabase.";

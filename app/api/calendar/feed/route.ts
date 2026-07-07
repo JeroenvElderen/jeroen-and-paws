@@ -1,6 +1,6 @@
 import { buildBookingIcs } from "@/utils/calendar-feed";
 import { fallbackBookings, mapBookingRow, type SupabaseBookingRow } from "@/utils/bookings";
-import { supabaseRestFetch } from "@/utils/supabase-rest";
+import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -17,11 +17,14 @@ export async function GET(request: Request) {
   let bookings = fallbackBookings;
 
   try {
-    const path = token
-      ? `/rest/v1/portal_calendar_feed?select=*&feed_token=eq.${encodeURIComponent(token)}&order=starts_at.asc`
-      : "/rest/v1/admin_booking_calendar?select=*&order=starts_at.asc";
-    const rows = (await supabaseRestFetch(path, { cache: "no-store" })) as SupabaseBookingRow[];
-    bookings = rows.map(mapBookingRow);
+    const query = token
+      ? supabaseAdmin.from("portal_calendar_feed").select("*").eq("feed_token", token).order("starts_at", { ascending: true })
+      : supabaseAdmin.from("admin_booking_calendar").select("*").order("starts_at", { ascending: true });
+    const { data: rows, error } = await query;
+
+    if (error) throw error;
+
+    bookings = ((rows ?? []) as SupabaseBookingRow[]).map(mapBookingRow);
   } catch (error) {
     console.error("Calendar feed fallback", { route: "/api/calendar/feed", error });
   }

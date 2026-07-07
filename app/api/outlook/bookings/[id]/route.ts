@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { mapBookingRow, type CalendarBooking, type SupabaseBookingRow } from "@/utils/bookings";
 import { createOutlookEvent, deleteOutlookEvent, getGraphCalendarConfig, updateOutlookEvent } from "@/utils/microsoft-graph-calendar";
-import { supabaseRestFetch } from "@/utils/supabase-rest";
+import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -24,8 +24,15 @@ function toOutlookInput(booking: CalendarBooking) {
 }
 
 async function loadBooking(id: string) {
-  const rows = (await supabaseRestFetch(`/rest/v1/admin_booking_calendar?select=*&id=eq.${encodeURIComponent(id)}&limit=1`, { cache: "no-store" })) as SupabaseBookingRow[];
-  return rows[0] ? mapBookingRow(rows[0]) : null;
+  const { data: rows, error } = await supabaseAdmin
+    .from("admin_booking_calendar")
+    .select("*")
+    .eq("id", id)
+    .limit(1);
+
+  if (error) throw error;
+
+  return rows?.[0] ? mapBookingRow(rows[0] as SupabaseBookingRow) : null;
 }
 
 export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -41,10 +48,12 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   try {
     if (booking.status === "cancelled" && booking.outlookEventId) {
       await deleteOutlookEvent(config, booking.outlookEventId);
-      await supabaseRestFetch(`/rest/v1/portal_bookings?id=eq.${encodeURIComponent(id)}`, {
-        method: "PATCH",
-        body: JSON.stringify({ sync_status: "synced", outlook_last_synced_at: new Date().toISOString() }),
-      });
+      const { error: syncError } = await supabaseAdmin
+        .from("portal_bookings")
+        .update({ sync_status: "synced", outlook_last_synced_at: new Date().toISOString() })
+        .eq("id", id);
+
+      if (syncError) throw syncError;
       return NextResponse.json({ action: "deleted" });
     }
 
@@ -52,9 +61,9 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
       ? await updateOutlookEvent(config, booking.outlookEventId, toOutlookInput(booking))
       : await createOutlookEvent(config, toOutlookInput(booking));
 
-    await supabaseRestFetch(`/rest/v1/portal_bookings?id=eq.${encodeURIComponent(id)}`, {
-      method: "PATCH",
-      body: JSON.stringify({
+    const { error: syncError } = await supabaseAdmin
+      .from("portal_bookings")
+      .update({
         outlook_event_id: event.id,
         outlook_ical_uid: event.iCalUId ?? null,
         outlook_change_key: event.changeKey ?? null,
@@ -62,15 +71,17 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
         sync_status: "synced",
         sync_error: null,
         outlook_last_synced_at: new Date().toISOString(),
-      }),
-    });
+      })
+      .eq("id", id);
+
+    if (syncError) throw syncError;
 
     return NextResponse.json({ action: booking.outlookEventId ? "updated" : "created", eventId: event.id });
   } catch (error) {
-    await supabaseRestFetch(`/rest/v1/portal_bookings?id=eq.${encodeURIComponent(id)}`, {
-      method: "PATCH",
-      body: JSON.stringify({ sync_status: "failed", sync_error: error instanceof Error ? error.message : "Outlook sync failed." }),
-    });
+    await supabaseAdmin
+      .from("portal_bookings")
+      .update({ sync_status: "failed", sync_error: error instanceof Error ? error.message : "Outlook sync failed." })
+      .eq("id", id);
     throw error;
   }
 }

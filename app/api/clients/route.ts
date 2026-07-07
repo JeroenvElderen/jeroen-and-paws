@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { supabaseRestFetch } from "@/utils/supabase-rest";
+import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -93,13 +93,17 @@ export async function GET(request: Request) {
   }
 
   try {
-    const rows = (await supabaseRestFetch(
-      "/rest/v1/portal_clients?select=id,full_name,email,phone,address,avatar_url,created_at,updated_at,portal_dogs(id,name,profile_photo_url),portal_bookings(id,service_name,starts_at,status),portal_client_activity(id,title,body)&portal_bookings.order=starts_at.desc&portal_client_activity.order=created_at.desc&portal_client_activity.limit=1&order=created_at.asc",
-      { cache: "no-store" },
-      adminAccessToken,
-    )) as AdminClientRow[];
+    const { data: rows, error } = await supabaseAdmin
+      .from("portal_clients")
+      .select("id,full_name,email,phone,address,avatar_url,created_at,updated_at,portal_dogs(id,name,profile_photo_url),portal_bookings(id,service_name,starts_at,status),portal_client_activity(id,title,body)")
+      .order("starts_at", { referencedTable: "portal_bookings", ascending: false })
+      .order("created_at", { referencedTable: "portal_client_activity", ascending: false })
+      .limit(1, { referencedTable: "portal_client_activity" })
+      .order("created_at", { ascending: true });
 
-    return NextResponse.json({ clients: rows.map(mapClient), isFallback: false });
+    if (error) throw error;
+
+    return NextResponse.json({ clients: ((rows ?? []) as AdminClientRow[]).map(mapClient), isFallback: false });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to load clients from Supabase.";
     console.error("Client data unavailable", { route: "/api/clients", error });

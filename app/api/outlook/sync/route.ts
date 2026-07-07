@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getGraphCalendarConfig, listOutlookEvents } from "@/utils/microsoft-graph-calendar";
-import { getSupabaseConfig, supabaseRestFetch } from "@/utils/supabase-rest";
+import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -71,19 +71,31 @@ function uniqueMatches(matches: ClientDogMatch[]) {
 async function findConnectedClient(dogName: string, clientName: string) {
   if (isPlaceholderName(dogName) || isPlaceholderName(clientName)) return null;
 
-  const dogFilter = encodeURIComponent(`*${escapePostgrestLike(dogName.trim())}*`);
-  const clientFilter = encodeURIComponent(`*${escapePostgrestLike(clientName.trim())}*`);
+  const dogFilter = `%${escapePostgrestLike(dogName.trim())}%`;
+  const clientFilter = `%${escapePostgrestLike(clientName.trim())}%`;
 
-  const [dogRows, calendarRows] = await Promise.all([
-    supabaseRestFetch(
-      `/rest/v1/portal_dogs?select=id,name,client_id,portal_clients(id,full_name,email)&name=ilike.${dogFilter}&portal_clients.full_name=ilike.${clientFilter}&limit=25`,
-      { cache: "no-store" },
-    ) as Promise<PortalDogMatchRow[]>,
-    supabaseRestFetch(
-      `/rest/v1/admin_booking_calendar?select=client_id,client_name,client_email,dog_id,dog_name&dog_name=ilike.${dogFilter}&client_name=ilike.${clientFilter}&client_id=not.is.null&dog_id=not.is.null&limit=25`,
-      { cache: "no-store" },
-    ) as Promise<AdminCalendarMatchRow[]>,
+  const [dogResult, calendarResult] = await Promise.all([
+    supabaseAdmin
+      .from("portal_dogs")
+      .select("id,name,client_id,portal_clients(id,full_name,email)")
+      .ilike("name", dogFilter)
+      .ilike("portal_clients.full_name", clientFilter)
+      .limit(25),
+    supabaseAdmin
+      .from("admin_booking_calendar")
+      .select("client_id,client_name,client_email,dog_id,dog_name")
+      .ilike("dog_name", dogFilter)
+      .ilike("client_name", clientFilter)
+      .not("client_id", "is", null)
+      .not("dog_id", "is", null)
+      .limit(25),
   ]);
+
+  if (dogResult.error) throw dogResult.error;
+  if (calendarResult.error) throw calendarResult.error;
+
+  const dogRows = (dogResult.data ?? []) as PortalDogMatchRow[];
+  const calendarRows = (calendarResult.data ?? []) as AdminCalendarMatchRow[];
 
   const matches = uniqueMatches([
     ...dogRows
@@ -138,10 +150,13 @@ async function importOutlookEvent(event: Awaited<ReturnType<typeof listOutlookEv
 
   if (!event.id || !startsAt || !endsAt) return { eventId: event.id, skipped: "missing time" };
 
-  const rows = await supabaseRestFetch(
-    `/rest/v1/portal_outlook_imports?outlook_event_id=eq.${encodeURIComponent(event.id)}&limit=1`,
-    { cache: "no-store" },
-  ) as { id: string }[];
+  const { data: rows, error: lookupError } = await supabaseAdmin
+    .from("portal_outlook_imports")
+    .select("id")
+    .eq("outlook_event_id", event.id)
+    .limit(1);
+
+  if (lookupError) throw lookupError;
 
   const connectedClient = await findConnectedClient(parsed.dogName, parsed.clientName);
   const needsManualReview = parsed.needsReview || event.sensitivity === "private" || !connectedClient;
@@ -168,18 +183,21 @@ async function importOutlookEvent(event: Awaited<ReturnType<typeof listOutlookEv
     updated_at: new Date().toISOString(),
   };
 
-  if (rows[0]?.id) {
-    await supabaseRestFetch(`/rest/v1/portal_outlook_imports?id=eq.${encodeURIComponent(rows[0].id)}`, {
-      method: "PATCH",
-      body: JSON.stringify(payload),
-    });
+  if (rows?.[0]?.id) {
+    const { error: updateError } = await supabaseAdmin
+      .from("portal_outlook_imports")
+      .update(payload)
+      .eq("id", rows[0].id);
+
+    if (updateError) throw updateError;
     return { eventId: event.id, action: "updated" };
   }
 
-  await supabaseRestFetch("/rest/v1/portal_outlook_imports", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+  const { error: insertError } = await supabaseAdmin
+    .from("portal_outlook_imports")
+    .insert(payload);
+
+  if (insertError) throw insertError;
 
   return { eventId: event.id, action: "created" };
 }
@@ -192,7 +210,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Microsoft Graph calendar is not configured." }, { status: 503 });
     }
 
-    if (!getSupabaseConfig().serviceRoleKey) {
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
       return NextResponse.json({ message: "Supabase service role key is required to import Outlook events." }, { status: 503 });
     }
 
