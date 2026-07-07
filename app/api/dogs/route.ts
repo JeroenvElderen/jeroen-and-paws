@@ -15,11 +15,11 @@ type AdminDogRow = {
   profile_photo_url: string | null;
   notes: string | null;
   created_at: string | null;
-  portal_clients: {
-    full_name: string | null;
-    email: string | null;
-    phone: string | null;
-  } | null;
+  portal_clients: Array<{
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+}> | null;
   portal_bookings: Array<{
     service_name: string | null;
     starts_at: string | null;
@@ -34,24 +34,25 @@ function formatStatus(value: string | null) {
 }
 
 function mapDog(row: AdminDogRow) {
-  const latestBooking = row.portal_bookings?.[0];
+  const owner = row.portal_clients?.[0];
+const latestBooking = row.portal_bookings?.[0];
 
   return {
-    id: row.id,
-    name: row.name?.trim() || "Unnamed dog",
-    gender: "unknown",
-    owner: row.portal_clients?.full_name?.trim() || "No owner linked",
-    phone: row.portal_clients?.phone?.trim() || "No phone saved",
-    email: row.portal_clients?.email?.trim() || "No email saved",
-    breed: row.breed?.trim() || "Breed unknown",
-    age: row.age?.trim() || "Age unknown",
-    status: formatStatus(row.status),
-    lastDate: latestBooking?.starts_at || row.created_at || null,
-    lastService: latestBooking?.service_name?.trim() || "No bookings yet",
-    notes: row.portal_session_updates?.length ?? (row.notes ? 1 : 0),
-    notesText: row.notes?.trim() || "No notes saved yet.",
-    image: row.profile_photo_url || dogPlaceholderImage,
-  };
+  id: row.id,
+  name: row.name?.trim() || "Unnamed dog",
+  gender: "unknown",
+  owner: owner?.full_name?.trim() || "No owner linked",
+  phone: owner?.phone?.trim() || "No phone saved",
+  email: owner?.email?.trim() || "No email saved",
+  breed: row.breed?.trim() || "Breed unknown",
+  age: row.age?.trim() || "Age unknown",
+  status: formatStatus(row.status),
+  lastDate: latestBooking?.starts_at || row.created_at || null,
+  lastService: latestBooking?.service_name?.trim() || "No bookings yet",
+  notes: row.portal_session_updates?.length ?? (row.notes ? 1 : 0),
+  notesText: row.notes?.trim() || "No notes saved yet.",
+  image: row.profile_photo_url || dogPlaceholderImage,
+};
 }
 
 type SupabaseAuthUser = {
