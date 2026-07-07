@@ -346,7 +346,7 @@ export function BackendDashboard() {
     if (activeView === "dogs") return <BackendDogs accessToken={backendSession.accessToken} />;
     if (activeView === "clients") return <BackendClients accessToken={backendSession.accessToken} />;
     if (activeView === "calendar") return <BackendCalendar />;
-    if (activeView === "invoices") return <BackendInvoices />;
+    if (activeView === "invoices") return <BackendInvoices accessToken={backendSession.accessToken} />;
     if (activeView === "photo-updates") return <BackendPhotoUpdates />;
     if (activeView === "faq") return <BackendFAQ />;
     if (activeView === "settings") return <BackendSettings />;

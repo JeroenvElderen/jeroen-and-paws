@@ -59,9 +59,9 @@ export default async function handler(
     const data = await response.json();
 
     return res.status(response.status).json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return res.status(500).json({
-      error: error.message || "Refresh token failed",
+      error: error instanceof Error ? error.message : "Refresh token failed",
     });
   }
 }

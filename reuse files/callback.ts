@@ -81,10 +81,10 @@ export default async function handler(
       expires_in: data.expires_in,
       token_type: data.token_type,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return res.status(500).json({
       success: false,
-      error: error.message || "Token exchange failed",
+      error: error instanceof Error ? error.message : "Token exchange failed",
     });
   }
 }

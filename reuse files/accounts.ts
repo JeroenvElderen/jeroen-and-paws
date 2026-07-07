@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { revolutGet } from '../../../lib/revolut/proxy';
+import { revolutBusinessGet } from '../utils/revolut-business';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { status, data } = await revolutGet('/api/1.0/accounts');
-    return res.status(status).json(data);
-  } catch (error: any) {
+    const data = await revolutBusinessGet('/api/1.0/accounts');
+    return res.status(200).json(data);
+  } catch (error: unknown) {
     return res.status(500).json({
-      error: error.message || 'Revolut accounts failed'
+      error: error instanceof Error ? error.message : 'Revolut accounts failed'
     });
   }
 }
