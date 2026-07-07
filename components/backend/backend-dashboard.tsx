@@ -342,7 +342,7 @@ export function BackendDashboard() {
   const ActiveContent = (() => {
     if (activeView === "dashboard") return <BackendDashboardOverview />;
     if (activeView === "bookings") return <BackendBookings />;
-    if (activeView === "services") return <BackendServices />;
+    if (activeView === "services") return <BackendServices accessToken={backendSession.accessToken} />;
     if (activeView === "dogs") return <BackendDogs accessToken={backendSession.accessToken} />;
     if (activeView === "clients") return <BackendClients />;
     if (activeView === "calendar") return <BackendCalendar />;

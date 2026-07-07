@@ -239,6 +239,10 @@ alter table public.portal_outlook_imports enable row level security;
 -- evaluating RLS when these privileges are missing.
 grant usage on schema public to anon, authenticated, service_role;
 grant select on public.portal_clients, public.portal_dogs, public.portal_bookings, public.portal_session_updates, public.portal_gallery_items to authenticated;
+-- Server-side Outlook sync uses the Supabase service role through PostgREST.
+-- PostgREST checks table privileges before RLS, so grant service_role access
+-- to every base table/view the sync reads or writes.
+grant select on public.portal_clients, public.portal_dogs, public.portal_bookings to service_role;
 grant select, insert, update on public.portal_outlook_imports to service_role;
 grant insert, delete on public.portal_dogs to authenticated;
 grant update (full_name, email) on public.portal_clients to authenticated;

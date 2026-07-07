@@ -30,8 +30,13 @@ alter table public.portal_client_activity enable row level security;
 
 -- Explicit API grants for Supabase PostgREST roles. RLS still limits rows to the
 -- signed-in portal client, while these privileges allow PostgREST to reach RLS.
-grant usage on schema public to anon, authenticated;
+grant usage on schema public to anon, authenticated, service_role;
 grant select on public.portal_clients, public.portal_dogs, public.portal_bookings, public.portal_session_updates, public.portal_gallery_items, public.portal_client_activity to authenticated;
+-- Server-side Outlook sync uses the Supabase service role through PostgREST.
+-- PostgREST checks table privileges before RLS, so grant service_role access
+-- to every base table/view the sync reads or writes.
+grant select on public.portal_clients, public.portal_dogs, public.portal_bookings to service_role;
+grant select, insert, update on public.portal_outlook_imports to service_role;
 grant insert, delete on public.portal_dogs to authenticated;
 grant update (full_name, email, first_name, phone, address, avatar_url) on public.portal_clients to authenticated;
 grant update (name, breed, age, status, profile_photo_url, hero_photo_url, notes) on public.portal_dogs to authenticated;
