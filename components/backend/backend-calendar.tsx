@@ -16,17 +16,53 @@ const serviceStyles = {
 
 type BookingResponse = { bookings: CalendarBooking[]; isFallback: boolean };
 
+type CalendarView = "week" | "month";
+
+function startOfWeek(date: Date) {
+  const value = new Date(date);
+  const day = value.getDay() || 7;
+  value.setDate(value.getDate() - day + 1);
+  value.setHours(0, 0, 0, 0);
+  return value;
+}
+
+function startOfMonth(date: Date) {
+  const value = new Date(date);
+  value.setDate(1);
+  value.setHours(0, 0, 0, 0);
+  return value;
+}
+
+function addDays(date: Date, amount: number) {
+  const value = new Date(date);
+  value.setDate(value.getDate() + amount);
+  return value;
+}
+
+function addMonths(date: Date, amount: number) {
+  const value = new Date(date);
+  value.setMonth(value.getMonth() + amount, 1);
+  return value;
+}
+
+function getDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getWeekLabel(weekStart: Date) {
+  const weekEnd = addDays(weekStart, 6);
+  return `${formatBookingDate(weekStart.toISOString(), { day: "numeric", month: "short" })} - ${formatBookingDate(weekEnd.toISOString(), { day: "numeric", month: "short", year: "numeric" })}`;
+}
+
 function getServiceStyle(serviceName: string) {
   const value = serviceName.toLowerCase();
   if (value.includes("train")) return serviceStyles.training;
   if (value.includes("puppy")) return serviceStyles.puppy;
   if (value.includes("walk")) return serviceStyles.walk;
   return serviceStyles.other;
-}
-
-function sameDay(left: string, right: Date) {
-  const date = new Date(left);
-  return date.getFullYear() === right.getFullYear() && date.getMonth() === right.getMonth() && date.getDate() === right.getDate();
 }
 
 function EventCard({ booking }: { booking: CalendarBooking }) {
@@ -46,6 +82,8 @@ function EventCard({ booking }: { booking: CalendarBooking }) {
 export function BackendCalendar() {
   const [isFallback, setIsFallback] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
+  const [visibleDate, setVisibleDate] = useState(() => startOfWeek(new Date()));
+  const [calendarView, setCalendarView] = useState<CalendarView>("week");
   const realtimeTables = useMemo(() => ["portal_bookings", "portal_outlook_imports", "portal_clients", "portal_dogs"], []);
   const fallback = useMemo(() => fallbackBookings, []);
   const mapFallbackBookings = useCallback(() => fallbackBookings, []);
@@ -63,19 +101,40 @@ export function BackendCalendar() {
     load: loadBookings,
   });
 
-  const weekStart = useMemo(() => {
-    const first = new Date(bookings[0]?.startsAt ?? new Date());
-    const day = first.getDay() || 7;
-    first.setDate(first.getDate() - day + 1);
-    first.setHours(0, 0, 0, 0);
-    return first;
+  const weekStart = useMemo(() => startOfWeek(visibleDate), [visibleDate]);
+  const monthStart = useMemo(() => startOfMonth(visibleDate), [visibleDate]);
+  const monthGridStart = useMemo(() => startOfWeek(monthStart), [monthStart]);
+
+  const days = useMemo(() => Array.from({ length: 7 }, (_, index) => addDays(weekStart, index)), [weekStart]);
+  const monthDays = useMemo(() => Array.from({ length: 42 }, (_, index) => addDays(monthGridStart, index)), [monthGridStart]);
+
+  const weekOptions = useMemo(() => {
+    const weekKeys = new Map<string, Date>();
+    const todayWeek = startOfWeek(new Date());
+    for (let offset = -8; offset <= 12; offset += 1) {
+      const week = addDays(todayWeek, offset * 7);
+      weekKeys.set(getDateKey(week), week);
+    }
+    for (const booking of bookings) {
+      const week = startOfWeek(new Date(booking.startsAt));
+      weekKeys.set(getDateKey(week), week);
+    }
+    weekKeys.set(getDateKey(weekStart), weekStart);
+    return Array.from(weekKeys.values()).sort((left, right) => left.getTime() - right.getTime());
+  }, [bookings, weekStart]);
+
+  const bookingByDate = useMemo(() => {
+    const groups = new Map<string, CalendarBooking[]>();
+    for (const booking of bookings) {
+      const key = getDateKey(new Date(booking.startsAt));
+      groups.set(key, [...(groups.get(key) ?? []), booking]);
+    }
+    return groups;
   }, [bookings]);
 
-  const days = Array.from({ length: 7 }, (_, index) => {
-    const day = new Date(weekStart);
-    day.setDate(weekStart.getDate() + index);
-    return day;
-  });
+  const goToToday = () => setVisibleDate(calendarView === "month" ? startOfMonth(new Date()) : startOfWeek(new Date()));
+  const goToPrevious = () => setVisibleDate((date) => calendarView === "month" ? addMonths(date, -1) : addDays(date, -7));
+  const goToNext = () => setVisibleDate((date) => calendarView === "month" ? addMonths(date, 1) : addDays(date, 7));
 
   const stats = [
     { label: "Total Bookings", value: bookings.length.toString(), icon: CalendarDays },
@@ -101,10 +160,36 @@ export function BackendCalendar() {
       <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
         <div><h1 className="font-serif text-3xl">Calendar <PawPrint className="inline size-6 text-[#6c38c2]" /></h1><p className="mt-1 text-sm text-[#6d667a]">Live Supabase bookings and Outlook imports refresh as soon as calendar data changes.</p></div>
         <div className="flex flex-wrap items-center gap-3 text-sm">
-          <button className="rounded-lg border border-[#151124]/10 bg-white px-5 py-3 font-semibold">Today</button>
-          <button className="grid size-11 place-items-center rounded-lg border border-[#151124]/10 bg-white"><ChevronLeft className="size-4" /></button>
-          <button className="grid size-11 place-items-center rounded-lg border border-[#151124]/10 bg-white"><ChevronRight className="size-4" /></button>
-          <button className="rounded-lg border border-[#151124]/10 bg-white px-5 py-3 font-semibold">{formatBookingDate(days[0].toISOString(), { day: "numeric", month: "short" })} - {formatBookingDate(days[6].toISOString(), { day: "numeric", month: "short", year: "numeric" })} <ChevronDown className="ml-3 inline size-4" /></button>
+          <button onClick={goToToday} className="rounded-lg border border-[#151124]/10 bg-white px-5 py-3 font-semibold">Today</button>
+          <button onClick={goToPrevious} aria-label={`Previous ${calendarView}`} className="grid size-11 place-items-center rounded-lg border border-[#151124]/10 bg-white"><ChevronLeft className="size-4" /></button>
+          <button onClick={goToNext} aria-label={`Next ${calendarView}`} className="grid size-11 place-items-center rounded-lg border border-[#151124]/10 bg-white"><ChevronRight className="size-4" /></button>
+          {calendarView === "week" ? (
+            <label className="relative">
+              <span className="sr-only">Choose week</span>
+              <select
+                value={getDateKey(weekStart)}
+                onChange={(event) => setVisibleDate(startOfWeek(new Date(`${event.target.value}T00:00:00`)))}
+                className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 font-semibold"
+              >
+                {weekOptions.map((week) => <option key={getDateKey(week)} value={getDateKey(week)}>{getWeekLabel(week)}</option>)}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" />
+            </label>
+          ) : (
+            <p className="rounded-lg border border-[#151124]/10 bg-white px-5 py-3 font-semibold">{formatBookingDate(monthStart.toISOString(), { month: "long", year: "numeric" })}</p>
+          )}
+          <label className="relative">
+            <span className="sr-only">Calendar view</span>
+            <select
+              value={calendarView}
+              onChange={(event) => setCalendarView(event.target.value as CalendarView)}
+              className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 font-semibold"
+            >
+              <option value="week">Weekly view</option>
+              <option value="month">Monthly view</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" />
+          </label>
           <button onClick={syncFromOutlook} className="rounded-lg border border-[#151124]/10 bg-white px-5 py-3 font-semibold"><RefreshCw className="mr-2 inline size-4" />Sync Outlook</button>
           <a href="https://outlook.office.com/calendar/" target="_blank" rel="noreferrer" className="rounded-lg bg-[#4f2c91] px-6 py-3 font-semibold text-white shadow-lg shadow-[#4f2c91]/25"><Plus className="mr-2 inline size-4" />Book in Outlook</a>
         </div>
@@ -118,16 +203,40 @@ export function BackendCalendar() {
 
       <div className="mt-6 grid gap-6 2xl:grid-cols-[1fr_20rem]">
         <Card className="overflow-x-auto">
-          <div className="grid min-w-[980px] grid-cols-7 border-b border-[#151124]/10 text-sm font-semibold">
-            {days.map((day) => <div key={day.toISOString()} className="border-r border-[#151124]/10 p-4 text-center last:border-r-0">{formatBookingDate(day.toISOString(), { weekday: "short", day: "numeric" })}</div>)}
-          </div>
-          <div className="grid min-h-[38rem] min-w-[980px] grid-cols-7">
-            {days.map((day) => (
-              <div key={day.toISOString()} className="border-r border-[#151124]/10 p-2 last:border-r-0">
-                {bookings.filter((booking) => sameDay(booking.startsAt, day)).map((booking) => <EventCard key={booking.id} booking={booking} />)}
+          {calendarView === "week" ? (
+            <>
+              <div className="grid min-w-[980px] grid-cols-7 border-b border-[#151124]/10 text-sm font-semibold">
+                {days.map((day) => <div key={day.toISOString()} className="border-r border-[#151124]/10 p-4 text-center last:border-r-0">{formatBookingDate(day.toISOString(), { weekday: "short", day: "numeric" })}</div>)}
               </div>
-            ))}
-          </div>
+              <div className="grid min-h-[38rem] min-w-[980px] grid-cols-7">
+                {days.map((day) => (
+                  <div key={day.toISOString()} className="border-r border-[#151124]/10 p-2 last:border-r-0">
+                    {(bookingByDate.get(getDateKey(day)) ?? []).map((booking) => <EventCard key={booking.id} booking={booking} />)}
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="grid min-w-[980px] grid-cols-7 border-b border-[#151124]/10 text-sm font-semibold">
+                {days.map((day) => <div key={day.toISOString()} className="border-r border-[#151124]/10 p-4 text-center last:border-r-0">{formatBookingDate(day.toISOString(), { weekday: "short" })}</div>)}
+              </div>
+              <div className="grid min-h-[44rem] min-w-[980px] grid-cols-7">
+                {monthDays.map((day) => {
+                  const dayBookings = bookingByDate.get(getDateKey(day)) ?? [];
+                  const isOutsideMonth = day.getMonth() !== monthStart.getMonth();
+
+                  return (
+                    <div key={day.toISOString()} className={`min-h-32 border-r border-t border-[#151124]/10 p-2 last:border-r-0 ${isOutsideMonth ? "bg-[#f7f4fb] text-[#9c94aa]" : "bg-white"}`}>
+                      <p className="mb-2 text-xs font-bold">{formatBookingDate(day.toISOString(), { day: "numeric" })}</p>
+                      {dayBookings.slice(0, 3).map((booking) => <EventCard key={booking.id} booking={booking} />)}
+                      {dayBookings.length > 3 && <p className="m-1 rounded-lg bg-[#f0e9fb] px-3 py-2 text-xs font-semibold text-[#4f2c91]">+{dayBookings.length - 3} more</p>}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </Card>
 
         <aside className="space-y-5">
