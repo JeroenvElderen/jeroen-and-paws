@@ -186,6 +186,8 @@ create table if not exists public.portal_outlook_imports (
   sensitivity text,
   status text not null default 'needs_review',
   needs_review boolean not null default true,
+  client_id uuid references public.portal_clients(id) on delete set null,
+  dog_id uuid references public.portal_dogs(id) on delete set null,
   linked_booking_id uuid references public.portal_bookings(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -212,12 +214,18 @@ create trigger portal_outlook_imports_set_updated_at
 before update on public.portal_outlook_imports
 for each row execute function public.set_updated_at();
 
+alter table public.portal_outlook_imports
+  add column if not exists client_id uuid references public.portal_clients(id) on delete set null,
+  add column if not exists dog_id uuid references public.portal_dogs(id) on delete set null;
+
 create index if not exists portal_dogs_client_id_idx on public.portal_dogs(client_id);
 create index if not exists portal_bookings_starts_at_idx on public.portal_bookings(starts_at);
 create index if not exists portal_bookings_outlook_event_id_idx on public.portal_bookings(outlook_event_id);
 create index if not exists portal_bookings_client_starts_at_idx on public.portal_bookings(client_id, starts_at);
 create index if not exists portal_outlook_imports_starts_at_idx on public.portal_outlook_imports(starts_at);
 create index if not exists portal_outlook_imports_linked_booking_id_idx on public.portal_outlook_imports(linked_booking_id);
+create index if not exists portal_outlook_imports_client_id_idx on public.portal_outlook_imports(client_id);
+create index if not exists portal_outlook_imports_dog_id_idx on public.portal_outlook_imports(dog_id);
 
 alter table public.portal_clients enable row level security;
 alter table public.portal_dogs enable row level security;
@@ -444,11 +452,11 @@ join public.portal_dogs d on d.id = b.dog_id
 union all
 select
   i.id,
-  null::uuid as client_id,
-  i.client_name,
-  null::text as client_email,
-  null::uuid as dog_id,
-  i.dog_name,
+  i.client_id,
+  coalesce(c.full_name, i.client_name) as client_name,
+  c.email as client_email,
+  i.dog_id,
+  coalesce(d.name, i.dog_name) as dog_name,
   i.service_name,
   i.starts_at,
   i.ends_at,
@@ -463,6 +471,8 @@ select
   null::text as cover_image_url,
   i.notes
 from public.portal_outlook_imports i
+left join public.portal_clients c on c.id = i.client_id
+left join public.portal_dogs d on d.id = i.dog_id
 where i.linked_booking_id is null;
 
 grant select on public.portal_dashboard, public.portal_booking_list, public.portal_calendar_feed, public.admin_booking_calendar to authenticated;
