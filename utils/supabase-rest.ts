@@ -10,6 +10,12 @@ export async function supabaseRestFetch(path: string, init: RequestInit = {}, ac
   const { supabaseUrl, anonKey, serviceRoleKey } = getSupabaseConfig();
   const token = accessToken || serviceRoleKey || anonKey;
 
+  console.log({
+    hasAnon: !!anonKey,
+    hasServiceRole: !!serviceRoleKey,
+    usingServiceRole: token === serviceRoleKey,
+  });
+  
   if (!supabaseUrl || !anonKey || !token) {
     throw new Error("Supabase is not configured.");
   }
