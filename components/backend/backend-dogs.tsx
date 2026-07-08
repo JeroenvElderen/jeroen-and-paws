@@ -83,6 +83,8 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
   const [clientOptions, setClientOptions] = useState<DogClientOption[]>([]);
   const [newDog, setNewDog] = useState({ clientId: "", name: "", breed: "", age: "", notes: "" });
   const [isSavingDog, setIsSavingDog] = useState(false);
+  const [openActionId, setOpenActionId] = useState<string | null>(null);
+  const [actionMenuPosition, setActionMenuPosition] = useState<{ top: number; left: number } | null>(null);
 
   const loadDogs = useCallback(async () => {
     try {
@@ -113,8 +115,17 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
   async function saveDogUpdates(dogId: string, updates: Partial<Pick<BackendDog, "name" | "breed" | "age" | "notesText" | "status">>) {
     setDogRows((rows) => rows.map((dog) => dog.id === dogId ? { ...dog, ...updates } : dog));
     const response = await fetch("/api/dogs", { method: "PATCH", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ id: dogId, ...updates, notes: updates.notesText }) });
-    if (!response.ok) setDogError("Supabase did not save the dog update. Please retry.");
+    if (!response.ok) {
+      setDogError("Supabase did not save the dog update. Please retry.");
+      return;
+    }
     await loadDogs();
+  }
+
+  function updateDogStatus(dog: BackendDog, status: string) {
+    setOpenActionId(null);
+    setActionMenuPosition(null);
+    void saveDogUpdates(dog.id, { status });
   }
 
   async function createDog(event: React.FormEvent<HTMLFormElement>) {
@@ -210,7 +221,7 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
                     <td className="px-5 py-4"><span className={`rounded-md px-3 py-1 text-xs font-medium ${dog.status === "Active" ? "bg-green-100 text-green-700" : "bg-zinc-200 text-zinc-600"}`}>{dog.status}</span></td>
                     <td className="px-5 py-4"><p>{formatDisplayDate(dog.lastDate)}</p><p className="mt-1 text-[#6d667a]">{dog.lastService}</p></td>
                     <td className="px-5 py-4"><StickyNote className="mr-1 inline size-4 text-[#4f4863]" />{dog.notes}</td>
-                    <td className="px-5 py-4"><button aria-label={`Actions for ${dog.name}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button></td>
+                    <td className="px-5 py-4"><button aria-label={`Actions for ${dog.name}`} onClick={(event) => { event.stopPropagation(); const rect = event.currentTarget.getBoundingClientRect(); setActionMenuPosition({ top: rect.bottom + 8, left: Math.max(12, rect.right - 176) }); setOpenActionId((current) => current === dog.id ? null : dog.id); }} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button>{openActionId === dog.id && actionMenuPosition && <div style={{ top: actionMenuPosition.top, left: actionMenuPosition.left }} className="fixed z-50 w-44 rounded-xl border border-[#151124]/10 bg-white p-2 shadow-2xl"><button onClick={(event) => { event.stopPropagation(); updateDogStatus(dog, "Active"); }} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set active</button><button onClick={(event) => { event.stopPropagation(); updateDogStatus(dog, "Inactive"); }} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set inactive</button></div>}</td>
                   </tr>
                 ))}
               </tbody>

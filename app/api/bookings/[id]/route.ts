@@ -12,7 +12,7 @@ const outlookRemovalStatuses = new Set<BookingStatus>(["cancelled", "no_show"]);
 const allowedStatuses = new Set<BookingStatus>(["requested", "pending_confirmation", "confirmed", "reschedule_requested", "cancelled", "completed", "no_show", "needs_review", "busy"]);
 
 type SupabaseAuthUser = { email?: string; user?: { email?: string } };
-type BookingSyncColumns = SupabaseBookingRow & { outlook_event_id?: string | null };
+type ExistingBookingSyncRow = { outlook_event_id?: string | null } | null;
 
 async function getVerifiedBackendAdminToken(request: Request) {
   const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
@@ -115,14 +115,26 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (typeof payload.notes === "string") updates.notes = payload.notes;
   if (!Object.keys(updates).length) return NextResponse.json({ error: "No valid booking updates supplied." }, { status: 400 });
 
-  const { data: existing, error: existingError } = await supabaseAdmin.from("portal_bookings").select("outlook_event_id").eq("id", id).single();
+  const { data: existing, error: existingError } = await supabaseAdmin.from("portal_bookings").select("outlook_event_id").eq("id", id).maybeSingle();
   if (existingError) return NextResponse.json({ error: existingError.message }, { status: 502 });
+
+  if (!existing) {
+    const importUpdates: Record<string, unknown> = {};
+    if (typeof updates.status === "string") importUpdates.status = updates.status;
+    if (typeof updates.starts_at === "string") importUpdates.starts_at = updates.starts_at;
+    if (typeof updates.ends_at === "string") importUpdates.ends_at = updates.ends_at;
+    if (typeof updates.notes === "string") importUpdates.notes = updates.notes;
+    const { error: importError } = await supabaseAdmin.from("portal_outlook_imports").update(importUpdates).eq("id", id);
+    if (importError) return NextResponse.json({ error: importError.message }, { status: 502 });
+    const booking = await loadAdminBooking(id);
+    return NextResponse.json({ booking, outlookSyncError: null });
+  }
 
   const { error } = await supabaseAdmin.from("portal_bookings").update(updates).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 502 });
 
   const booking = await loadAdminBooking(id);
-  const outlookSyncError = await syncOutlookAfterBookingChange(booking, (existing as BookingSyncColumns | null)?.outlook_event_id ?? null);
+  const outlookSyncError = await syncOutlookAfterBookingChange(booking, (existing as ExistingBookingSyncRow)?.outlook_event_id ?? null);
   const syncedBooking = await loadAdminBooking(id);
 
   return NextResponse.json({ booking: syncedBooking, outlookSyncError });
@@ -132,11 +144,17 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   if (!(await getVerifiedBackendAdminToken(request))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
 
-  const { data: existing, error: existingError } = await supabaseAdmin.from("portal_bookings").select("outlook_event_id").eq("id", id).single();
+  const { data: existing, error: existingError } = await supabaseAdmin.from("portal_bookings").select("outlook_event_id").eq("id", id).maybeSingle();
   if (existingError) return NextResponse.json({ error: existingError.message }, { status: 502 });
 
+  if (!existing) {
+    const { error: importError } = await supabaseAdmin.from("portal_outlook_imports").delete().eq("id", id);
+    if (importError) return NextResponse.json({ error: importError.message }, { status: 502 });
+    return NextResponse.json({ ok: true });
+  }
+
   const config = getGraphCalendarConfig();
-  const outlookEventId = (existing as BookingSyncColumns | null)?.outlook_event_id;
+  const outlookEventId = (existing as ExistingBookingSyncRow)?.outlook_event_id;
   if (config && outlookEventId) await deleteOutlookEvent(config, outlookEventId);
 
   const { error } = await supabaseAdmin.from("portal_bookings").delete().eq("id", id);

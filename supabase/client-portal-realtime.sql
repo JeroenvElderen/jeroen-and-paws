@@ -6,6 +6,7 @@ alter table public.portal_clients
   add column if not exists phone text,
   add column if not exists address text,
   add column if not exists avatar_url text,
+  add column if not exists status text not null default 'active',
   add column if not exists updated_at timestamptz not null default now();
 
 update public.portal_clients
@@ -38,7 +39,7 @@ grant select on public.portal_clients, public.portal_dogs, public.portal_booking
 grant select on public.portal_clients, public.portal_dogs, public.portal_bookings to service_role;
 grant select, insert, update on public.portal_outlook_imports to service_role;
 grant insert, delete on public.portal_dogs to authenticated;
-grant update (full_name, email, first_name, phone, address, avatar_url) on public.portal_clients to authenticated;
+grant update (full_name, email, first_name, phone, address, avatar_url, status) on public.portal_clients to authenticated;
 grant update (name, breed, age, status, profile_photo_url, hero_photo_url, notes) on public.portal_dogs to authenticated;
 
 alter table public.portal_dogs enable row level security;

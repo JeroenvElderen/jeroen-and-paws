@@ -83,6 +83,7 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
   const [activeTab, setActiveTab] = useState<"Overview" | "Dogs" | "Bookings" | "Notes">("Overview");
   const [isEditingClient, setIsEditingClient] = useState(false);
   const [openActionId, setOpenActionId] = useState<string | null>(null);
+  const [actionMenuPosition, setActionMenuPosition] = useState<{ top: number; left: number } | null>(null);
   const [showNewClient, setShowNewClient] = useState(false);
   const [newClient, setNewClient] = useState({ name: "", email: "", phone: "", address: "" });
   const [isSavingClient, setIsSavingClient] = useState(false);
@@ -154,11 +155,14 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
   async function saveClientUpdates(clientId: string, updates: Partial<Pick<BackendClient, "name" | "email" | "phone" | "address" | "status">>) {
     setClientRows((rows) => rows.map((client) => client.id === clientId ? { ...client, ...updates } : client));
     const response = await fetch("/api/clients", { method: "PATCH", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ id: clientId, ...updates }) });
-    if (!response.ok) setClientError("Supabase did not save the client update. Please retry.");
+    if (!response.ok) {
+      setClientError("Supabase did not save the client update. Please retry.");
+      return;
+    }
     await loadClients();
   }
 
-  function updateClientStatus(client: BackendClient, status: string) { setOpenActionId(null); void saveClientUpdates(client.id, { status }); }
+  function updateClientStatus(client: BackendClient, status: string) { setOpenActionId(null); setActionMenuPosition(null); void saveClientUpdates(client.id, { status }); }
 
   async function createClient(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -214,7 +218,7 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
                     <td className="px-6 py-4">{client.spent}</td>
                     <td className="px-6 py-4"><p>{formatDisplayDate(client.lastBookingDate)}</p><p className="mt-1 text-[#6d667a]">{client.service}</p></td>
                     <td className="px-6 py-4"><span className={`rounded-md px-3 py-1 text-xs font-medium ${client.status === "Active" ? "bg-green-100 text-green-700" : "bg-slate-200 text-slate-600"}`}>{client.status}</span></td>
-                    <td className="relative px-6 py-4"><button aria-label={`Actions for ${client.name}`} onClick={(event) => { event.stopPropagation(); setOpenActionId((current) => current === client.id ? null : client.id); }} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button>{openActionId === client.id && <div className="absolute right-6 z-20 mt-2 w-44 rounded-xl border border-[#151124]/10 bg-white p-2 shadow-xl"><button onClick={() => updateClientStatus(client, "Active")} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set active</button><button onClick={() => updateClientStatus(client, "Confirmed")} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set confirmed</button><button onClick={() => updateClientStatus(client, "Inactive")} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set inactive</button></div>}</td>
+                    <td className="px-6 py-4"><button aria-label={`Actions for ${client.name}`} onClick={(event) => { event.stopPropagation(); const rect = event.currentTarget.getBoundingClientRect(); setActionMenuPosition({ top: rect.bottom + 8, left: Math.max(12, rect.right - 176) }); setOpenActionId((current) => current === client.id ? null : client.id); }} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button>{openActionId === client.id && actionMenuPosition && <div style={{ top: actionMenuPosition.top, left: actionMenuPosition.left }} className="fixed z-50 w-44 rounded-xl border border-[#151124]/10 bg-white p-2 shadow-2xl"><button onClick={(event) => { event.stopPropagation(); updateClientStatus(client, "Active"); }} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set active</button><button onClick={(event) => { event.stopPropagation(); updateClientStatus(client, "Confirmed"); }} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set confirmed</button><button onClick={(event) => { event.stopPropagation(); updateClientStatus(client, "Inactive"); }} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set inactive</button></div>}</td>
                   </tr>
                 ))}
               </tbody>
