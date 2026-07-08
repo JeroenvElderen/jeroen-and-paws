@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { fallbackBookings, mapBookingRow, type BookingStatus, type SupabaseBookingRow } from "@/utils/bookings";
+import { fallbackBookings, mapBookingRow, type BookingStatus, type CalendarBooking, type SupabaseBookingRow } from "@/utils/bookings";
+import { createOutlookEvent, getGraphCalendarConfig } from "@/utils/microsoft-graph-calendar";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
@@ -37,6 +38,84 @@ function getClientFullName(portalClients: BookingOptionDogRow["portal_clients"])
   const client = Array.isArray(portalClients) ? portalClients[0] : portalClients;
 
   return client?.full_name?.trim() || "Client to confirm";
+}
+
+function toOutlookInput(booking: CalendarBooking) {
+  return {
+    subject: `[JP] ${booking.serviceName} - ${booking.dogName} - ${booking.clientName}`,
+    body: [
+      `Jeroen & Paws booking ${booking.id}`,
+      `Client: ${booking.clientName}`,
+      `Dog: ${booking.dogName}`,
+      `Status: ${booking.status}`,
+      booking.notes ? `Notes: ${booking.notes}` : "",
+    ].filter(Boolean).join("\n"),
+    startsAt: booking.startsAt,
+    endsAt: booking.endsAt,
+    timezone: booking.timezone,
+    location: booking.location,
+  };
+}
+
+async function loadAdminBookings(ids: string[]) {
+  if (!ids.length) return [];
+
+  const { data, error } = await supabaseAdmin
+    .from("admin_booking_calendar")
+    .select("*")
+    .in("id", ids);
+
+  if (error) throw error;
+
+  return ((data ?? []) as SupabaseBookingRow[]).map(mapBookingRow);
+}
+
+async function syncConfirmedBookingsToOutlook(bookings: CalendarBooking[]) {
+  const confirmedBookings = bookings.filter((booking) => booking.status === "confirmed");
+  const config = getGraphCalendarConfig();
+  const errors: Array<{ bookingId: string; message: string }> = [];
+
+  if (!confirmedBookings.length) return errors;
+
+  if (!config) {
+    const message = "Microsoft Graph calendar is not configured.";
+    await supabaseAdmin
+      .from("portal_bookings")
+      .update({ sync_status: "failed", sync_error: message })
+      .in("id", confirmedBookings.map((booking) => booking.id));
+
+    return confirmedBookings.map((booking) => ({ bookingId: booking.id, message }));
+  }
+
+  for (const booking of confirmedBookings) {
+    try {
+      const event = await createOutlookEvent(config, toOutlookInput(booking));
+      const { error } = await supabaseAdmin
+        .from("portal_bookings")
+        .update({
+          outlook_event_id: event.id,
+          outlook_ical_uid: event.iCalUId ?? null,
+          outlook_change_key: event.changeKey ?? null,
+          outlook_web_link: event.webLink ?? null,
+          sync_status: "synced",
+          sync_error: null,
+          outlook_last_synced_at: new Date().toISOString(),
+        })
+        .eq("id", booking.id);
+
+      if (error) throw error;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Outlook sync failed.";
+      errors.push({ bookingId: booking.id, message });
+
+      await supabaseAdmin
+        .from("portal_bookings")
+        .update({ sync_status: "failed", sync_error: message })
+        .eq("id", booking.id);
+    }
+  }
+
+  return errors;
 }
 
 async function getVerifiedBackendAdminToken(request: Request) {
@@ -156,13 +235,18 @@ export async function POST(request: Request) {
         notes: payload.data.notes || null,
         status: payload.data.status satisfies BookingStatus,
         source: "admin_import",
-        sync_status: "not_synced",
+        sync_status: payload.data.status === "confirmed" ? "pending" : "not_synced",
       })))
       .select("*");
 
     if (insertError) throw insertError;
 
-    return NextResponse.json({ bookings: ((rows ?? []) as SupabaseBookingRow[]).map(mapBookingRow) }, { status: 201 });
+    const createdBookingIds = ((rows ?? []) as SupabaseBookingRow[]).map((row) => row.id);
+    const createdBookings = await loadAdminBookings(createdBookingIds);
+    const outlookSyncErrors = await syncConfirmedBookingsToOutlook(createdBookings);
+    const syncedBookings = await loadAdminBookings(createdBookingIds);
+
+    return NextResponse.json({ bookings: syncedBookings, outlookSyncErrors }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to create booking.";
     console.error("Booking create failed", { route: "/api/bookings", error });

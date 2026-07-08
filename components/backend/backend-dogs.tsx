@@ -37,8 +37,10 @@ type BackendDog = {
   image: string;
 };
 
+const fallbackDogImage = "/images/dogs/kaiser.jpg";
+
 const fallbackDogRows: BackendDog[] = [
-  { id: "max", name: "Max", gender: "male", owner: "Sarah Johnson", phone: "+353 87 123 4567", email: "sarah.j@email.com", breed: "Golden Retriever", age: "3 years", status: "Active", lastDate: "2024-05-25T00:00:00.000Z", lastService: "Dog Walk", notes: 2, notesText: "Gets excited around other dogs. Loves tennis balls!", image: "/images/dogs/kaiser.jpg" },
+  { id: "max", name: "Max", gender: "male", owner: "Sarah Johnson", phone: "+353 87 123 4567", email: "sarah.j@email.com", breed: "Golden Retriever", age: "3 years", status: "Active", lastDate: "2024-05-25T00:00:00.000Z", lastService: "Dog Walk", notes: 2, notesText: "Gets excited around other dogs. Loves tennis balls!", image: fallbackDogImage },
 ];
 
 type DogsApiResponse = {
@@ -59,6 +61,20 @@ function formatDisplayDate(value: string | null) {
   return new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
 }
 
+function DogProfileImage({ alt, className, height, src, width }: { alt: string; className: string; height: number; src: string; width: number }) {
+  const [imageSrc, setImageSrc] = useState(src || fallbackDogImage);
+
+  return (
+    <Image
+      src={imageSrc}
+      alt={alt}
+      width={width}
+      height={height}
+      className={className}
+      onError={() => setImageSrc(fallbackDogImage)}
+    />
+  );
+}
 
 export function BackendDogs({ accessToken }: { accessToken: string }) {
   const [dogRows, setDogRows] = useState<BackendDog[]>(fallbackDogRows);
@@ -156,7 +172,7 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
               <tbody className="divide-y divide-[#151124]/10">
                 {dogRows.map((dog) => (
                   <tr key={dog.id} onClick={() => setSelectedDogId(dog.id)} className={`cursor-pointer align-middle transition ${selectedDog.id === dog.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}>
-                    <td className="px-5 py-4"><div className="flex items-center gap-4"><Image src={dog.image} alt={`${dog.name} profile`} width={44} height={44} className="size-11 rounded-full object-cover" /><p className="font-semibold">{dog.name} {dog.gender === "male" ? <Mars className="inline size-4 text-blue-500" /> : dog.gender === "female" ? <Venus className="inline size-4 text-pink-500" /> : null}</p></div></td>
+                    <td className="px-5 py-4"><div className="flex items-center gap-4"><DogProfileImage key={dog.image} src={dog.image} alt={`${dog.name} profile`} width={44} height={44} className="size-11 rounded-full object-cover" /><p className="font-semibold">{dog.name} {dog.gender === "male" ? <Mars className="inline size-4 text-blue-500" /> : dog.gender === "female" ? <Venus className="inline size-4 text-pink-500" /> : null}</p></div></td>
                     <td className="px-5 py-4"><p className="font-semibold">{dog.owner}</p><p className="mt-1 text-[#6d667a]">{dog.phone}</p></td>
                     <td className="px-5 py-4">{dog.breed}</td><td className="px-5 py-4">{dog.age}</td>
                     <td className="px-5 py-4"><span className={`rounded-md px-3 py-1 text-xs font-medium ${dog.status === "Active" ? "bg-green-100 text-green-700" : "bg-zinc-200 text-zinc-600"}`}>{dog.status}</span></td>
@@ -173,7 +189,7 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
 
         <Card className="overflow-hidden p-5">
           <div className="flex justify-end"><X className="size-5 text-[#4f4863]" /></div>
-          <div className="flex items-center gap-4"><Image src={selectedDog.image} alt={`${selectedDog.name} profile`} width={74} height={74} className="size-[74px] rounded-full object-cover" /><div><h2 className="font-serif text-2xl">{selectedDog.name} {selectedDog.gender === "male" ? <Mars className="inline size-4 text-blue-500" /> : selectedDog.gender === "female" ? <Venus className="inline size-4 text-pink-500" /> : null}</h2><p className="text-sm text-[#6d667a]">{selectedDog.breed}</p><span className={`mt-2 inline-block rounded-md px-3 py-1 text-xs font-medium ${selectedDog.status === "Active" ? "bg-green-100 text-green-700" : "bg-zinc-200 text-zinc-600"}`}>{selectedDog.status}</span></div></div>
+          <div className="flex items-center gap-4"><DogProfileImage key={selectedDog.image} src={selectedDog.image} alt={`${selectedDog.name} profile`} width={74} height={74} className="size-[74px] rounded-full object-cover" /><div><h2 className="font-serif text-2xl">{selectedDog.name} {selectedDog.gender === "male" ? <Mars className="inline size-4 text-blue-500" /> : selectedDog.gender === "female" ? <Venus className="inline size-4 text-pink-500" /> : null}</h2><p className="text-sm text-[#6d667a]">{selectedDog.breed}</p><span className={`mt-2 inline-block rounded-md px-3 py-1 text-xs font-medium ${selectedDog.status === "Active" ? "bg-green-100 text-green-700" : "bg-zinc-200 text-zinc-600"}`}>{selectedDog.status}</span></div></div>
           <div className="mt-8 flex border-b border-[#151124]/10 text-sm font-semibold text-[#4f4863]"><button className="border-b-2 border-[#5b2aa0] px-4 pb-3 text-[#5b2aa0]">Overview</button><button className="px-4 pb-3">Info</button><button className="px-4 pb-3">History</button><button className="px-4 pb-3">Notes</button></div>
           <div className="mt-5 space-y-5 text-sm">
             {[ [UserRound, "Owner", selectedDog.owner], [Phone, "Phone", selectedDog.phone], [Mail, "Email", selectedDog.email], [Cake, "Age", selectedDog.age], [Weight, "Breed", selectedDog.breed], [CalendarDays, "Last Service", `${formatDisplayDate(selectedDog.lastDate)}\n${selectedDog.lastService}`], [CalendarDays, "Live Status", isLoadingDogs ? "Refreshing from Supabase…" : "Synced from Supabase realtime"], [StickyNote, "Notes", selectedDog.notesText] ].map(([Icon, label, value]) => <div key={String(label)} className="grid grid-cols-[1.2rem_5rem_1fr] gap-3 text-[#4f4863]"><Icon className="size-4 text-[#6c38c2]" /><span>{label as string}</span><span className="whitespace-pre-line text-[#4f4863]">{value as string}</span></div>)}

@@ -6,6 +6,12 @@ export const runtime = "nodejs";
 
 const dogPlaceholderImage = "/images/dogs/kaiser.jpg";
 
+type PortalClientRelation = {
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+};
+
 type AdminDogRow = {
   id: string;
   name: string | null;
@@ -15,11 +21,7 @@ type AdminDogRow = {
   profile_photo_url: string | null;
   notes: string | null;
   created_at: string | null;
-  portal_clients: Array<{
-  full_name: string | null;
-  email: string | null;
-  phone: string | null;
-}> | null;
+  portal_clients: PortalClientRelation | PortalClientRelation[] | null;
   portal_bookings: Array<{
     service_name: string | null;
     starts_at: string | null;
@@ -33,9 +35,13 @@ function formatStatus(value: string | null) {
   return value.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim().replace(/^./, (letter) => letter.toUpperCase());
 }
 
+function getPortalClient(relation: AdminDogRow["portal_clients"]) {
+  return Array.isArray(relation) ? relation[0] : relation;
+}
+
 function mapDog(row: AdminDogRow) {
-  const owner = row.portal_clients?.[0];
-const latestBooking = row.portal_bookings?.[0];
+  const owner = getPortalClient(row.portal_clients);
+  const latestBooking = row.portal_bookings?.[0];
 
   return {
   id: row.id,
