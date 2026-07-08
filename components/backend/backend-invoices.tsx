@@ -13,7 +13,6 @@ import {
   X,
   Clock3,
 } from "lucide-react";
-import Image from "next/image";
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import { useSupabaseLiveQuery } from "@/components/portal/use-supabase-live-query";
@@ -89,100 +88,6 @@ const toneClasses = {
   red: "bg-rose-100 text-rose-600",
 };
 
-const businessInvoiceDetails = {
-  name: "Jeroen & Paws",
-  legalName: "JEROEN & PAWS",
-  address: "9 Rosslyn Grove, A98 H940, Bray, Ireland",
-  logoSrc: "/logo4.svg",
-};
-
-function getInvoiceLineItems(invoice: BackendInvoice) {
-  if (invoice.lineItems?.length) return invoice.lineItems;
-
-  return [{ description: invoice.dogs === "—" ? "Dog care services" : `Dog care services - ${invoice.dogs}`, quantity: 1, unitAmountCents: invoice.amountCents }];
-}
-
-function InvoiceDocumentPreview({ invoice }: { invoice?: BackendInvoice }) {
-  if (!invoice) {
-    return (
-      <Card className="p-8 text-sm text-[#6d667a]">
-        Create or select an invoice to preview the website invoice layout.
-      </Card>
-    );
-  }
-
-  const lineItems = getInvoiceLineItems(invoice);
-  const subtotalCents = lineItems.reduce((sum, item) => sum + Math.round(item.quantity * item.unitAmountCents), 0);
-  const paidCents = invoice.status === "paid" ? subtotalCents : 0;
-  const balanceDueCents = Math.max(subtotalCents - paidCents, 0);
-
-  return (
-    <Card className="overflow-hidden bg-white p-6 text-[#151124] shadow-sm md:p-10">
-      <div className="flex items-start justify-between gap-6">
-        <div className="rounded-2xl bg-[#4f2c91] px-4 py-3 shadow-sm">
-          <Image src={businessInvoiceDetails.logoSrc} alt={`${businessInvoiceDetails.name} logo`} width={180} height={79} className="h-12 w-auto" />
-        </div>
-        <h2 className="text-right font-serif text-3xl font-bold">{businessInvoiceDetails.name}</h2>
-      </div>
-
-      <div className="mt-12 grid gap-10 text-sm md:grid-cols-[1fr_1fr]">
-        <dl className="grid max-w-sm grid-cols-[7.5rem_1fr] gap-x-4 gap-y-2 font-semibold">
-          <dt>Invoice Number:</dt><dd>{invoice.number}</dd>
-          <dt>Issued on:</dt><dd>{formatDate(invoice.issuedOn)}</dd>
-          <dt>Due date:</dt><dd>{formatDate(invoice.dueOn)}</dd>
-          <dt>Date of sale / supply:</dt><dd>{formatDate(invoice.servicePeriodStart ?? invoice.issuedOn)}</dd>
-          <dt className="mt-5">Payment method:</dt><dd className="mt-5">{invoice.status === "paid" ? "Marked as paid" : "Bank transfer via Revolut reference"}</dd>
-        </dl>
-      </div>
-
-      <div className="mt-8 grid gap-10 text-sm md:grid-cols-2">
-        <section>
-          <h3 className="font-serif text-xl font-semibold">Billed to</h3>
-          <p className="mt-3 font-semibold leading-6">{invoice.client}<br />{invoice.email || "No email saved"}<br />{invoice.address || "No billing address saved"}</p>
-        </section>
-        <section>
-          <h3 className="font-serif text-xl font-semibold">From</h3>
-          <p className="mt-3 font-semibold leading-6">{businessInvoiceDetails.legalName}<br />{businessInvoiceDetails.address}</p>
-        </section>
-      </div>
-
-      <p className="mt-14 text-sm font-semibold">Your invoice from Jeroen & Paws</p>
-      <h3 className="mt-8 font-serif text-xl font-semibold">Items</h3>
-      <div className="mt-4 overflow-x-auto">
-        <table className="w-full min-w-[640px] text-sm">
-          <thead>
-            <tr className="border-b-2 border-[#151124] text-left">
-              <th className="py-2">Name / description</th>
-              <th className="py-2 text-right">Price</th>
-              <th className="py-2 text-right">Quantity</th>
-              <th className="py-2 text-right">Tax rate</th>
-              <th className="py-2 text-right">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lineItems.map((item, index) => (
-              <tr key={`${item.description}-${index}`} className="border-b border-[#151124]/40 font-semibold">
-                <td className="py-3">{item.description}</td>
-                <td className="py-3 text-right">{formatMoney(item.unitAmountCents, invoice.currency)}</td>
-                <td className="py-3 text-right">{item.quantity}</td>
-                <td className="py-3 text-right">-</td>
-                <td className="py-3 text-right">{formatMoney(Math.round(item.quantity * item.unitAmountCents), invoice.currency)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <dl className="ml-auto mt-10 grid max-w-sm grid-cols-[1fr_auto] gap-x-10 gap-y-3 border-[#151124] text-sm font-semibold">
-        <dt>Subtotal</dt><dd>{formatMoney(subtotalCents, invoice.currency)}</dd>
-        <dt className="border-t border-[#151124] pt-3">Total</dt><dd className="border-t border-[#151124] pt-3">{formatMoney(subtotalCents, invoice.currency)}</dd>
-        <dt>Amount paid</dt><dd>{formatMoney(paidCents, invoice.currency)}</dd>
-        <dt className="border-t border-[#151124] pt-3">Balance Due</dt><dd className="border-t border-[#151124] pt-3">{formatMoney(balanceDueCents, invoice.currency)}</dd>
-      </dl>
-    </Card>
-  );
-}
-
 function StatusPill({ status }: { status: string }) {
   const styles = status === "Paid" ? "bg-green-100 text-green-700" : status === "Pending" ? "bg-orange-100 text-orange-700" : status === "Draft" ? "bg-slate-100 text-slate-700" : "bg-rose-100 text-rose-700";
   return <span className={`rounded-md px-3 py-1 text-xs font-semibold ${styles}`}>{status}</span>;
@@ -201,6 +106,10 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
   const [clientAddress, setClientAddress] = useState("");
   const [dogNames, setDogNames] = useState("");
   const [draftLineItems, setDraftLineItems] = useState<DraftLineItem[]>([{ description: "", quantity: "1", unitAmount: "" }]);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
+  const [invoiceQuery, setInvoiceQuery] = useState("");
+  const [invoiceStatusFilter, setInvoiceStatusFilter] = useState<"all" | "overdue" | "pending" | "paid">("all");
+  const [invoiceWeekFilter, setInvoiceWeekFilter] = useState("all");
   const fallback = useMemo<BackendInvoice[]>(() => [], []);
   const realtimeTables = useMemo(() => ["portal_invoices"], []);
   const noopMap = useCallback(() => [], []);
@@ -274,7 +183,16 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
   const pendingAmount = pendingInvoices.reduce((sum, invoice) => sum + invoice.amountCents, 0);
   const overdueAmount = overdueInvoices.reduce((sum, invoice) => sum + invoice.amountCents, 0);
   const currency = invoices[0]?.currency ?? "EUR";
-  const latestInvoice = invoices[0];
+  const weekOptions = Array.from(new Set(invoices.map((invoice) => invoice.issuedOn?.slice(0, 10)).filter(Boolean) as string[]));
+  const filteredInvoices = invoices.filter((invoice) => {
+    const needle = invoiceQuery.trim().toLowerCase();
+    const statusGroup = invoice.status === "overdue" ? "overdue" : invoice.status === "paid" ? "paid" : "pending";
+    const matchesSearch = !needle || [invoice.number, invoice.client, invoice.email, invoice.dogs].some((value) => value.toLowerCase().includes(needle));
+    const matchesStatus = invoiceStatusFilter === "all" || statusGroup === invoiceStatusFilter;
+    const matchesWeek = invoiceWeekFilter === "all" || invoice.issuedOn?.slice(0, 10) === invoiceWeekFilter;
+    return matchesSearch && matchesStatus && matchesWeek;
+  });
+  const latestInvoice = invoices.find((invoice) => invoice.id === selectedInvoiceId) ?? invoices[0];
   const invoiceStats = [
     { label: "Total Invoices", value: invoices.length.toString(), helper: `${formatMoney(totalAmount, currency)} billed`, tone: "purple", icon: FileText },
     { label: "Paid Invoices", value: paidInvoices.length.toString(), helper: `${formatMoney(paidAmount, currency)} collected`, tone: "green", icon: Check },
@@ -385,10 +303,6 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
         </Card>
       )}
 
-      <div className="mt-8">
-        <InvoiceDocumentPreview invoice={latestInvoice} />
-      </div>
-
       <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {invoiceStats.map(({ label, value, helper, tone, icon: Icon }) => (
           <Card key={label} className="p-6">
@@ -400,18 +314,18 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
       <div className="mt-6 grid gap-5 2xl:grid-cols-[1fr_20rem]">
         <Card className="overflow-hidden">
           <div className="flex flex-col gap-4 border-b border-[#151124]/10 p-5 xl:flex-row xl:items-center xl:justify-between">
-            <label className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-[#151124]/10 px-4 py-3 text-sm text-[#858093] xl:max-w-lg"><Search className="size-5" /><input className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Search invoices by number, client or dog..." /></label>
-            <div className="flex flex-wrap gap-3"><button className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm">All Statuses <ChevronDown className="ml-8 inline size-4" /></button><button className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm">All Clients <ChevronDown className="ml-8 inline size-4" /></button><button className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm">May 20 – May 26, 2024 <CalendarDays className="ml-5 inline size-4" /></button><button className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm"><Filter className="mr-2 inline size-4" />Filters</button></div>
+            <label className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-[#151124]/10 px-4 py-3 text-sm text-[#858093] xl:max-w-lg"><Search className="size-5" /><input value={invoiceQuery} onChange={(event) => setInvoiceQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Search invoices by number, client or dog..." /></label>
+            <div className="flex flex-wrap gap-3"><label className="relative"><select value={invoiceStatusFilter} onChange={(event) => setInvoiceStatusFilter(event.target.value as "all" | "overdue" | "pending" | "paid")} className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 text-sm"><option value="all">All Statuses</option><option value="overdue">Overdue</option><option value="pending">Pending</option><option value="paid">Paid</option></select><ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" /></label><label className="relative"><select value={invoiceWeekFilter} onChange={(event) => setInvoiceWeekFilter(event.target.value)} className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 text-sm"><option value="all">All weeks</option>{weekOptions.map((week) => <option key={week} value={week}>{formatDate(week)}</option>)}</select><CalendarDays className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" /></label><button onClick={() => { setInvoiceQuery(""); setInvoiceStatusFilter("all"); setInvoiceWeekFilter("all"); }} className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm"><Filter className="mr-2 inline size-4" />Reset</button></div>
           </div>
-          <div className="overflow-x-auto"><table className="w-full min-w-[1030px] text-left text-sm"><thead className="bg-[#fbf9fd] text-xs font-semibold text-[#4f2c91]"><tr>{["Invoice # ↕", "Client", "Dog(s)", "Date", "Due Date", "Amount", "Status", "Actions"].map((h)=><th key={h} className="px-6 py-4">{h}</th>)}</tr></thead><tbody className="divide-y divide-[#151124]/10">{invoices.map((invoice)=><tr key={invoice.id} className="bg-white"><td className="px-6 py-4"><p className="font-semibold">{invoice.number}</p><p className="mt-1 text-[#6d667a]">Ref: {invoice.paymentReference || invoice.number}</p></td><td className="px-6 py-4"><div className="flex items-center gap-4"><div className="grid size-11 place-items-center rounded-full bg-[#efe8ff] font-serif text-[#4f2c91]">{invoice.client.charAt(0)}</div><div><p className="font-semibold">{invoice.client}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.email || "No email"}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.isClientLinked ? "Linked client" : "Unmatched invoice"}</p></div></div></td><td className="px-6 py-4"><div className="flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" />{invoice.dogs}</div></td><td className="px-6 py-4">{formatDate(invoice.issuedOn)}</td><td className="px-6 py-4">{formatDate(invoice.dueOn)}</td><td className="px-6 py-4 font-semibold">{formatMoney(invoice.amountCents, invoice.currency)}</td><td className="px-6 py-4"><StatusPill status={displayStatus(invoice.status)} /></td><td className="px-6 py-4"><div className="flex gap-3"><button aria-label={`View ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f2c91]"><Eye className="size-5" /></button><button aria-label={`Actions for ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button></div></td></tr>)}</tbody></table></div>
-          <div className="flex flex-col gap-4 border-t border-[#151124]/10 p-5 text-sm text-[#6d667a] sm:flex-row sm:items-center sm:justify-between"><p>Showing {invoices.length ? `1 to ${invoices.length} of ${invoices.length}` : "0"} invoices</p><div className="flex gap-2">{["‹", "1", "2", "3", "...", "16", "›"].map((p)=><button key={p} className={`grid size-9 place-items-center rounded-md border border-[#151124]/10 ${p === "1" ? "border-[#5b2aa0] text-[#5b2aa0]" : "text-[#4f4863]"}`}>{p}</button>)}</div></div>
+          <div className="overflow-x-auto"><table className="w-full min-w-[1030px] text-left text-sm"><thead className="bg-[#fbf9fd] text-xs font-semibold text-[#4f2c91]"><tr>{["Invoice # ↕", "Client", "Dog(s)", "Date", "Due Date", "Amount", "Status", "Actions"].map((h)=><th key={h} className="px-6 py-4">{h}</th>)}</tr></thead><tbody className="divide-y divide-[#151124]/10">{filteredInvoices.map((invoice)=><tr key={invoice.id} onClick={() => setSelectedInvoiceId(invoice.id)} className={`cursor-pointer ${latestInvoice?.id === invoice.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}><td className="px-6 py-4"><p className="font-semibold">{invoice.number}</p><p className="mt-1 text-[#6d667a]">Ref: {invoice.paymentReference || invoice.number}</p></td><td className="px-6 py-4"><div className="flex items-center gap-4"><div className="grid size-11 place-items-center rounded-full bg-[#efe8ff] font-serif text-[#4f2c91]">{invoice.client.charAt(0)}</div><div><p className="font-semibold">{invoice.client}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.email || "No email"}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.isClientLinked ? "Linked client" : "Unmatched invoice"}</p></div></div></td><td className="px-6 py-4"><div className="flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" />{invoice.dogs}</div></td><td className="px-6 py-4">{formatDate(invoice.issuedOn)}</td><td className="px-6 py-4">{formatDate(invoice.dueOn)}</td><td className="px-6 py-4 font-semibold">{formatMoney(invoice.amountCents, invoice.currency)}</td><td className="px-6 py-4"><StatusPill status={displayStatus(invoice.status)} /></td><td className="px-6 py-4"><div className="flex gap-3"><button onClick={() => setSelectedInvoiceId(invoice.id)} aria-label={`View ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f2c91]"><Eye className="size-5" /></button><button aria-label={`Actions for ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button></div></td></tr>)}</tbody></table></div>
+          <div className="flex flex-col gap-4 border-t border-[#151124]/10 p-5 text-sm text-[#6d667a] sm:flex-row sm:items-center sm:justify-between"><p>Showing {filteredInvoices.length ? `1 to ${filteredInvoices.length} of ${invoices.length}` : "0"} invoices</p>{invoices.length >= 10 && <div className="flex gap-2">{["‹", "1", "2", "3", "...", "16", "›"].map((p)=><button key={p} className={`grid size-9 place-items-center rounded-md border border-[#151124]/10 ${p === "1" ? "border-[#5b2aa0] text-[#5b2aa0]" : "text-[#4f4863]"}`}>{p}</button>)}</div>}</div>
         </Card>
 
         <aside className="space-y-5">
-          <Card className="p-5"><h2 className="font-serif text-xl">Invoice Summary</h2><div className="mt-6 flex items-center gap-5"><div className="grid size-28 place-items-center rounded-full bg-[conic-gradient(#4f2c91_0_68%,#22c55e_68%_82%,#f59e0b_82%_96%,#f43f5e_96%_100%)]"><div className="grid size-16 place-items-center rounded-full bg-white text-center text-xs"><span>Total<br /><strong>€12,140.00</strong></span></div></div><div className="space-y-3 text-xs"><p><span className="mr-2 inline-block size-2 rounded-full bg-green-500" />Paid<br /><span className="text-[#6d667a]">€8,340.00 (68%)</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-orange-500" />Pending<br /><span className="text-[#6d667a]">€2,180.00 (18%)</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-rose-500" />Overdue<br /><span className="text-[#6d667a]">€1,620.00 (14%)</span></p></div></div></Card>
+          <Card className="p-5"><h2 className="font-serif text-xl">Invoice Summary</h2><div className="mt-6 flex items-center gap-5"><div className="grid size-28 place-items-center rounded-full bg-[#f0e9fb]"><div className="grid size-16 place-items-center rounded-full bg-white text-center text-xs"><span>Total<br /><strong>{formatMoney(totalAmount, currency)}</strong></span></div></div><div className="space-y-3 text-xs"><p><span className="mr-2 inline-block size-2 rounded-full bg-rose-500" />Overdue<br /><span className="text-[#6d667a]">{formatMoney(overdueAmount, currency)}</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-orange-500" />Pending<br /><span className="text-[#6d667a]">{formatMoney(pendingAmount, currency)}</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-green-500" />Paid<br /><span className="text-[#6d667a]">{formatMoney(paidAmount, currency)}</span></p></div></div></Card>
           <Card className="p-5"><h2 className="font-serif text-xl">Invoice Details</h2><div className="mt-5 flex items-center justify-between"><p className="font-serif text-xl">{latestInvoice?.number ?? "No invoice"}</p><StatusPill status={latestInvoice ? displayStatus(latestInvoice.status) : "Pending"} /></div><dl className="mt-5 space-y-4 text-sm"><div className="flex justify-between"><dt className="text-[#6d667a]">Issued On</dt><dd>{formatDate(latestInvoice?.issuedOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Due Date</dt><dd>{formatDate(latestInvoice?.dueOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Amount</dt><dd>{latestInvoice ? formatMoney(latestInvoice.amountCents, latestInvoice.currency) : "—"}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Paid On</dt><dd>{formatDate(latestInvoice?.paidOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Payment Method</dt><dd>{latestInvoice?.revolutTransactionId ? "Revolut bank transfer" : "Awaiting Revolut match"}</dd></div></dl><button className="mt-5 w-full rounded-lg border border-[#5b2aa0]/15 bg-[#f4efff] px-4 py-3 text-sm font-semibold text-[#5b2aa0]"><Download className="mr-2 inline size-4" />Download PDF</button></Card>
-          <Card className="p-5"><h2 className="font-serif text-lg">Client</h2><div className="mt-4 flex items-center gap-3"><Image src="/images/dogs/Johnny/Johnny.jpeg" alt="Sarah Johnson" width={48} height={48} className="size-12 rounded-full object-cover" /><div><p className="font-semibold">Sarah Johnson</p><p className="text-xs text-[#6d667a]">sarah.j@email.com<br />+353 87 123 4567</p></div></div><button className="mt-5 w-full rounded-lg border border-[#5b2aa0]/15 bg-[#f4efff] px-4 py-3 text-sm font-semibold text-[#5b2aa0]">View Client Profile</button></Card>
-          <Card className="p-5"><h2 className="font-serif text-lg">Dog</h2><div className="mt-4 flex items-center gap-3"><Image src="/images/dogs/kaiser.jpg" alt="Max" width={48} height={48} className="size-12 rounded-full object-cover" /><div><p className="font-semibold">Max</p><p className="text-xs text-[#6d667a]">Golden Retriever</p></div></div><button className="mt-5 w-full rounded-lg border border-[#5b2aa0]/15 bg-[#f4efff] px-4 py-3 text-sm font-semibold text-[#5b2aa0]">View Dog Profile</button></Card>
+          <Card className="p-5"><h2 className="font-serif text-lg">Client</h2><div className="mt-4"><p className="font-semibold">{latestInvoice?.client ?? "No client"}</p><p className="text-xs text-[#6d667a]">{latestInvoice?.email || "No email"}<br />{latestInvoice?.address || "No address"}</p></div></Card>
+          <Card className="p-5"><h2 className="font-serif text-lg">Dog(s)</h2><div className="mt-4 flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" /><div><p className="font-semibold">{latestInvoice?.dogs ?? "No dogs"}</p><p className="text-xs text-[#6d667a]">From selected invoice</p></div></div></Card>
         </aside>
       </div>
     </div>

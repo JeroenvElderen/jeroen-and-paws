@@ -79,7 +79,7 @@ function EventCard({ booking }: { booking: CalendarBooking }) {
   );
 }
 
-export function BackendCalendar() {
+export function BackendCalendar({ accessToken }: { accessToken?: string }) {
   const [isFallback, setIsFallback] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [visibleDate, setVisibleDate] = useState(() => startOfWeek(new Date()));
@@ -88,11 +88,11 @@ export function BackendCalendar() {
   const fallback = useMemo(() => fallbackBookings, []);
   const mapFallbackBookings = useCallback(() => fallbackBookings, []);
   const loadBookings = useCallback(async () => {
-    const response = await fetch("/api/bookings?scope=admin", { cache: "no-store" });
+    const response = await fetch("/api/bookings?scope=admin", { cache: "no-store", headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined });
     const payload = (await response.json()) as BookingResponse;
     setIsFallback(payload.isFallback || payload.bookings.length === 0);
     return payload.bookings.length ? payload.bookings : fallbackBookings;
-  }, []);
+  }, [accessToken]);
   const { data: bookings, isLoading, error } = useSupabaseLiveQuery({
     fallback,
     path: "/api/bookings?scope=admin",

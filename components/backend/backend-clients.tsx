@@ -3,7 +3,6 @@
 import {
   CalendarDays,
   ChevronDown,
-  ChevronRight,
   Edit3,
   Filter,
   Mail,
@@ -78,6 +77,12 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
   const [selectedClientId, setSelectedClientId] = useState(fallbackClients[0]?.id ?? "");
   const [isLoadingClients, setIsLoadingClients] = useState(true);
   const [clientError, setClientError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [clientTypeFilter, setClientTypeFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState<"Overview" | "Dogs" | "Bookings" | "Notes">("Overview");
+  const [isEditingClient, setIsEditingClient] = useState(false);
+  const [openActionId, setOpenActionId] = useState<string | null>(null);
 
   const loadClients = useCallback(async () => {
     try {
@@ -135,7 +140,15 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
     };
   }, [accessToken, loadClients]);
 
+  const filteredClients = useMemo(() => clientRows.filter((client) => {
+    const needle = query.trim().toLowerCase();
+    const matchesSearch = !needle || [client.name, client.email, client.phone, client.dogNames].some((value) => value.toLowerCase().includes(needle));
+    const matchesStatus = statusFilter === "all" || client.status.toLowerCase() === statusFilter;
+    const matchesType = clientTypeFilter === "all" || (clientTypeFilter === "returning" ? client.bookings > 1 : clientTypeFilter === "new" ? Boolean(client.joinedDate && new Date(client.joinedDate).getMonth() === new Date().getMonth()) : true);
+    return matchesSearch && matchesStatus && matchesType;
+  }), [clientRows, clientTypeFilter, query, statusFilter]);
   const selectedClient = useMemo(() => clientRows.find((client) => client.id === selectedClientId) ?? clientRows[0] ?? null, [clientRows, selectedClientId]);
+  function updateClientStatus(client: BackendClient, status: string) { setClientRows((rows) => rows.map((row) => row.id === client.id ? { ...row, status } : row)); setOpenActionId(null); void fetch("/api/clients", { method: "PATCH", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ id: client.id, status: status.toLowerCase() }) }); }
   const activeClients = clientRows.filter((client) => client.status === "Active").length;
   const returningClients = clientRows.filter((client) => client.bookings > 1).length;
   const newClients = clientRows.filter((client) => client.joinedDate && new Date(client.joinedDate).getMonth() === new Date().getMonth() && new Date(client.joinedDate).getFullYear() === new Date().getFullYear()).length;
@@ -162,14 +175,14 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
       <div className="mt-6 grid gap-6 2xl:grid-cols-[minmax(0,1fr)_23rem]">
         <Card className="overflow-hidden">
           <div className="flex flex-col gap-4 border-b border-[#151124]/10 p-5 lg:flex-row lg:items-center lg:justify-between">
-            <label className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-[#151124]/10 px-4 py-3 text-sm text-[#858093] lg:max-w-md"><Search className="size-5" /><input className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Search clients by name, email, or phone..." /></label>
-            <div className="flex flex-wrap gap-3"><button className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm">All Statuses <ChevronDown className="ml-8 inline size-4" /></button><button className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm">All Clients <ChevronDown className="ml-8 inline size-4" /></button><button className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm"><Filter className="mr-2 inline size-4" />Filters</button></div>
+            <label className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-[#151124]/10 px-4 py-3 text-sm text-[#858093] lg:max-w-md"><Search className="size-5" /><input value={query} onChange={(event) => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Search clients by name, email, or phone..." /></label>
+            <div className="flex flex-wrap gap-3"><label className="relative"><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 text-sm"><option value="all">All Statuses</option><option value="active">Active</option><option value="confirmed">Confirmed</option><option value="inactive">Inactive</option></select><ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" /></label><label className="relative"><select value={clientTypeFilter} onChange={(event) => setClientTypeFilter(event.target.value)} className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 text-sm"><option value="all">All Clients</option><option value="new">New clients</option><option value="returning">Returning clients</option></select><ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" /></label><button onClick={() => { setQuery(""); setStatusFilter("all"); setClientTypeFilter("all"); }} className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm"><Filter className="mr-2 inline size-4" />Reset</button></div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[920px] text-left text-sm">
               <thead className="bg-[#fbf9fd] text-xs font-semibold text-[#4f2c91]"><tr>{["Client ↑", "Contact", "Dogs", "Bookings", "Total Spent", "Last Booking", "Status", ""].map((heading) => <th key={heading} className="px-6 py-4">{heading}</th>)}</tr></thead>
               <tbody className="divide-y divide-[#151124]/10">
-                {clientRows.map((client) => (
+                {filteredClients.map((client) => (
                   <tr key={client.id} onClick={() => setSelectedClientId(client.id)} className={`cursor-pointer align-middle transition ${selectedClient?.id === client.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}>
                     <td className="px-6 py-4"><div className="flex items-center gap-4"><SupabaseAvatar src={client.image} alt={`${client.name} avatar`} width={42} height={42} className="size-11 rounded-full object-cover" /><p className="font-semibold">{client.name}</p></div></td>
                     <td className="px-6 py-4 text-[#4f4863]"><p>{client.email}</p><p className="mt-1">{client.phone}</p></td>
@@ -178,14 +191,14 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
                     <td className="px-6 py-4">{client.spent}</td>
                     <td className="px-6 py-4"><p>{formatDisplayDate(client.lastBookingDate)}</p><p className="mt-1 text-[#6d667a]">{client.service}</p></td>
                     <td className="px-6 py-4"><span className={`rounded-md px-3 py-1 text-xs font-medium ${client.status === "Active" ? "bg-green-100 text-green-700" : "bg-slate-200 text-slate-600"}`}>{client.status}</span></td>
-                    <td className="px-6 py-4"><button aria-label={`Actions for ${client.name}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button></td>
+                    <td className="relative px-6 py-4"><button aria-label={`Actions for ${client.name}`} onClick={(event) => { event.stopPropagation(); setOpenActionId((current) => current === client.id ? null : client.id); }} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button>{openActionId === client.id && <div className="absolute right-6 z-20 mt-2 w-44 rounded-xl border border-[#151124]/10 bg-white p-2 shadow-xl"><button onClick={() => updateClientStatus(client, "Active")} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set active</button><button onClick={() => updateClientStatus(client, "Confirmed")} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set confirmed</button><button onClick={() => updateClientStatus(client, "Inactive")} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Set inactive</button></div>}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div className="flex flex-col gap-4 border-t border-[#151124]/10 p-5 text-sm text-[#6d667a] sm:flex-row sm:items-center sm:justify-between">
-            <p>{isLoadingClients ? "Loading live clients…" : `Showing 1 to ${clientRows.length} of ${clientRows.length} clients`}{clientError ? ` · ${clientError}` : ""}</p><div className="flex gap-2">{["←", "1", "2", "3", "...", "6", "→"].map((page) => <button key={page} className={`grid size-9 place-items-center rounded-md border border-[#151124]/10 ${page === "1" ? "border-[#5b2aa0] text-[#5b2aa0]" : "text-[#4f4863]"}`}>{page}</button>)}</div>
+            <p>{isLoadingClients ? "Loading live clients…" : `Showing ${filteredClients.length ? 1 : 0} to ${filteredClients.length} of ${clientRows.length} clients`}{clientError ? ` · ${clientError}` : ""}</p>{clientRows.length >= 10 && <div className="flex gap-2">{["←", "1", "2", "3", "...", "6", "→"].map((page) => <button key={page} className={`grid size-9 place-items-center rounded-md border border-[#151124]/10 ${page === "1" ? "border-[#5b2aa0] text-[#5b2aa0]" : "text-[#4f4863]"}`}>{page}</button>)}</div>}
           </div>
         </Card>
 
@@ -194,10 +207,10 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
             <>
               <Card className="overflow-hidden">
                 <div className="flex items-start gap-4 p-5"><SupabaseAvatar src={selectedClient.image} alt={`${selectedClient.name} profile`} width={64} height={64} className="size-16 rounded-full object-cover" /><div className="min-w-0 flex-1"><h2 className="font-serif text-xl">{selectedClient.name}</h2><span className="mt-2 inline-block rounded-md bg-green-100 px-3 py-1 text-xs font-medium text-green-700">{selectedClient.status} Client</span><p className="mt-3 text-sm text-[#6d667a]">{selectedClient.email}</p><p className="mt-1 text-sm text-[#6d667a]">{selectedClient.phone}</p></div><button aria-label="Close client details"><X className="size-5 text-[#3c246c]" /></button></div>
-                <div className="grid grid-cols-4 border-y border-[#151124]/10 text-center text-xs font-semibold text-[#4f4863]"><button className="border-b-2 border-[#5b2aa0] py-3 text-[#5b2aa0]">Overview</button><button>Dogs</button><button>Bookings</button><button>Notes</button></div>
-                <div className="space-y-6 p-5 text-sm"><div className="flex items-center justify-between"><h3 className="font-semibold">Client Information</h3><button className="font-semibold text-[#5b2aa0]"><Edit3 className="mr-1 inline size-4" />Edit</button></div><InfoRow icon={MapPin} label="Address" value={selectedClient.address} /><InfoRow icon={CalendarDays} label="Joined" value={formatDisplayDate(selectedClient.joinedDate)} /><InfoRow icon={Mail} label="Preferred Contact" value="Email" /><InfoRow icon={PawPrint} label="Dogs" value={selectedClient.dogNames} /><InfoRow icon={StickyNote} label="Notes" value={selectedClient.notes} /></div>
+                <div className="grid grid-cols-4 border-y border-[#151124]/10 text-center text-xs font-semibold text-[#4f4863]">{(["Overview", "Dogs", "Bookings", "Notes"] as const).map((tab) => <button key={tab} onClick={() => setActiveTab(tab)} className={`${activeTab === tab ? "border-b-2 border-[#5b2aa0] text-[#5b2aa0]" : ""} py-3`}>{tab}</button>)}</div>
+                <div className="space-y-6 p-5 text-sm"><div className="flex items-center justify-between"><h3 className="font-semibold">Client Information</h3><button onClick={() => setIsEditingClient((value) => !value)} className="font-semibold text-[#5b2aa0]"><Edit3 className="mr-1 inline size-4" />Edit</button></div>{isEditingClient ? <div className="grid gap-3"><input defaultValue={selectedClient.name} onBlur={(event) => setClientRows((rows) => rows.map((client) => client.id === selectedClient.id ? { ...client, name: event.target.value } : client))} className="rounded-lg border px-3 py-2" /><input defaultValue={selectedClient.email} onBlur={(event) => setClientRows((rows) => rows.map((client) => client.id === selectedClient.id ? { ...client, email: event.target.value } : client))} className="rounded-lg border px-3 py-2" /><input defaultValue={selectedClient.phone} onBlur={(event) => setClientRows((rows) => rows.map((client) => client.id === selectedClient.id ? { ...client, phone: event.target.value } : client))} className="rounded-lg border px-3 py-2" /></div> : activeTab === "Overview" ? <><InfoRow icon={MapPin} label="Address" value={selectedClient.address} /><InfoRow icon={CalendarDays} label="Joined" value={formatDisplayDate(selectedClient.joinedDate)} /><InfoRow icon={Mail} label="Preferred Contact" value="Email" /></> : activeTab === "Dogs" ? <InfoRow icon={PawPrint} label="Dogs" value={selectedClient.dogNames} /> : activeTab === "Bookings" ? <><InfoRow icon={CalendarDays} label="Bookings" value={String(selectedClient.bookings)} /><InfoRow icon={CalendarDays} label="Last Booking" value={`${formatDisplayDate(selectedClient.lastBookingDate)}\n${selectedClient.service}`} /></> : <InfoRow icon={StickyNote} label="Notes" value={selectedClient.notes} />}</div>
               </Card>
-              <Card className="p-5"><h3 className="font-semibold">Summary</h3><div className="mt-5 space-y-5 text-sm"><InfoRow icon={CalendarDays} label="Total Bookings" value={String(selectedClient.bookings)} /><InfoRow icon={RefreshCw} label="Total Spent" value={selectedClient.spent} /><InfoRow icon={CalendarDays} label="Last Booking" value={`${formatDisplayDate(selectedClient.lastBookingDate)}\n${selectedClient.service}`} /></div><button className="mt-6 w-full rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25">View Full Profile <ChevronRight className="ml-2 inline size-4" /></button></Card>
+              <Card className="p-5"><h3 className="font-semibold">Summary</h3><div className="mt-5 space-y-5 text-sm"><InfoRow icon={CalendarDays} label="Total Bookings" value={String(selectedClient.bookings)} /><InfoRow icon={RefreshCw} label="Total Spent" value={selectedClient.spent} /><InfoRow icon={CalendarDays} label="Last Booking" value={`${formatDisplayDate(selectedClient.lastBookingDate)}\n${selectedClient.service}`} /></div></Card>
             </>
           ) : (
             <Card className="grid min-h-80 place-items-center p-8 text-center text-sm text-[#6d667a]">No live clients found in Supabase yet.</Card>

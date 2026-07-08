@@ -134,3 +134,25 @@ export async function GET(request: Request) {
     });
   }
 }
+
+export async function PATCH(request: Request) {
+  const adminAccessToken = await getVerifiedBackendAdminToken(request);
+  if (!adminAccessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const payload = (await request.json().catch(() => null)) as Record<string, unknown> | null;
+  if (!payload || typeof payload.id !== "string") return NextResponse.json({ error: "Client id is required." }, { status: 400 });
+
+  const updates: Record<string, unknown> = {};
+  if (typeof payload.name === "string") updates.full_name = payload.name.trim();
+  if (typeof payload.email === "string") updates.email = payload.email.trim();
+  if (typeof payload.phone === "string") updates.phone = payload.phone.trim();
+  if (typeof payload.address === "string") updates.address = payload.address.trim();
+  if (typeof payload.status === "string") updates.status = payload.status.trim().toLowerCase();
+
+  if (!Object.keys(updates).length) return NextResponse.json({ error: "No valid client updates supplied." }, { status: 400 });
+
+  const { data, error } = await supabaseAdmin.from("portal_clients").update(updates).eq("id", payload.id).select("*").single();
+  if (error) return NextResponse.json({ error: error.message }, { status: 502 });
+
+  return NextResponse.json({ client: data });
+}
