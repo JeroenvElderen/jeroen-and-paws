@@ -355,7 +355,7 @@ export function BackendDashboard() {
   }
 
   const ActiveContent = (() => {
-    if (activeView === "dashboard") return <BackendDashboardOverview />;
+    if (activeView === "dashboard") return <BackendDashboardOverview accessToken={backendSession.accessToken} />;
     if (activeView === "bookings") return <BackendBookings accessToken={backendSession.accessToken} />;
     if (activeView === "services") return <BackendServices accessToken={backendSession.accessToken} />;
     if (activeView === "dogs") return <BackendDogs accessToken={backendSession.accessToken} />;

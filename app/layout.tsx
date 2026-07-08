@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { businessInfo } from "@/components/site/data";
 import { localKeywords } from "@/components/site/seo";
 import { StructuredData } from "@/components/site/structured-data";
+import { PageViewTracker } from "@/components/site/tracking/page-view-tracker";
 
 import "./globals.css";
 
@@ -82,6 +83,7 @@ export default function RootLayout({
           Skip to main content
         </a>
         <StructuredData />
+        <PageViewTracker />
         {children}
       </body>
     </html>
