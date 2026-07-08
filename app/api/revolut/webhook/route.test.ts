@@ -27,11 +27,12 @@ function signedRequest(payload: Record<string, unknown>, signatureOverride?: str
 
 function mockInvoiceLookup(invoice: Record<string, unknown> | null) {
   const maybeSingle = vi.fn().mockResolvedValue({ data: invoice, error: null });
-  const eq = vi.fn(() => ({ maybeSingle }));
+  const limit = vi.fn(() => ({ maybeSingle }));
+  const eq = vi.fn(() => ({ limit, maybeSingle }));
   const select = vi.fn(() => ({ eq }));
   vi.mocked(supabaseAdmin.from).mockReturnValueOnce({ select } as never);
 
-  return { select, eq, maybeSingle };
+  return { select, eq, limit, maybeSingle };
 }
 
 function mockInvoiceUpdate() {
@@ -82,5 +83,18 @@ describe("POST /api/revolut/webhook", () => {
     expect(response.status).toBe(200);
     expect(body).toMatchObject({ matched: true, duplicate: true, invoiceId: "invoice-1" });
     expect(supabaseAdmin.from).toHaveBeenCalledTimes(1);
+  });
+
+  it("matches the invoice reference from nested Revolut webhook payloads", async () => {
+    mockInvoiceLookup(null);
+    mockInvoiceLookup({ id: "invoice-2", status: "pending", invoice_number: "INV-2", payment_reference: "INV-2" });
+    const update = mockInvoiceUpdate();
+
+    const response = await POST(signedRequest({ event: "ORDER_COMPLETED", data: { order: { id: "order-2", merchant_order_data: { reference: "INV-2" } } } }));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({ matched: true, updated: true, invoiceId: "invoice-2", matchType: "reference" });
+    expect(update.eq).toHaveBeenCalledWith("id", "invoice-2");
   });
 });

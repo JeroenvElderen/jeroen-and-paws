@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getRevolutWebhookOrderId, type RevolutWebhookPayload, verifyRevolutWebhookSignature } from "@/utils/revolut/webhook";
+import { getRevolutWebhookOrderId, getRevolutWebhookReference, type RevolutWebhookPayload, verifyRevolutWebhookSignature } from "@/utils/revolut/webhook";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
@@ -36,7 +36,7 @@ async function findInvoice(payload: RevolutWebhookPayload) {
     if (data) return { invoice: data as InvoiceWebhookMatchRow, matchType: "revolut_order_id" };
   }
 
-  const reference = cleanString(payload.merchant_order_ext_ref || payload.reference);
+  const reference = getRevolutWebhookReference(payload);
   if (!reference) return { invoice: null, matchType: null };
 
   const { data: invoiceData, error: invoiceError } = await supabaseAdmin
