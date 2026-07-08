@@ -124,6 +124,9 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
   const [invoiceQuery, setInvoiceQuery] = useState("");
   const [invoiceStatusFilter, setInvoiceStatusFilter] = useState<"all" | "overdue" | "pending" | "paid">("all");
   const [invoiceWeekFilter, setInvoiceWeekFilter] = useState("all");
+  const [editingInvoiceId, setEditingInvoiceId] = useState<string | null>(null);
+  const [openActionId, setOpenActionId] = useState<string | null>(null);
+  const [actionMenuPosition, setActionMenuPosition] = useState<{ top: number; left: number } | null>(null);
   const fallback = useMemo<BackendInvoice[]>(() => [], []);
   const realtimeTables = useMemo(() => ["portal_invoices"], []);
   const noopMap = useCallback(() => [], []);
@@ -224,6 +227,7 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
       amount,
       paymentTitle: invoice.paymentTitle || invoice.number,
       paymentUrl: invoice.paymentUrl,
+      dogNames: invoice.dogs,
     });
 
     return getWhatsappClickToChatUrl(invoice.phone, message);
@@ -252,23 +256,25 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
       dueOn: String(form.get("dueOn") || ""),
       currency: String(form.get("currency") || "EUR"),
       notes: String(form.get("notes") || ""),
+      status: "draft",
       lineItems,
     };
 
     try {
-      const response = await fetch("/api/invoices", {
-        method: "POST",
+      const response = await fetch(editingInvoiceId ? `/api/invoices/${editingInvoiceId}` : "/api/invoices", {
+        method: editingInvoiceId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json", ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
         body: JSON.stringify(payload),
       });
       const result = (await response.json()) as { invoice?: BackendInvoice; clientMatched?: boolean; error?: string; revolut?: { createsRevolutCheckout?: boolean; message?: string } };
       if (!response.ok) throw new Error(result.error || "Invoice creation failed.");
       setCreateMessage([
-        `Created ${result.invoice?.number ?? "invoice"}.`,
+        editingInvoiceId ? `Updated ${result.invoice?.number ?? "invoice"}.` : `Saved ${result.invoice?.number ?? "invoice"} as a draft.`,
+        "Use the three-dot menu to edit, delete, or send it on WhatsApp when ready.",
         result.clientMatched ? "Linked to an existing client." : "Saved without a client link until a matching client exists.",
-        result.revolut?.createsRevolutCheckout === false && result.revolut.message ? result.revolut.message : null,
       ].filter(Boolean).join(" "));
       setDraftLineItems([{ description: "", quantity: "1", unitAmount: "" }]);
+      setEditingInvoiceId(null);
       setShowCreateForm(false);
       await loadInvoices();
     } catch (createError) {
@@ -292,6 +298,56 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
       setIsSyncing(false);
     }
   }
+  function editInvoice(invoice: BackendInvoice) {
+    setEditingInvoiceId(invoice.id);
+    setClientName(invoice.client === "Unmatched client" ? "" : invoice.client);
+    setClientEmail(invoice.email);
+    setClientAddress(invoice.address || "");
+    setClientPhone(invoice.phone || "");
+    setDogNames(invoice.dogs === "—" ? "" : invoice.dogs);
+    setServiceName(invoice.serviceName || "");
+    setDurationMinutes(invoice.durationMinutes ? String(invoice.durationMinutes) : "");
+    setBillingDays(invoice.billingDays ? String(invoice.billingDays) : "");
+    setDraftLineItems(invoice.lineItems?.length ? invoice.lineItems.map((item) => ({ description: item.description, quantity: String(item.quantity), unitAmount: String(item.unitAmountCents / 100) })) : [{ description: "", quantity: "1", unitAmount: "" }]);
+    setShowCreateForm(true);
+    setOpenActionId(null);
+  }
+
+  async function sendInvoice(invoice: BackendInvoice) {
+    setOpenActionId(null);
+    setCreateMessage(`Creating payment link for ${invoice.number}…`);
+    try {
+      const response = await fetch(`/api/invoices/${invoice.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
+        body: JSON.stringify({ action: "send" }),
+      });
+      const result = (await response.json()) as { invoice?: BackendInvoice; error?: string };
+      if (!response.ok || !result.invoice) throw new Error(result.error || "Invoice send failed.");
+      const invoiceWhatsappUrl = getInvoiceWhatsappUrl(result.invoice);
+      if (!invoiceWhatsappUrl) throw new Error("Payment link was created, but this invoice has no client WhatsApp phone.");
+      window.open(invoiceWhatsappUrl, "_blank", "noopener,noreferrer");
+      setCreateMessage(`Created payment link for ${result.invoice.number} and opened WhatsApp.`);
+      await loadInvoices();
+    } catch (sendError) {
+      setCreateMessage(sendError instanceof Error ? sendError.message : "Invoice send failed.");
+    }
+  }
+
+  async function deleteInvoice(invoice: BackendInvoice) {
+    setOpenActionId(null);
+    setCreateMessage(`Deleting ${invoice.number}…`);
+    try {
+      const response = await fetch(`/api/invoices/${invoice.id}`, { method: "DELETE", headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined });
+      const result = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) throw new Error(result.error || "Invoice delete failed.");
+      setCreateMessage(`Deleted ${invoice.number}.`);
+      await loadInvoices();
+    } catch (deleteError) {
+      setCreateMessage(deleteError instanceof Error ? deleteError.message : "Invoice delete failed.");
+    }
+  }
+
   return (
     <div className="p-5 md:p-10">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
@@ -308,7 +364,7 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
         <Card className="mt-6 p-5">
           <form onSubmit={createInvoice} className="grid gap-4 lg:grid-cols-4">
             <div className="lg:col-span-4">
-              <h2 className="font-serif text-xl">Create website invoice</h2>
+              <h2 className="font-serif text-xl">{editingInvoiceId ? "Edit draft invoice" : "Create draft invoice"}</h2>
               <p className="mt-1 text-sm text-[#6d667a]">Invoice data stays in the website first. If the client email or name already exists, the invoice links automatically; otherwise it remains unmatched until a client is added later. When the Merchant API key is configured, this also creates a Revolut checkout link that can be sent to the client by WhatsApp.</p>
             </div>
             <input name="clientName" list="invoice-client-options" value={clientName} onChange={(event) => applyClientOption(event.target.value)} className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Start typing client name" />
@@ -338,8 +394,8 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
               ))}
             </div>
             <textarea name="notes" className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm lg:col-span-4" placeholder="Notes shown in backend" />
-            <button disabled={isCreating} className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white disabled:opacity-60 lg:col-span-2">{isCreating ? "Creating…" : "Save website invoice"}</button>
-            <button type="button" onClick={() => setShowCreateForm(false)} className="rounded-lg border border-[#151124]/10 px-6 py-3 text-sm lg:col-span-2">Cancel</button>
+            <button disabled={isCreating} className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white disabled:opacity-60 lg:col-span-2">{isCreating ? "Saving…" : editingInvoiceId ? "Save invoice changes" : "Save draft invoice"}</button>
+            <button type="button" onClick={() => { setShowCreateForm(false); setEditingInvoiceId(null); }} className="rounded-lg border border-[#151124]/10 px-6 py-3 text-sm lg:col-span-2">Cancel</button>
           </form>
         </Card>
       )}
@@ -358,13 +414,13 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
             <label className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-[#151124]/10 px-4 py-3 text-sm text-[#858093] xl:max-w-lg"><Search className="size-5" /><input value={invoiceQuery} onChange={(event) => setInvoiceQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Search invoices by number, client or dog..." /></label>
             <div className="flex flex-wrap gap-3"><label className="relative"><select value={invoiceStatusFilter} onChange={(event) => setInvoiceStatusFilter(event.target.value as "all" | "overdue" | "pending" | "paid")} className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 text-sm"><option value="all">All Statuses</option><option value="overdue">Overdue</option><option value="pending">Pending</option><option value="paid">Paid</option></select><ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" /></label><label className="relative"><select value={invoiceWeekFilter} onChange={(event) => setInvoiceWeekFilter(event.target.value)} className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 text-sm"><option value="all">All weeks</option>{weekOptions.map((week) => <option key={week} value={week}>{formatDate(week)}</option>)}</select><CalendarDays className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" /></label><button onClick={() => { setInvoiceQuery(""); setInvoiceStatusFilter("all"); setInvoiceWeekFilter("all"); }} className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm"><Filter className="mr-2 inline size-4" />Reset</button></div>
           </div>
-          <div className="overflow-x-auto"><table className="w-full min-w-[1030px] text-left text-sm"><thead className="bg-[#fbf9fd] text-xs font-semibold text-[#4f2c91]"><tr>{["Invoice # ↕", "Client", "Dog(s)", "Date", "Due Date", "Amount", "Status", "Actions"].map((h)=><th key={h} className="px-6 py-4">{h}</th>)}</tr></thead><tbody className="divide-y divide-[#151124]/10">{filteredInvoices.map((invoice)=><tr key={invoice.id} onClick={() => setSelectedInvoiceId(invoice.id)} className={`cursor-pointer ${latestInvoice?.id === invoice.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}><td className="px-6 py-4"><p className="font-semibold">{invoice.number}</p><p className="mt-1 text-[#6d667a]">Ref: {invoice.paymentReference || invoice.number}</p></td><td className="px-6 py-4"><div className="flex items-center gap-4"><div className="grid size-11 place-items-center rounded-full bg-[#efe8ff] font-serif text-[#4f2c91]">{invoice.client.charAt(0)}</div><div><p className="font-semibold">{invoice.client}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.email || "No email"}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.isClientLinked ? "Linked client" : "Unmatched invoice"}</p></div></div></td><td className="px-6 py-4"><div className="flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" />{invoice.dogs}</div></td><td className="px-6 py-4">{formatDate(invoice.issuedOn)}</td><td className="px-6 py-4">{formatDate(invoice.dueOn)}</td><td className="px-6 py-4 font-semibold">{formatMoney(invoice.amountCents, invoice.currency)}</td><td className="px-6 py-4"><StatusPill status={displayStatus(invoice.status)} /></td><td className="px-6 py-4"><div className="flex gap-3"><button onClick={() => setSelectedInvoiceId(invoice.id)} aria-label={`View ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f2c91]"><Eye className="size-5" /></button>{getInvoiceWhatsappUrl(invoice) ? <a href={getInvoiceWhatsappUrl(invoice) || undefined} target="_blank" rel="noreferrer" aria-label={`Send ${invoice.number} payment link on WhatsApp`} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">WhatsApp</a> : <button disabled title={invoice.paymentUrl ? "No client WhatsApp phone saved" : "No Revolut payment link generated"} className="rounded-lg border border-[#151124]/10 px-3 py-2 text-xs text-[#8b8497] disabled:opacity-60">WhatsApp</button>}<button aria-label={`Actions for ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button></div></td></tr>)}</tbody></table></div>
+          <div className="overflow-x-auto"><table className="w-full min-w-[1030px] text-left text-sm"><thead className="bg-[#fbf9fd] text-xs font-semibold text-[#4f2c91]"><tr>{["Invoice # ↕", "Client", "Dog(s)", "Date", "Due Date", "Amount", "Status", "Actions"].map((h)=><th key={h} className="px-6 py-4">{h}</th>)}</tr></thead><tbody className="divide-y divide-[#151124]/10">{filteredInvoices.map((invoice)=><tr key={invoice.id} onClick={() => setSelectedInvoiceId(invoice.id)} className={`cursor-pointer ${latestInvoice?.id === invoice.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}><td className="px-6 py-4"><p className="font-semibold">{invoice.number}</p><p className="mt-1 text-[#6d667a]">Ref: {invoice.paymentReference || invoice.number}</p></td><td className="px-6 py-4"><div className="flex items-center gap-4"><div className="grid size-11 place-items-center rounded-full bg-[#efe8ff] font-serif text-[#4f2c91]">{invoice.client.charAt(0)}</div><div><p className="font-semibold">{invoice.client}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.email || "No email"}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.isClientLinked ? "Linked client" : "Unmatched invoice"}</p></div></div></td><td className="px-6 py-4"><div className="flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" />{invoice.dogs}</div></td><td className="px-6 py-4">{formatDate(invoice.issuedOn)}</td><td className="px-6 py-4">{formatDate(invoice.dueOn)}</td><td className="px-6 py-4 font-semibold">{formatMoney(invoice.amountCents, invoice.currency)}</td><td className="px-6 py-4"><StatusPill status={displayStatus(invoice.status)} /></td><td className="px-6 py-4"><div className="flex gap-3"><button onClick={(event) => { event.stopPropagation(); setSelectedInvoiceId(invoice.id); }} aria-label={`View ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f2c91]"><Eye className="size-5" /></button><button aria-label={`Actions for ${invoice.number}`} onClick={(event) => { event.stopPropagation(); const rect = event.currentTarget.getBoundingClientRect(); setActionMenuPosition({ top: Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - 148)), left: Math.max(12, Math.min(rect.right - 176, window.innerWidth - 188)) }); setOpenActionId((current) => current === invoice.id ? null : invoice.id); }} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button>{openActionId === invoice.id && actionMenuPosition && <div style={{ top: actionMenuPosition.top, left: actionMenuPosition.left }} className="fixed z-50 w-44 rounded-xl border border-[#151124]/10 bg-white p-2 shadow-2xl"><button onClick={(event) => { event.stopPropagation(); editInvoice(invoice); }} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Edit</button><button onClick={(event) => { event.stopPropagation(); sendInvoice(invoice); }} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">Send on WhatsApp</button><button onClick={(event) => { event.stopPropagation(); deleteInvoice(invoice); }} className="block w-full rounded-lg px-3 py-2 text-left text-sm text-rose-600 hover:bg-rose-50">Delete</button></div>}</div></td></tr>)}</tbody></table></div>
           <div className="flex flex-col gap-4 border-t border-[#151124]/10 p-5 text-sm text-[#6d667a] sm:flex-row sm:items-center sm:justify-between"><p>Showing {filteredInvoices.length ? `1 to ${filteredInvoices.length} of ${invoices.length}` : "0"} invoices</p>{invoices.length >= 10 && <div className="flex gap-2">{["‹", "1", "2", "3", "...", "16", "›"].map((p)=><button key={p} className={`grid size-9 place-items-center rounded-md border border-[#151124]/10 ${p === "1" ? "border-[#5b2aa0] text-[#5b2aa0]" : "text-[#4f4863]"}`}>{p}</button>)}</div>}</div>
         </Card>
 
         <aside className="space-y-5">
           <Card className="p-5"><h2 className="font-serif text-xl">Invoice Summary</h2><div className="mt-6 flex items-center gap-5"><div className="grid size-28 place-items-center rounded-full bg-[#f0e9fb]"><div className="grid size-16 place-items-center rounded-full bg-white text-center text-xs"><span>Total<br /><strong>{formatMoney(totalAmount, currency)}</strong></span></div></div><div className="space-y-3 text-xs"><p><span className="mr-2 inline-block size-2 rounded-full bg-rose-500" />Overdue<br /><span className="text-[#6d667a]">{formatMoney(overdueAmount, currency)}</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-orange-500" />Pending<br /><span className="text-[#6d667a]">{formatMoney(pendingAmount, currency)}</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-green-500" />Paid<br /><span className="text-[#6d667a]">{formatMoney(paidAmount, currency)}</span></p></div></div></Card>
-          <Card className="p-5"><h2 className="font-serif text-xl">Invoice Details</h2><div className="mt-5 flex items-center justify-between"><p className="font-serif text-xl">{latestInvoice?.number ?? "No invoice"}</p><StatusPill status={latestInvoice ? displayStatus(latestInvoice.status) : "Pending"} /></div><dl className="mt-5 space-y-4 text-sm"><div className="flex justify-between"><dt className="text-[#6d667a]">Issued On</dt><dd>{formatDate(latestInvoice?.issuedOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Due Date</dt><dd>{formatDate(latestInvoice?.dueOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Amount</dt><dd>{latestInvoice ? formatMoney(latestInvoice.amountCents, latestInvoice.currency) : "—"}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Paid On</dt><dd>{formatDate(latestInvoice?.paidOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Payment Method</dt><dd>{latestInvoice?.revolutTransactionId ? "Revolut bank transfer" : latestInvoice?.paymentUrl ? "Revolut checkout link" : "Awaiting Revolut link"}</dd></div><div className="flex justify-between gap-4"><dt className="text-[#6d667a]">Payment title</dt><dd className="text-right">{latestInvoice?.paymentTitle || "—"}</dd></div></dl>{latestInvoice && getInvoiceWhatsappUrl(latestInvoice) ? <a href={getInvoiceWhatsappUrl(latestInvoice) || undefined} target="_blank" rel="noreferrer" className="mt-5 block w-full rounded-lg bg-emerald-600 px-4 py-3 text-center text-sm font-semibold text-white">Send payment link on WhatsApp</a> : null}<button className="mt-5 w-full rounded-lg border border-[#5b2aa0]/15 bg-[#f4efff] px-4 py-3 text-sm font-semibold text-[#5b2aa0]"><Download className="mr-2 inline size-4" />Download PDF</button></Card>
+          <Card className="p-5"><h2 className="font-serif text-xl">Invoice Details</h2><div className="mt-5 flex items-center justify-between"><p className="font-serif text-xl">{latestInvoice?.number ?? "No invoice"}</p><StatusPill status={latestInvoice ? displayStatus(latestInvoice.status) : "Pending"} /></div><dl className="mt-5 space-y-4 text-sm"><div className="flex justify-between"><dt className="text-[#6d667a]">Issued On</dt><dd>{formatDate(latestInvoice?.issuedOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Due Date</dt><dd>{formatDate(latestInvoice?.dueOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Amount</dt><dd>{latestInvoice ? formatMoney(latestInvoice.amountCents, latestInvoice.currency) : "—"}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Paid On</dt><dd>{formatDate(latestInvoice?.paidOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Payment Method</dt><dd>{latestInvoice?.revolutTransactionId ? "Revolut bank transfer" : latestInvoice?.paymentUrl ? "Revolut checkout link" : "Awaiting Revolut link"}</dd></div><div className="flex justify-between gap-4"><dt className="text-[#6d667a]">Payment title</dt><dd className="text-right">{latestInvoice?.paymentTitle || "—"}</dd></div></dl><button className="mt-5 w-full rounded-lg border border-[#5b2aa0]/15 bg-[#f4efff] px-4 py-3 text-sm font-semibold text-[#5b2aa0]"><Download className="mr-2 inline size-4" />Download PDF</button></Card>
           <Card className="p-5"><h2 className="font-serif text-lg">Client</h2><div className="mt-4"><p className="font-semibold">{latestInvoice?.client ?? "No client"}</p><p className="text-xs text-[#6d667a]">{latestInvoice?.email || "No email"}<br />{latestInvoice?.address || "No address"}</p></div></Card>
           <Card className="p-5"><h2 className="font-serif text-lg">Dog(s)</h2><div className="mt-4 flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" /><div><p className="font-semibold">{latestInvoice?.dogs ?? "No dogs"}</p><p className="text-xs text-[#6d667a]">From selected invoice</p></div></div></Card>
         </aside>
