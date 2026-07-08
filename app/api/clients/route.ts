@@ -4,7 +4,6 @@ import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
-const clientPlaceholderImage = "/images/dogs/kaiser.jpg";
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
 
 const fallbackClients = [
@@ -23,7 +22,7 @@ const fallbackClients = [
     service: "No bookings yet",
     status: "Inactive",
     notes: "Live client data could not be loaded from Supabase.",
-    image: clientPlaceholderImage,
+    image: null,
   },
 ];
 
@@ -61,7 +60,6 @@ function mapClient(row: AdminClientRow) {
   const bookings = row.portal_bookings ?? [];
   const latestBooking = bookings[0];
   const activeBooking = bookings.find((booking) => !["cancelled", "canceled"].includes((booking.status ?? "").toLowerCase()));
-  const fallbackDogImage = dogs.find((dog) => dog.profile_photo_url)?.profile_photo_url;
 
   return {
     id: row.id,
@@ -78,7 +76,7 @@ function mapClient(row: AdminClientRow) {
     service: latestBooking?.service_name?.trim() || "No bookings yet",
     status: formatStatus(activeBooking?.status || (bookings.length ? "active" : "inactive")),
     notes: row.portal_client_activity?.[0]?.body?.trim() || row.portal_client_activity?.[0]?.title?.trim() || "No notes saved yet.",
-    image: row.avatar_url || fallbackDogImage || clientPlaceholderImage,
+    image: row.avatar_url || null,
   };
 }
 

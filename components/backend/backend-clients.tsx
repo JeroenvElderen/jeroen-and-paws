@@ -46,12 +46,10 @@ type BackendClient = {
   service: string;
   status: string;
   notes: string;
-  image: string;
+  image: string | null;
 };
 
-const fallbackClients: BackendClient[] = [
-  { id: "sarah", name: "Sarah Johnson", email: "sarah.j@email.com", phone: "+353 87 123 4567", address: "123 Greenfield Road, Dublin 6, Ireland", dogs: "1 Dog", dogNames: "Max", bookings: 12, spent: "—", joinedDate: "2024-02-10T00:00:00.000Z", lastBookingDate: "2024-05-25T00:00:00.000Z", service: "Dog Walk", status: "Active", notes: "Loves morning walks. Prefers quieter routes.", image: "/images/dogs/Johnny/Johnny.jpeg" },
-];
+const fallbackClients: BackendClient[] = [];
 
 type ClientsApiResponse = {
   clients?: BackendClient[];
@@ -71,6 +69,10 @@ function formatDisplayDate(value: string | null) {
   return new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
 }
 
+function SupabaseAvatar({ alt, className, height, src, width }: { alt: string; className: string; height: number; src: string | null; width: number }) {
+  return src?.trim() ? <Image src={src} alt={alt} width={width} height={height} className={className} /> : <span aria-label={`${alt} has no Supabase image`} className={`${className} grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]`}><PawPrint className="size-5" /></span>;
+}
+
 export function BackendClients({ accessToken }: { accessToken: string }) {
   const [clientRows, setClientRows] = useState<BackendClient[]>(fallbackClients);
   const [selectedClientId, setSelectedClientId] = useState(fallbackClients[0]?.id ?? "");
@@ -82,10 +84,10 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
       const response = await fetch("/api/clients", { cache: "no-store", headers: { Authorization: `Bearer ${accessToken}` } });
       if (!response.ok) throw new Error(`Clients API returned ${response.status}`);
       const payload = (await response.json()) as ClientsApiResponse;
-      const nextClients = payload.clients?.length ? payload.clients : fallbackClients;
+      const nextClients = payload.clients ?? [];
       setClientRows(nextClients);
       setSelectedClientId((current) => nextClients.some((client) => client.id === current) ? current : nextClients[0]?.id ?? "");
-      setClientError(payload.isFallback ? "Showing placeholder clients until Supabase data is available." : null);
+      setClientError(payload.isFallback ? "Supabase returned fallback mode, but placeholder clients are disabled." : null);
     } catch (error) {
       setClientError(error instanceof Error ? error.message : "Unable to load clients.");
     } finally {
@@ -133,7 +135,7 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
     };
   }, [accessToken, loadClients]);
 
-  const selectedClient = useMemo(() => clientRows.find((client) => client.id === selectedClientId) ?? clientRows[0] ?? fallbackClients[0], [clientRows, selectedClientId]);
+  const selectedClient = useMemo(() => clientRows.find((client) => client.id === selectedClientId) ?? clientRows[0] ?? null, [clientRows, selectedClientId]);
   const activeClients = clientRows.filter((client) => client.status === "Active").length;
   const returningClients = clientRows.filter((client) => client.bookings > 1).length;
   const newClients = clientRows.filter((client) => client.joinedDate && new Date(client.joinedDate).getMonth() === new Date().getMonth() && new Date(client.joinedDate).getFullYear() === new Date().getFullYear()).length;
@@ -168,8 +170,8 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
               <thead className="bg-[#fbf9fd] text-xs font-semibold text-[#4f2c91]"><tr>{["Client ↑", "Contact", "Dogs", "Bookings", "Total Spent", "Last Booking", "Status", ""].map((heading) => <th key={heading} className="px-6 py-4">{heading}</th>)}</tr></thead>
               <tbody className="divide-y divide-[#151124]/10">
                 {clientRows.map((client) => (
-                  <tr key={client.id} onClick={() => setSelectedClientId(client.id)} className={`cursor-pointer align-middle transition ${selectedClient.id === client.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}>
-                    <td className="px-6 py-4"><div className="flex items-center gap-4"><Image src={client.image} alt={`${client.name} avatar`} width={42} height={42} className="size-11 rounded-full object-cover" /><p className="font-semibold">{client.name}</p></div></td>
+                  <tr key={client.id} onClick={() => setSelectedClientId(client.id)} className={`cursor-pointer align-middle transition ${selectedClient?.id === client.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}>
+                    <td className="px-6 py-4"><div className="flex items-center gap-4"><SupabaseAvatar src={client.image} alt={`${client.name} avatar`} width={42} height={42} className="size-11 rounded-full object-cover" /><p className="font-semibold">{client.name}</p></div></td>
                     <td className="px-6 py-4 text-[#4f4863]"><p>{client.email}</p><p className="mt-1">{client.phone}</p></td>
                     <td className="px-6 py-4"><span className="inline-flex items-center gap-2"><PawPrint className="size-4 text-[#6c38c2]" />{client.dogs}</span></td>
                     <td className="px-6 py-4">{client.bookings}</td>
@@ -188,12 +190,18 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
         </Card>
 
         <aside className="space-y-5">
-          <Card className="overflow-hidden">
-            <div className="flex items-start gap-4 p-5"><Image src={selectedClient.image} alt={`${selectedClient.name} profile`} width={64} height={64} className="size-16 rounded-full object-cover" /><div className="min-w-0 flex-1"><h2 className="font-serif text-xl">{selectedClient.name}</h2><span className="mt-2 inline-block rounded-md bg-green-100 px-3 py-1 text-xs font-medium text-green-700">{selectedClient.status} Client</span><p className="mt-3 text-sm text-[#6d667a]">{selectedClient.email}</p><p className="mt-1 text-sm text-[#6d667a]">{selectedClient.phone}</p></div><button aria-label="Close client details"><X className="size-5 text-[#3c246c]" /></button></div>
-            <div className="grid grid-cols-4 border-y border-[#151124]/10 text-center text-xs font-semibold text-[#4f4863]"><button className="border-b-2 border-[#5b2aa0] py-3 text-[#5b2aa0]">Overview</button><button>Dogs</button><button>Bookings</button><button>Notes</button></div>
-            <div className="space-y-6 p-5 text-sm"><div className="flex items-center justify-between"><h3 className="font-semibold">Client Information</h3><button className="font-semibold text-[#5b2aa0]"><Edit3 className="mr-1 inline size-4" />Edit</button></div><InfoRow icon={MapPin} label="Address" value={selectedClient.address} /><InfoRow icon={CalendarDays} label="Joined" value={formatDisplayDate(selectedClient.joinedDate)} /><InfoRow icon={Mail} label="Preferred Contact" value="Email" /><InfoRow icon={PawPrint} label="Dogs" value={selectedClient.dogNames} /><InfoRow icon={StickyNote} label="Notes" value={selectedClient.notes} /></div>
-          </Card>
-          <Card className="p-5"><h3 className="font-semibold">Summary</h3><div className="mt-5 space-y-5 text-sm"><InfoRow icon={CalendarDays} label="Total Bookings" value={String(selectedClient.bookings)} /><InfoRow icon={RefreshCw} label="Total Spent" value={selectedClient.spent} /><InfoRow icon={CalendarDays} label="Last Booking" value={`${formatDisplayDate(selectedClient.lastBookingDate)}\n${selectedClient.service}`} /></div><button className="mt-6 w-full rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25">View Full Profile <ChevronRight className="ml-2 inline size-4" /></button></Card>
+          {selectedClient ? (
+            <>
+              <Card className="overflow-hidden">
+                <div className="flex items-start gap-4 p-5"><SupabaseAvatar src={selectedClient.image} alt={`${selectedClient.name} profile`} width={64} height={64} className="size-16 rounded-full object-cover" /><div className="min-w-0 flex-1"><h2 className="font-serif text-xl">{selectedClient.name}</h2><span className="mt-2 inline-block rounded-md bg-green-100 px-3 py-1 text-xs font-medium text-green-700">{selectedClient.status} Client</span><p className="mt-3 text-sm text-[#6d667a]">{selectedClient.email}</p><p className="mt-1 text-sm text-[#6d667a]">{selectedClient.phone}</p></div><button aria-label="Close client details"><X className="size-5 text-[#3c246c]" /></button></div>
+                <div className="grid grid-cols-4 border-y border-[#151124]/10 text-center text-xs font-semibold text-[#4f4863]"><button className="border-b-2 border-[#5b2aa0] py-3 text-[#5b2aa0]">Overview</button><button>Dogs</button><button>Bookings</button><button>Notes</button></div>
+                <div className="space-y-6 p-5 text-sm"><div className="flex items-center justify-between"><h3 className="font-semibold">Client Information</h3><button className="font-semibold text-[#5b2aa0]"><Edit3 className="mr-1 inline size-4" />Edit</button></div><InfoRow icon={MapPin} label="Address" value={selectedClient.address} /><InfoRow icon={CalendarDays} label="Joined" value={formatDisplayDate(selectedClient.joinedDate)} /><InfoRow icon={Mail} label="Preferred Contact" value="Email" /><InfoRow icon={PawPrint} label="Dogs" value={selectedClient.dogNames} /><InfoRow icon={StickyNote} label="Notes" value={selectedClient.notes} /></div>
+              </Card>
+              <Card className="p-5"><h3 className="font-semibold">Summary</h3><div className="mt-5 space-y-5 text-sm"><InfoRow icon={CalendarDays} label="Total Bookings" value={String(selectedClient.bookings)} /><InfoRow icon={RefreshCw} label="Total Spent" value={selectedClient.spent} /><InfoRow icon={CalendarDays} label="Last Booking" value={`${formatDisplayDate(selectedClient.lastBookingDate)}\n${selectedClient.service}`} /></div><button className="mt-6 w-full rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25">View Full Profile <ChevronRight className="ml-2 inline size-4" /></button></Card>
+            </>
+          ) : (
+            <Card className="grid min-h-80 place-items-center p-8 text-center text-sm text-[#6d667a]">No live clients found in Supabase yet.</Card>
+          )}
         </aside>
       </div>
     </div>

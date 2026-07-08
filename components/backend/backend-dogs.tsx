@@ -1,8 +1,9 @@
 "use client";
 
 import { Cake, CalendarDays, CheckCircle2, ChevronDown, Dog, Edit3, Filter, Mail, Mars, MoreVertical, PawPrint, Phone, Plus, Search, StickyNote, UserRound, Venus, Weight, X } from "lucide-react";
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
+
+import Image from "next/image";
 
 import { Card } from "./card";
 
@@ -34,14 +35,10 @@ type BackendDog = {
   lastService: string;
   notes: number;
   notesText: string;
-  image: string;
+  image: string | null;
 };
 
-const fallbackDogImage = "/images/dogs/kaiser.jpg";
-
-const fallbackDogRows: BackendDog[] = [
-  { id: "max", name: "Max", gender: "male", owner: "Sarah Johnson", phone: "+353 87 123 4567", email: "sarah.j@email.com", breed: "Golden Retriever", age: "3 years", status: "Active", lastDate: "2024-05-25T00:00:00.000Z", lastService: "Dog Walk", notes: 2, notesText: "Gets excited around other dogs. Loves tennis balls!", image: fallbackDogImage },
-];
+const fallbackDogRows: BackendDog[] = [];
 
 type DogsApiResponse = {
   dogs?: BackendDog[];
@@ -61,19 +58,16 @@ function formatDisplayDate(value: string | null) {
   return new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
 }
 
-function DogProfileImage({ alt, className, height, src, width }: { alt: string; className: string; height: number; src: string; width: number }) {
-  const [imageSrc, setImageSrc] = useState(src || fallbackDogImage);
+function DogProfileImage({ alt, className, height, src, width }: { alt: string; className: string; height: number; src: string | null; width: number }) {
+  if (!src?.trim()) {
+    return (
+      <span aria-label={`${alt} has no Supabase image`} className={`${className} grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]`}>
+        <PawPrint className="size-5" />
+      </span>
+    );
+  }
 
-  return (
-    <Image
-      src={imageSrc}
-      alt={alt}
-      width={width}
-      height={height}
-      className={className}
-      onError={() => setImageSrc(fallbackDogImage)}
-    />
-  );
+  return <Image src={src} alt={alt} width={width} height={height} className={className} />;
 }
 
 export function BackendDogs({ accessToken }: { accessToken: string }) {
@@ -87,10 +81,10 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
       const response = await fetch("/api/dogs", { cache: "no-store", headers: { Authorization: `Bearer ${accessToken}` } });
       if (!response.ok) throw new Error(`Dogs API returned ${response.status}`);
       const payload = (await response.json()) as DogsApiResponse;
-      const nextDogs = payload.dogs?.length ? payload.dogs : fallbackDogRows;
+      const nextDogs = payload.dogs ?? [];
       setDogRows(nextDogs);
       setSelectedDogId((current) => nextDogs.some((dog) => dog.id === current) ? current : nextDogs[0]?.id ?? "");
-      setDogError(payload.isFallback ? "Showing placeholder dogs until Supabase data is available." : null);
+      setDogError(payload.isFallback ? "Supabase returned fallback mode, but placeholder dogs are disabled." : null);
     } catch (error) {
       setDogError(error instanceof Error ? error.message : "Unable to load dogs.");
     } finally {
@@ -138,7 +132,7 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
     };
   }, [accessToken, loadDogs]);
 
-  const selectedDog = useMemo(() => dogRows.find((dog) => dog.id === selectedDogId) ?? dogRows[0] ?? fallbackDogRows[0], [dogRows, selectedDogId]);
+  const selectedDog = useMemo(() => dogRows.find((dog) => dog.id === selectedDogId) ?? dogRows[0] ?? null, [dogRows, selectedDogId]);
   const activeDogs = dogRows.filter((dog) => dog.status === "Active").length;
   const dogStats = {
     total: { value: String(dogRows.length), detail: "Synced from Supabase" },
@@ -171,8 +165,8 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
               <thead className="bg-[#fbf9fd] text-xs font-semibold text-[#4f2c91]"><tr>{["Dog", "Owner", "Breed", "Age", "Status", "Last Service", "Notes", ""].map((h)=><th key={h} className="px-5 py-4">{h}</th>)}</tr></thead>
               <tbody className="divide-y divide-[#151124]/10">
                 {dogRows.map((dog) => (
-                  <tr key={dog.id} onClick={() => setSelectedDogId(dog.id)} className={`cursor-pointer align-middle transition ${selectedDog.id === dog.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}>
-                    <td className="px-5 py-4"><div className="flex items-center gap-4"><DogProfileImage key={dog.image} src={dog.image} alt={`${dog.name} profile`} width={44} height={44} className="size-11 rounded-full object-cover" /><p className="font-semibold">{dog.name} {dog.gender === "male" ? <Mars className="inline size-4 text-blue-500" /> : dog.gender === "female" ? <Venus className="inline size-4 text-pink-500" /> : null}</p></div></td>
+                  <tr key={dog.id} onClick={() => setSelectedDogId(dog.id)} className={`cursor-pointer align-middle transition ${selectedDog?.id === dog.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}>
+                    <td className="px-5 py-4"><div className="flex items-center gap-4"><DogProfileImage key={dog.image ?? dog.id} src={dog.image} alt={`${dog.name} profile`} width={44} height={44} className="size-11 rounded-full object-cover" /><p className="font-semibold">{dog.name} {dog.gender === "male" ? <Mars className="inline size-4 text-blue-500" /> : dog.gender === "female" ? <Venus className="inline size-4 text-pink-500" /> : null}</p></div></td>
                     <td className="px-5 py-4"><p className="font-semibold">{dog.owner}</p><p className="mt-1 text-[#6d667a]">{dog.phone}</p></td>
                     <td className="px-5 py-4">{dog.breed}</td><td className="px-5 py-4">{dog.age}</td>
                     <td className="px-5 py-4"><span className={`rounded-md px-3 py-1 text-xs font-medium ${dog.status === "Active" ? "bg-green-100 text-green-700" : "bg-zinc-200 text-zinc-600"}`}>{dog.status}</span></td>
@@ -188,14 +182,20 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
         </Card>
 
         <Card className="overflow-hidden p-5">
-          <div className="flex justify-end"><X className="size-5 text-[#4f4863]" /></div>
-          <div className="flex items-center gap-4"><DogProfileImage key={selectedDog.image} src={selectedDog.image} alt={`${selectedDog.name} profile`} width={74} height={74} className="size-[74px] rounded-full object-cover" /><div><h2 className="font-serif text-2xl">{selectedDog.name} {selectedDog.gender === "male" ? <Mars className="inline size-4 text-blue-500" /> : selectedDog.gender === "female" ? <Venus className="inline size-4 text-pink-500" /> : null}</h2><p className="text-sm text-[#6d667a]">{selectedDog.breed}</p><span className={`mt-2 inline-block rounded-md px-3 py-1 text-xs font-medium ${selectedDog.status === "Active" ? "bg-green-100 text-green-700" : "bg-zinc-200 text-zinc-600"}`}>{selectedDog.status}</span></div></div>
-          <div className="mt-8 flex border-b border-[#151124]/10 text-sm font-semibold text-[#4f4863]"><button className="border-b-2 border-[#5b2aa0] px-4 pb-3 text-[#5b2aa0]">Overview</button><button className="px-4 pb-3">Info</button><button className="px-4 pb-3">History</button><button className="px-4 pb-3">Notes</button></div>
-          <div className="mt-5 space-y-5 text-sm">
-            {[ [UserRound, "Owner", selectedDog.owner], [Phone, "Phone", selectedDog.phone], [Mail, "Email", selectedDog.email], [Cake, "Age", selectedDog.age], [Weight, "Breed", selectedDog.breed], [CalendarDays, "Last Service", `${formatDisplayDate(selectedDog.lastDate)}\n${selectedDog.lastService}`], [CalendarDays, "Live Status", isLoadingDogs ? "Refreshing from Supabase…" : "Synced from Supabase realtime"], [StickyNote, "Notes", selectedDog.notesText] ].map(([Icon, label, value]) => <div key={String(label)} className="grid grid-cols-[1.2rem_5rem_1fr] gap-3 text-[#4f4863]"><Icon className="size-4 text-[#6c38c2]" /><span>{label as string}</span><span className="whitespace-pre-line text-[#4f4863]">{value as string}</span></div>)}
-          </div>
-          <button className="mt-7 w-full rounded-lg bg-[#4f2c91] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25">View Dog Profile →</button>
-          <button className="mt-3 w-full rounded-lg border border-[#151124]/10 px-5 py-3 text-sm font-semibold text-[#4f4863]"><Edit3 className="mr-2 inline size-4" />Edit Dog Info</button>
+          {selectedDog ? (
+            <>
+              <div className="flex justify-end"><X className="size-5 text-[#4f4863]" /></div>
+              <div className="flex items-center gap-4"><DogProfileImage key={selectedDog.image ?? selectedDog.id} src={selectedDog.image} alt={`${selectedDog.name} profile`} width={74} height={74} className="size-[74px] rounded-full object-cover" /><div><h2 className="font-serif text-2xl">{selectedDog.name} {selectedDog.gender === "male" ? <Mars className="inline size-4 text-blue-500" /> : selectedDog.gender === "female" ? <Venus className="inline size-4 text-pink-500" /> : null}</h2><p className="text-sm text-[#6d667a]">{selectedDog.breed}</p><span className={`mt-2 inline-block rounded-md px-3 py-1 text-xs font-medium ${selectedDog.status === "Active" ? "bg-green-100 text-green-700" : "bg-zinc-200 text-zinc-600"}`}>{selectedDog.status}</span></div></div>
+              <div className="mt-8 flex border-b border-[#151124]/10 text-sm font-semibold text-[#4f4863]"><button className="border-b-2 border-[#5b2aa0] px-4 pb-3 text-[#5b2aa0]">Overview</button><button className="px-4 pb-3">Info</button><button className="px-4 pb-3">History</button><button className="px-4 pb-3">Notes</button></div>
+              <div className="mt-5 space-y-5 text-sm">
+                {[ [UserRound, "Owner", selectedDog.owner], [Phone, "Phone", selectedDog.phone], [Mail, "Email", selectedDog.email], [Cake, "Age", selectedDog.age], [Weight, "Breed", selectedDog.breed], [CalendarDays, "Last Service", `${formatDisplayDate(selectedDog.lastDate)}\n${selectedDog.lastService}`], [CalendarDays, "Live Status", isLoadingDogs ? "Refreshing from Supabase…" : "Synced from Supabase realtime"], [StickyNote, "Notes", selectedDog.notesText] ].map(([Icon, label, value]) => <div key={String(label)} className="grid grid-cols-[1.2rem_5rem_1fr] gap-3 text-[#4f4863]"><Icon className="size-4 text-[#6c38c2]" /><span>{label as string}</span><span className="whitespace-pre-line text-[#4f4863]">{value as string}</span></div>)}
+              </div>
+              <button className="mt-7 w-full rounded-lg bg-[#4f2c91] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25">View Dog Profile →</button>
+              <button className="mt-3 w-full rounded-lg border border-[#151124]/10 px-5 py-3 text-sm font-semibold text-[#4f4863]"><Edit3 className="mr-2 inline size-4" />Edit Dog Info</button>
+            </>
+          ) : (
+            <div className="grid min-h-80 place-items-center rounded-xl bg-[#fbf9fd] p-8 text-center text-sm text-[#6d667a]">No live dogs found in Supabase yet.</div>
+          )}
         </Card>
       </div>
     </div>

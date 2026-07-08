@@ -346,18 +346,18 @@ select
   c.full_name as client_name,
   d.id as dog_id,
   d.name as dog_name,
-  coalesce(d.profile_photo_url, 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1400&q=80') as dog_photo_url,
-  coalesce(d.hero_photo_url, d.profile_photo_url, 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1400&q=80') as hero_photo_url,
+  d.profile_photo_url as dog_photo_url,
+  coalesce(d.hero_photo_url, d.profile_photo_url) as hero_photo_url,
   b.id as upcoming_booking_id,
   b.service_name,
   b.starts_at,
   b.ends_at,
   b.location,
   b.status as booking_status,
-  coalesce(b.cover_image_url, d.profile_photo_url, 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1400&q=80') as booking_image_url,
+  coalesce(b.cover_image_url, d.profile_photo_url) as booking_image_url,
   u.title as latest_update_title,
   u.body as latest_update_body,
-  coalesce(u.image_url, b.cover_image_url, d.profile_photo_url, 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1400&q=80') as latest_update_image_url,
+  coalesce(u.image_url, b.cover_image_url, d.profile_photo_url) as latest_update_image_url,
   u.shared_at as latest_update_shared_at
 from public.portal_clients c
 join public.portal_dogs d on d.client_id = c.id

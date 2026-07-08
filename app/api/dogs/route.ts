@@ -4,8 +4,6 @@ import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
-const dogPlaceholderImage = "/images/dogs/kaiser.jpg";
-
 type PortalClientRelation = {
   full_name: string | null;
   email: string | null;
@@ -57,7 +55,7 @@ function mapDog(row: AdminDogRow) {
   lastService: latestBooking?.service_name?.trim() || "No bookings yet",
   notes: row.portal_session_updates?.length ?? (row.notes ? 1 : 0),
   notesText: row.notes?.trim() || "No notes saved yet.",
-  image: row.profile_photo_url || dogPlaceholderImage,
+  image: row.profile_photo_url,
 };
 }
 

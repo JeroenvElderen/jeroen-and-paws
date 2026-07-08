@@ -19,7 +19,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-import { dogPlaceholderImage } from "./portal-data";
 import { useSupabaseLiveQuery } from "./use-supabase-live-query";
 
 type DogRow = {
@@ -96,6 +95,16 @@ function InfoLine({ label, value }: { label: string; value: string }) {
       <p className="text-sm font-semibold text-[#17132a]">{label}</p>
       <p className="mt-2 text-sm text-[#2f2938]">{value}</p>
     </div>
+  );
+}
+
+function DogImage({ alt, className, src, sizes }: { alt: string; className: string; src: string | null; sizes: string }) {
+  return src?.trim() ? (
+    <Image src={src} alt={alt} fill sizes={sizes} className={className} />
+  ) : (
+    <span aria-label={`${alt} has no Supabase image`} className={`${className} grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]`}>
+      <PawPrint className="size-6" />
+    </span>
   );
 }
 
@@ -292,7 +301,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
             <Panel className="overflow-hidden p-6 sm:p-8">
               <div className="grid gap-8 lg:grid-cols-[14rem_1fr_18rem] lg:items-center">
                 <button type="button" onClick={() => setIsProfileFormOpen(true)} className="relative mx-auto size-44 lg:mx-0" aria-label="Edit profile picture and details">
-                  <Image src={profile.avatar_url || profile.dog_photo_url || dogPlaceholderImage} alt={`${profile.full_name} profile`} fill sizes="176px" className="rounded-full object-cover ring-4 ring-[#ead9b8]" />
+                  <DogImage src={profile.avatar_url || profile.dog_photo_url} alt={`${profile.full_name} profile`} sizes="176px" className="rounded-full object-cover ring-4 ring-[#ead9b8]" />
                   <span className="absolute bottom-3 right-0 grid size-12 place-items-center rounded-full bg-white text-[#4d2e91] shadow-[0_12px_28px_rgba(29,23,40,0.18)]">
                     <Edit3 className="size-5" />
                   </span>
@@ -365,7 +374,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                   <div className="mt-6 divide-y divide-[#24163f]/10">
                     {dogs.map((dog) => (
                       <article key={dog.id} className="flex items-center justify-between gap-4 py-5 first:pt-0">
-                        <span className="flex items-center gap-4"><span className="relative size-16 overflow-hidden rounded-full"><Image src={dog.profile_photo_url || dogPlaceholderImage} alt={dog.name} fill sizes="64px" className="object-cover" /></span><span><span className="font-serif text-2xl text-[#241f30]">{dog.name}</span><span className="mt-1 block text-sm text-[#665d70]">{dog.breed || "Dog"}{dog.age ? ` • ${dog.age}` : ""}</span></span></span>
+                        <span className="flex items-center gap-4"><span className="relative size-16 overflow-hidden rounded-full"><DogImage src={dog.profile_photo_url} alt={dog.name} sizes="64px" className="object-cover" /></span><span><span className="font-serif text-2xl text-[#241f30]">{dog.name}</span><span className="mt-1 block text-sm text-[#665d70]">{dog.breed || "Dog"}{dog.age ? ` • ${dog.age}` : ""}</span></span></span>
                         <span className="rounded-full bg-[#f0e8f8] px-4 py-1 text-xs font-semibold text-[#5b2aa0]">{dog.status || "Active"}</span>
                       </article>
                     ))}

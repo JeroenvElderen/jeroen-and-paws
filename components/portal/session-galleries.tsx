@@ -3,7 +3,6 @@
 import { ArrowLeft, Bell, Download, Heart, ImageIcon, PawPrint } from "lucide-react";
 import Image from "next/image";
 
-import { dogPlaceholderImage } from "./portal-data";
 import { useSupabaseLiveQuery } from "./use-supabase-live-query";
 
 type GalleryItem = {
@@ -49,7 +48,7 @@ export function SessionGalleries({ accessToken, onBackToDashboard }: { accessTok
           <h1 className="font-serif text-4xl leading-tight text-[#241f30]">Session Galleries <PawPrint className="inline size-6 text-[#8b5cf6]" /></h1>
           <p className="mt-3 text-sm text-[#17132a]">Real-time galleries for {dogNames}, updated as soon as Jeroen adds photos.</p>
         </div>
-        <div className="flex items-center gap-5"><Bell className="size-6 text-[#2f1b59]" /><div className="relative size-14 overflow-hidden rounded-full ring-2 ring-[#ead9b8]"><Image src={latest?.image_url || dogPlaceholderImage} alt={`${dogNames} profile photo`} fill sizes="56px" className="object-cover" /></div></div>
+        <div className="flex items-center gap-5"><Bell className="size-6 text-[#2f1b59]" /><div className="relative size-14 overflow-hidden rounded-full ring-2 ring-[#ead9b8]">{latest?.image_url ? <Image src={latest.image_url} alt={`${dogNames} profile photo`} fill sizes="56px" className="object-cover" /> : <span className="grid size-full place-items-center bg-[#f0e8f8] text-[#5b2aa0]"><PawPrint className="size-5" /></span>}</div></div>
       </header>
 
       <div className="mx-auto mt-8 max-w-6xl space-y-6">

@@ -28,10 +28,10 @@ type PortalDogRow = {
 };
 
 type PortalImageSlots = {
-  heroPhotoUrl: string;
-  bookingPhotoUrl: string;
-  countdownPhotoUrl: string;
-  latestSessionPhotoUrl: string;
+  heroPhotoUrl: string | null;
+  bookingPhotoUrl: string | null;
+  countdownPhotoUrl: string | null;
+  latestSessionPhotoUrl: string | null;
 };
 
 function formatDate(date: string) {
@@ -109,11 +109,10 @@ function getStoredImageUrls() {
   }
 }
 
-function chooseDogPhotos(photos: PortalDogPhoto[], fallbackUrls: string[]) {
+function chooseDogPhotos(photos: PortalDogPhoto[]) {
   const galleryUrls = Array.from(new Set(photos.map((photo) => photo.image_url.trim()).filter(Boolean)));
-  const uniqueFallbackUrls = Array.from(new Set(fallbackUrls.filter(Boolean)));
   const previousUrls = getStoredImageUrls();
-  const pool = galleryUrls.length > 0 ? galleryUrls : uniqueFallbackUrls;
+  const pool = galleryUrls;
   const freshPool = pool.filter((url) => !previousUrls.includes(url));
   const preferredUrls = [
     ...shuffle(freshPool),
@@ -122,7 +121,7 @@ function chooseDogPhotos(photos: PortalDogPhoto[], fallbackUrls: string[]) {
 
   const chosenUrls = [0, 1, 2, 3].map((index) => {
     if (preferredUrls[index]) return preferredUrls[index];
-    return pool[index % Math.max(pool.length, 1)] || uniqueFallbackUrls[index % Math.max(uniqueFallbackUrls.length, 1)];
+    return pool[index % Math.max(pool.length, 1)] || null;
   });
 
   if (chosenUrls.some(Boolean)) {
@@ -130,11 +129,20 @@ function chooseDogPhotos(photos: PortalDogPhoto[], fallbackUrls: string[]) {
   }
 
   return {
-    heroPhotoUrl: chosenUrls[0] || uniqueFallbackUrls[0],
-    bookingPhotoUrl: chosenUrls[1] || chosenUrls[0] || uniqueFallbackUrls[0],
-    countdownPhotoUrl: chosenUrls[2] || chosenUrls[0] || uniqueFallbackUrls[0],
-    latestSessionPhotoUrl: chosenUrls[3] || chosenUrls[0] || uniqueFallbackUrls[0],
+    heroPhotoUrl: chosenUrls[0] || null,
+    bookingPhotoUrl: chosenUrls[1] || chosenUrls[0] || null,
+    countdownPhotoUrl: chosenUrls[2] || chosenUrls[0] || null,
+    latestSessionPhotoUrl: chosenUrls[3] || chosenUrls[0] || null,
   } satisfies PortalImageSlots;
+}
+
+function SupabaseImage({ alt, children, className, imageClassName = "object-cover", priority = false, sizes, src }: { alt: string; children?: React.ReactNode; className: string; imageClassName?: string; priority?: boolean; sizes: string; src: string | null }) {
+  return (
+    <div className={`${className} ${src ? "" : "grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]"}`}>
+      {src ? <Image src={src} alt={alt} fill priority={priority} loading={priority ? "eager" : undefined} sizes={sizes} className={imageClassName} /> : <PawPrint aria-hidden="true" className="size-10" />}
+      {children}
+    </div>
+  );
 }
 
 export function Dashboard({ accessToken }: { accessToken?: string }) {
@@ -168,16 +176,10 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
   const elapsed = useMemo(() => getElapsedParts(data.clientSince, now), [data.clientSince, now]);
   const dogPossessive = `${data.dogNames}${data.dogNames.includes(",") || data.dogNames.includes(" and ") ? "’" : "’s"}`;
   const booking = data.upcomingBooking;
-  const fallbackImageUrls = useMemo(() => [
-    data.heroPhotoUrl,
-    booking?.imageUrl,
-    data.dogPhotoUrl,
-    data.latestSession?.imageUrl,
-  ].filter((url): url is string => Boolean(url)), [booking?.imageUrl, data.dogPhotoUrl, data.heroPhotoUrl, data.latestSession?.imageUrl]);
-
+  
   useEffect(() => {
-    queueMicrotask(() => setImageSlots(chooseDogPhotos([...dogProfilePhotos, ...dogPhotos], fallbackImageUrls)));
-  }, [dogPhotos, dogProfilePhotos, fallbackImageUrls]);
+    queueMicrotask(() => setImageSlots(chooseDogPhotos([...dogProfilePhotos, ...dogPhotos])));
+  }, [dogPhotos, dogProfilePhotos]);
 
   const displayedImages = imageSlots ?? {
     heroPhotoUrl: data.heroPhotoUrl,
@@ -202,7 +204,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
     <div className="px-4 py-5 sm:px-8 lg:px-10 lg:py-8">
       {(isLoading || error) && (
         <div className="mx-auto mb-5 max-w-6xl rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70] shadow-[0_12px_30px_rgba(29,23,40,0.06)]">
-          {isLoading ? "Loading live portal data from Supabase…" : `${error} Showing the fallback portal preview until live data is available.`}
+          {isLoading ? "Loading live portal data from Supabase…" : `${error} Live Supabase data could not be loaded.`}
         </div>
       )}
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-4">
@@ -214,13 +216,12 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
           <p className="mt-1 text-sm text-[#665d70]">Everything for {data.dogNames} updates live from Supabase.</p>
         </div>
         <div className="relative size-12 overflow-hidden rounded-full ring-2 ring-[#ead9b8]">
-          <Image src={data.avatarUrl} alt={`${data.clientName} profile photo`} fill sizes="48px" className="object-cover" />
+          {data.avatarUrl ? <Image src={data.avatarUrl} alt={`${data.clientName} profile photo`} fill sizes="48px" className="object-cover" /> : <span className="grid size-full place-items-center bg-[#f0e8f8] text-[#5b2aa0]"><PawPrint className="size-5" /></span>}
         </div>
       </header>
 
       <div className="mx-auto mt-7 max-w-6xl space-y-6">
-        <section className="relative overflow-hidden rounded-[1.6rem] bg-[#080b10] px-6 py-12 text-white shadow-2xl shadow-[#1d1728]/15 sm:px-12 lg:min-h-[24rem]">
-          <Image src={displayedImages.heroPhotoUrl} alt={`${data.dogNames} enjoying a Jeroen & Paws session`} fill priority loading="eager" sizes="(min-width: 1024px) 1120px, 100vw" className="object-cover object-center opacity-60" />
+        <SupabaseImage src={displayedImages.heroPhotoUrl} alt={`${data.dogNames} enjoying a Jeroen & Paws session`} priority sizes="(min-width: 1024px) 1120px, 100vw" className="relative overflow-hidden rounded-[1.6rem] bg-[#080b10] px-6 py-12 text-white shadow-2xl shadow-[#1d1728]/15 sm:px-12 lg:min-h-[24rem]" imageClassName="object-cover object-center opacity-60">
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,11,16,.92),rgba(8,11,16,.62),rgba(8,11,16,.18))]" />
           <div className="relative max-w-xl">
             <p className="text-xs font-black uppercase tracking-[0.32em] text-[#c4b5fd]">Your dog&apos;s care, beautifully organised.</p>
@@ -230,7 +231,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
               View {data.dogNames} photos <PawPrint aria-hidden="true" className="size-4" />
             </Link>
           </div>
-        </section>
+        </SupabaseImage>
 
         <div className="grid gap-6 lg:grid-cols-[1.7fr_1fr]">
           <PortalCard className="p-6 sm:p-8">
@@ -239,9 +240,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
               <a href="#" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#6d4b9b]">View details <ArrowRight className="size-4" /></a>
             </div>
             <div className="mt-7 grid gap-6 sm:grid-cols-[13rem_1fr] sm:items-center">
-              <div className="relative h-44 overflow-hidden rounded-lg sm:h-36">
-                <Image src={displayedImages.bookingPhotoUrl} alt={`${data.dogNames} booking photo`} fill sizes="210px" className="object-cover" />
-              </div>
+              <SupabaseImage src={displayedImages.bookingPhotoUrl} alt={`${data.dogNames} booking photo`} sizes="210px" className="relative h-44 overflow-hidden rounded-lg sm:h-36" />
               <div>
                 <h3 className="text-xl font-semibold">{booking?.serviceName ?? "No bookings yet"}</h3>
                 <p className="mt-3 text-sm leading-7 text-[#30283c]">{booking ? formatDate(booking.startsAt) : "No bookings yet"}<br />{booking ? `${formatTime(booking.startsAt)} – ${formatTime(booking.endsAt)}` : "Book a service to see it here"}</p>
@@ -258,7 +257,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
           </PortalCard>
 
           <PortalCard className="relative min-h-[22rem] overflow-hidden p-8 text-center text-white">
-            <Image src={displayedImages.countdownPhotoUrl} alt={`${data.dogNames} countdown photo`} fill sizes="400px" className="object-cover" />
+            <SupabaseImage src={displayedImages.countdownPhotoUrl} alt={`${data.dogNames} countdown photo`} sizes="400px" className="absolute inset-0" />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(29,23,40,.90),rgba(29,23,40,.55),rgba(29,23,40,.20))]" />
             <div className="relative">
               <h2 className="text-2xl font-semibold text-[#fff7e8]">Our time together <Heart className="inline size-4 text-[#c4b5fd]" /></h2>
@@ -284,7 +283,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
         <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
           <PortalCard id="photos" className="p-6 sm:p-8">
             <div className="flex items-center justify-between gap-4"><h2 className="text-2xl font-semibold">Latest from your session</h2><a href="#" className="text-xs font-black uppercase tracking-[0.16em] text-[#6d4b9b]">View all</a></div>
-            <div className="relative mt-6 h-64 overflow-hidden rounded-xl"><Image src={displayedImages.latestSessionPhotoUrl} alt={`${data.dogNames} latest session photo`} fill sizes="650px" className="object-cover" /></div>
+            <SupabaseImage src={displayedImages.latestSessionPhotoUrl} alt={`${data.dogNames} latest session photo`} sizes="650px" className="relative mt-6 h-64 overflow-hidden rounded-xl" />
             <div className="mt-5 flex items-center justify-between"><div><p className="font-semibold">{data.latestSession?.serviceName ?? "No session photos yet"}</p><p className="mt-1 text-sm text-[#665d70]">{data.latestSession ? formatShortDate(data.latestSession.sessionDate) : "Jeroen will share one from the gallery"}</p></div><p className="text-xs font-black uppercase tracking-[0.16em] text-green-700">{data.latestSession?.status ?? "Waiting for gallery"}</p></div>
           </PortalCard>
 

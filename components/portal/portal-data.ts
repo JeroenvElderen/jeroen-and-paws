@@ -1,28 +1,25 @@
-export const dogPlaceholderImage =
-  "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1400&q=80";
-
 export type PortalDashboardData = {
   clientId: string | null;
   clientName: string;
   clientFirstName: string;
   clientSince: string;
-  avatarUrl: string;
+  avatarUrl: string | null;
   dogNames: string;
-  dogPhotoUrl: string;
-  heroPhotoUrl: string;
+  dogPhotoUrl: string | null;
+  heroPhotoUrl: string | null;
   upcomingBooking: null | {
     id: string;
     serviceName: string;
     startsAt: string;
     endsAt: string;
     location: string;
-    imageUrl: string;
+    imageUrl: string | null;
     status: string;
   };
   latestSession: null | {
     serviceName: string;
     sessionDate: string;
-    imageUrl: string;
+    imageUrl: string | null;
     status: string;
   };
   latestUpdate: string;
@@ -33,10 +30,10 @@ export const emptyPortalDashboardData: PortalDashboardData = {
   clientName: "there",
   clientFirstName: "there",
   clientSince: new Date().toISOString(),
-  avatarUrl: dogPlaceholderImage,
+  avatarUrl: null,
   dogNames: "your dog",
-  dogPhotoUrl: dogPlaceholderImage,
-  heroPhotoUrl: dogPlaceholderImage,
+  dogPhotoUrl: null,
+  heroPhotoUrl: null,
   upcomingBooking: null,
   latestSession: null,
   latestUpdate: "Live notes, photos, and arrival updates appear here as soon as Jeroen shares them.",
@@ -69,17 +66,17 @@ export function mapPortalDashboardRows(rows: unknown): PortalDashboardData {
   if (!row) return emptyPortalDashboardData;
 
   const dogNames = row.dog_names?.trim() || "your dog";
-  const imageUrl = row.booking_image_url || row.dog_photo_url || dogPlaceholderImage;
+  const imageUrl = row.booking_image_url || row.dog_photo_url || null;
 
   return {
     clientId: row.client_id,
     clientName: row.client_name?.trim() || "there",
     clientFirstName: row.client_first_name?.trim() || firstName(row.client_name) || "there",
     clientSince: row.client_since || new Date().toISOString(),
-    avatarUrl: row.avatar_url || dogPlaceholderImage,
+    avatarUrl: row.avatar_url || null,
     dogNames,
-    dogPhotoUrl: row.dog_photo_url || dogPlaceholderImage,
-    heroPhotoUrl: row.hero_photo_url || row.dog_photo_url || dogPlaceholderImage,
+    dogPhotoUrl: row.dog_photo_url || null,
+    heroPhotoUrl: row.hero_photo_url || row.dog_photo_url || null,
     upcomingBooking: row.upcoming_booking_id && row.starts_at && row.ends_at ? {
       id: row.upcoming_booking_id,
       serviceName: row.service_name?.trim() || "Upcoming care",
