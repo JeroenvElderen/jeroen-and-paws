@@ -4,10 +4,22 @@ export const revolutWebhookToleranceMs = 5 * 60 * 1000;
 
 export type RevolutWebhookPayload = {
   event?: string;
+  type?: string;
   order_id?: string;
   merchant_order_ext_ref?: string;
+  reference?: string;
+  data?: unknown;
+  order?: unknown;
   [key: string]: unknown;
 };
+
+function cleanString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function getRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : null;
+}
 
 export function getRevolutWebhookSignature({ rawBody, timestamp, signingSecret }: { rawBody: string; timestamp: string; signingSecret: string }) {
   const payloadToSign = `v1.${timestamp}.${rawBody}`;
@@ -36,14 +48,32 @@ export function verifyRevolutWebhookSignature({ rawBody, timestamp, signatureHea
 }
 
 export function getRevolutWebhookOrderId(payload: RevolutWebhookPayload) {
-  const orderId = typeof payload.order_id === "string" ? payload.order_id.trim() : "";
+  const orderId = cleanString(payload.order_id);
   if (orderId) return orderId;
 
-  const order = payload.order;
-  if (order && typeof order === "object") {
-    const candidate = (order as { id?: unknown }).id;
-    return typeof candidate === "string" ? candidate.trim() : "";
-  }
+  const data = getRecord(payload.data);
+  const dataOrderId = cleanString(data?.order_id || data?.id);
+  if (dataOrderId) return dataOrderId;
+
+  const order = getRecord(payload.order) || getRecord(data?.order);
+  const candidate = cleanString(order?.id || order?.order_id);
+  if (candidate) return candidate;
 
   return "";
+}
+
+export function getRevolutWebhookReference(payload: RevolutWebhookPayload) {
+  const directReference = cleanString(payload.merchant_order_ext_ref || payload.reference);
+  if (directReference) return directReference;
+
+  const data = getRecord(payload.data);
+  const dataReference = cleanString(data?.merchant_order_ext_ref || data?.reference);
+  if (dataReference) return dataReference;
+
+  const order = getRecord(payload.order) || getRecord(data?.order);
+  const orderReference = cleanString(order?.merchant_order_ext_ref || order?.reference);
+  if (orderReference) return orderReference;
+
+  const merchantOrderData = getRecord(order?.merchant_order_data) || getRecord(data?.merchant_order_data);
+  return cleanString(merchantOrderData?.reference);
 }

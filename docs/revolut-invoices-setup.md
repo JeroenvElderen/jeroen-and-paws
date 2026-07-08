@@ -54,7 +54,8 @@ REVOLUT_WEBHOOK_SIGNING_SECRET=
 1. In Revolut Merchant, create a webhook for the production URL `https://www.jeroenandpaws.com/api/revolut/webhook`.
 2. Subscribe it to `ORDER_COMPLETED` events.
 3. Copy the webhook signing secret into `REVOLUT_WEBHOOK_SIGNING_SECRET` in Vercel.
-4. Send a sandbox/test event and confirm the matching invoice changes to `paid`.
+4. Confirm `REVOLUT_MERCHANT_API_KEY` is also configured, because the invoice flow only creates a Revolut checkout link and stores `revolut_order_id` when the Merchant API key exists.
+5. Send a sandbox/test event and confirm the matching invoice changes to `paid`.
 
 The endpoint is idempotent: repeated `ORDER_COMPLETED` delivery for an invoice that is already `paid` returns success without changing it again.
 
