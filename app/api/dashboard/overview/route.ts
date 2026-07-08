@@ -34,7 +34,7 @@ export async function GET(request: Request) {
   const adminAccessToken = await getVerifiedBackendAdminToken(request);
   if (!adminAccessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
-    const now = new Date(); const weekStart = new Date(now); weekStart.setDate(now.getDate() - 6); weekStart.setHours(0, 0, 0, 0); const prevWeekStart = new Date(weekStart); prevWeekStart.setDate(weekStart.getDate() - 7); const activeSince = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+    const now = new Date(); const weekStart = new Date(now); weekStart.setDate(now.getDate() - 6); weekStart.setHours(0, 0, 0, 0); const prevWeekStart = new Date(weekStart); prevWeekStart.setDate(weekStart.getDate() - 7); const activeSince = new Date(Date.now() - 15 * 1000).toISOString();
     const [clients, dogs, bookings, invoices, visits] = await Promise.all([
       supabaseAdmin.from("portal_clients").select("id,created_at,status"),
       supabaseAdmin.from("portal_dogs").select("id,created_at,status"),

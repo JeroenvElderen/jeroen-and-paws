@@ -12,13 +12,8 @@ type LiveQueryOptions<T> = {
 };
 
 async function getSupabaseErrorMessage(response: Response) {
-  const fallback = `Supabase returned ${response.status}`;
-  const payload = await response.json().catch(() => null) as { message?: string; hint?: string; details?: string } | null;
-  const details = [payload?.message, payload?.hint, payload?.details].filter(Boolean).join(" ");
-
-  if (!details) return fallback;
-
-  return `${fallback}: ${details}`;
+  const fallback = `Your portal details could not be loaded (${response.status})`;
+  return fallback;
 }
 
 function getConfig() {
@@ -56,7 +51,7 @@ export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeT
       }
 
       if (!config || !token) {
-        setError("Connect Supabase to show live portal data.");
+        setError("Portal data is not available right now.");
         setIsLoading(false);
         return;
       }
@@ -75,7 +70,7 @@ export function useSupabaseLiveQuery<T>({ accessToken, fallback, path, realtimeT
         setData(map(rows));
         setError(null);
       } catch (queryError) {
-        if (isMounted) setError(queryError instanceof Error ? queryError.message : "Unable to load Supabase data.");
+        if (isMounted) setError(queryError instanceof Error ? queryError.message : "Unable to load portal data.");
       } finally {
         if (isMounted) setIsLoading(false);
       }

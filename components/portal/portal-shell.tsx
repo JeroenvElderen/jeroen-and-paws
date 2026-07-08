@@ -127,7 +127,7 @@ function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: Port
     const authConfig = getSupabaseAuthConfig();
 
     if (!authConfig) {
-      setErrorMessage("Connect Supabase before logging in or signing up.");
+      setErrorMessage("The client portal is not ready for sign in yet. Please try again later.");
       return;
     }
 
@@ -201,7 +201,7 @@ function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: Port
     setStatusMessage(null);
 
     if (!authConfig) {
-      setErrorMessage("Connect Supabase before resending confirmation emails.");
+      setErrorMessage("The client portal is not ready to resend confirmation emails yet. Please try again later.");
       return;
     }
 
@@ -237,7 +237,7 @@ function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: Port
     const authConfig = getSupabaseAuthConfig();
 
     if (!authConfig) {
-      setErrorMessage("Connect Supabase before using social sign in.");
+      setErrorMessage("Social sign in is not ready yet. Please try again later.");
       return;
     }
 
@@ -248,7 +248,7 @@ function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: Port
   const trustFeatures = [
     [ShieldCheck, "Trusted & Insured", "Fully insured and dedicated to your dog’s safety."],
     [CalendarDays, "Easy Booking", "Book walks and training in just a few taps."],
-    [Camera, "Photo Updates", "Real-time updates and photos from every visit."],
+    [Camera, "Photo Updates", "Visit notes and photos after every visit."],
   ] as const;
 
   return (

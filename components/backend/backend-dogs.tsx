@@ -60,16 +60,23 @@ function formatDisplayDate(value: string | null) {
   return new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
 }
 
+function DogProfilePlaceholder({ alt, className }: { alt: string; className: string }) {
+  return (
+    <span aria-label={`${alt} has no Supabase image`} className={`${className} grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]`}>
+      <PawPrint className="size-5" />
+    </span>
+  );
+}
+
 function DogProfileImage({ alt, className, height, src, width }: { alt: string; className: string; height: number; src: string | null; width: number }) {
-  if (!src?.trim()) {
-    return (
-      <span aria-label={`${alt} has no Supabase image`} className={`${className} grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]`}>
-        <PawPrint className="size-5" />
-      </span>
-    );
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const cleanSrc = src?.trim();
+
+  if (!cleanSrc || failedSrc === cleanSrc) {
+    return <DogProfilePlaceholder alt={alt} className={className} />;
   }
 
-  return <Image src={src} alt={alt} width={width} height={height} className={className} />;
+  return <Image src={cleanSrc} alt={alt} width={width} height={height} className={className} onError={() => setFailedSrc(cleanSrc)} />;
 }
 
 export function BackendDogs({ accessToken }: { accessToken: string }) {

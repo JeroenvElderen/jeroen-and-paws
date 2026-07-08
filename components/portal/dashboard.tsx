@@ -77,7 +77,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
     [Check, "Booking", booking?.status ?? "No bookings yet", true],
     [Heart, "Care plan", "Shared with Jeroen", true],
     [Camera, "Session day", booking ? formatDate(booking.startsAt) : "No session scheduled", false],
-    [MessageCircle, "Live updates", "Shared during care", false],
+    [MessageCircle, "Care updates", "Shared during care", false],
   ] as const;
 
   const nextSteps = [
@@ -89,7 +89,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
     <div className="px-4 py-5 sm:px-8 lg:px-10 lg:py-8">
       {(isLoading || error) && (
         <div className="mx-auto mb-5 max-w-6xl rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70] shadow-[0_12px_30px_rgba(29,23,40,0.06)]">
-          {isLoading ? "Loading live portal data from Supabase…" : `${error} Live Supabase data could not be loaded.`}
+          {isLoading ? "Loading your portal…" : `${error} Your portal details could not be loaded.`}
         </div>
       )}
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-4">
@@ -98,7 +98,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
             <Image src="/logo4.svg" alt="Jeroen & Paws" width={140} height={82} className="h-12 w-auto" />
           </Link>
           <p className="text-lg font-semibold text-[#2d2140]">Welcome back, {data.clientFirstName} <PawPrint aria-hidden="true" className="ml-1 inline size-4 text-[#8b5cf6]" /></p>
-          <p className="mt-1 text-sm text-[#665d70]">Everything for {data.dogNames} updates live from Supabase.</p>
+          <p className="mt-1 text-sm text-[#665d70]">Everything for {data.dogNames} is kept up to date here</p>
         </div>
         <div className="relative size-12 overflow-hidden rounded-full ring-2 ring-[#ead9b8]">
           {data.avatarUrl ? <Image src={data.avatarUrl} alt={`${data.clientName} profile photo`} fill sizes="48px" className="object-cover" /> : <span className="grid size-full place-items-center bg-[#f0e8f8] text-[#5b2aa0]"><PawPrint className="size-5" /></span>}
@@ -111,7 +111,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
           <div className="relative max-w-xl">
             <p className="text-xs font-black uppercase tracking-[0.32em] text-[#c4b5fd]">Your dog&apos;s care, beautifully organised.</p>
             <h1 className="mt-5 text-4xl font-semibold leading-tight text-[#fff7e8] sm:text-6xl">Everything for {data.dogNames} is right here.</h1>
-            <p className="mt-5 max-w-md leading-8 text-[#f5e9d5]">Bookings, care notes, photo updates, invoices, and live client updates — all styled to feel as warm and premium as the Jeroen & Paws experience.</p>
+            <p className="mt-5 max-w-md leading-8 text-[#f5e9d5]">Bookings, care notes, photo updates, and invoices — all styled to feel as warm and premium as the Jeroen & Paws experience.</p>
             <Link href="#photos" className="mt-8 inline-flex items-center gap-3 rounded-md bg-[#6d4b9b] px-6 py-4 text-xs font-black uppercase tracking-[0.18em] text-white shadow-xl shadow-[#000]/20">
               View {data.dogNames} photos <PawPrint aria-hidden="true" className="size-4" />
             </Link>

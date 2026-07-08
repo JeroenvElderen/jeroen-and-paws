@@ -36,7 +36,7 @@ export const emptyPortalDashboardData: PortalDashboardData = {
   heroPhotoUrl: null,
   upcomingBooking: null,
   latestSession: null,
-  latestUpdate: "Live notes, photos, and arrival updates appear here as soon as Jeroen shares them.",
+  latestUpdate: "Care notes, photos, and arrival updates appear here as soon as Jeroen shares them.",
 };
 
 export type PortalDashboardViewRow = {
@@ -92,7 +92,7 @@ export function mapPortalDashboardRows(rows: unknown): PortalDashboardData {
       imageUrl: row.latest_update_image_url || imageUrl,
       status: row.latest_update_title ? "Update shared ✓" : "Gallery update ✓",
     } : null,
-    latestUpdate: row.latest_update_body?.trim() || "Live notes, photos, and arrival updates appear here as soon as Jeroen shares them.",
+    latestUpdate: row.latest_update_body?.trim() || "Care notes, photos, and arrival updates appear here as soon as Jeroen shares them.",
   };
 }
 

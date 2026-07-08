@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 
 const visitorStorageKey = "jeroen-and-paws-visitor-id";
+const backendSessionStorageKey = "jeroen-and-paws-backend-session";
+const heartbeatIntervalMs = 5000;
 
 function getVisitorId() {
   const existing = window.localStorage.getItem(visitorStorageKey);
@@ -15,6 +17,7 @@ function getVisitorId() {
 export function PageViewTracker() {
   useEffect(() => {
     if (window.location.pathname.startsWith("/backend")) return;
+    if (window.localStorage.getItem(backendSessionStorageKey)) return;
     let isActive = true;
     const visitorId = getVisitorId();
     const send = () => {
@@ -27,10 +30,12 @@ export function PageViewTracker() {
       });
     };
     send();
-    const interval = window.setInterval(send, 45000);
+    const interval = window.setInterval(send, heartbeatIntervalMs);
     const onVisibilityChange = () => { if (document.visibilityState === "visible") send(); };
+    const onPageHide = () => send();
     document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => { isActive = false; window.clearInterval(interval); document.removeEventListener("visibilitychange", onVisibilityChange); };
+    window.addEventListener("pagehide", onPageHide);
+    return () => { isActive = false; window.clearInterval(interval); document.removeEventListener("visibilitychange", onVisibilityChange); window.removeEventListener("pagehide", onPageHide); };
   }, []);
 
   return null;

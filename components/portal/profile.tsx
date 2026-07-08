@@ -98,14 +98,23 @@ function InfoLine({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DogImage({ alt, className, src, sizes }: { alt: string; className: string; src: string | null; sizes: string }) {
-  return src?.trim() ? (
-    <Image src={src} alt={alt} fill sizes={sizes} className={className} />
-  ) : (
+function DogImagePlaceholder({ alt, className }: { alt: string; className: string }) {
+  return (
     <span aria-label={`${alt} has no Supabase image`} className={`${className} grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]`}>
       <PawPrint className="size-6" />
     </span>
   );
+}
+
+function DogImage({ alt, className, src, sizes }: { alt: string; className: string; src: string | null; sizes: string }) {
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const cleanSrc = src?.trim();
+
+  if (!cleanSrc || failedSrc === cleanSrc) {
+    return <DogImagePlaceholder alt={alt} className={className} />;
+  }
+
+  return <Image src={cleanSrc} alt={alt} fill sizes={sizes} className={className} onError={() => setFailedSrc(cleanSrc)} />;
 }
 
 export function Profile({ accessToken, onBackToDashboard }: { accessToken?: string; onBackToDashboard: () => void }) {
@@ -133,7 +142,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!url || !key || !accessToken) {
-      setMessage("Connect Supabase and log in before saving.");
+      setMessage("Please log in before saving changes.");
       return null;
     }
 
@@ -141,9 +150,8 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
   }
 
   async function getSupabaseWriteError(response: Response) {
-    const payload = await response.json().catch(() => null) as { message?: string; hint?: string; details?: string; code?: string } | null;
-    const detail = [payload?.message, payload?.hint, payload?.details, payload?.code ? `Code: ${payload.code}` : null].filter(Boolean).join(" ");
-    return detail ? `Supabase ${response.status}: ${detail}` : `Supabase ${response.status}: ${response.statusText || "Request failed"}`;
+    await response.json().catch(() => null);
+    return `Your changes could not be saved (${response.status}). Please try again or contact Jeroen.`;
   }
 
   async function uploadPortalImage(config: { url: string; key: string; accessToken: string }, file: File, folder: "avatars" | "dogs") {
@@ -294,7 +302,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
           ← Back to dashboard
         </button>
         {isLoading || profileError || !profile ? (
-          <p className="rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70]">{isLoading ? "Loading live profile…" : profileError ?? "No profile data yet."}</p>
+          <p className="rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70]">{isLoading ? "Loading your profile…" : profileError ?? "No profile data yet."}</p>
         ) : null}
         {profile ? (
           <>
@@ -378,7 +386,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                         <span className="rounded-full bg-[#f0e8f8] px-4 py-1 text-xs font-semibold text-[#5b2aa0]">{dog.status || "Active"}</span>
                       </article>
                     ))}
-                    {!dogs.length ? <p className="py-5 text-sm text-[#665d70]">Add your dog here and it will be saved in Supabase.</p> : null}
+                    {!dogs.length ? <p className="py-5 text-sm text-[#665d70]">Add your dog here and it will be saved to your profile.</p> : null}
                   </div>
                   <button type="button" onClick={() => setIsDogFormOpen((isOpen) => !isOpen)} className="mt-4 inline-flex w-full items-center justify-center gap-3 rounded-md border border-[#5b2aa0]/40 px-5 py-3 text-sm font-semibold text-[#5b2aa0]"><Plus className="size-4" />{isDogFormOpen ? "Close Dog Form" : "Add a Dog"}</button>
                   {isDogFormOpen ? (
