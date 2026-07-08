@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { formatBookingDate, formatBookingTime, mapBookingRow, type CalendarBooking } from "@/utils/bookings";
+import { usePortalDogImages } from "./use-portal-dog-images";
 import { useSupabaseLiveQuery } from "./use-supabase-live-query";
 
 function mapBookingRows(rows: unknown): CalendarBooking[] {
@@ -60,6 +61,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
     realtimeTables,
     map: mapBookingRows,
   });
+  const dogImages = usePortalDogImages(accessToken, 3);
 
   const upcoming = useMemo(() => bookings.filter((booking) => booking.status !== "cancelled" && new Date(booking.endsAt).getTime() >= now).sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()), [bookings, now]);
   const nextBooking = upcoming[0];
@@ -71,6 +73,9 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
     return days;
   }, {}), [bookings]);
   const monthLabel = new Intl.DateTimeFormat("en-IE", { month: "long", year: "numeric" }).format(visibleMonth);
+  const headerImage = dogImages.getImage(0, nextBooking?.coverImageUrl || "/images/dogs/ace.jpg");
+  const bookingImage = dogImages.getImage(1, nextBooking?.coverImageUrl || "/images/dogs/ace.jpg");
+  const supportImage = dogImages.getImage(2, "/images/dogs/melakta.jpeg");
   const sessionPassed = nextBooking ? new Date(nextBooking.startsAt).getTime() < now : false;
   const timeline = nextBooking ? [
     [Check, "Booking", nextBooking.status.replace(/_/g, " "), formatBookingDate(nextBooking.startsAt, { day: "numeric", month: "short", year: "numeric" }), true],
@@ -86,7 +91,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
           <h1 className="font-serif text-4xl leading-tight text-[#241f30]">My Bookings</h1>
           <p className="mt-3 text-sm text-[#17132a]">Your portal calendar is powered by the same Supabase bookings that sync with Outlook.</p>
         </div>
-        <div className="flex items-center gap-5"><button aria-label="Notifications" className="relative text-[#2f1b59]"><Bell className="size-6" /><span className="absolute right-0 top-0 size-2 rounded-full bg-[#8b5cf6]" /></button><div className="relative size-14 overflow-hidden rounded-full ring-2 ring-[#ead9b8]"><Image src={nextBooking?.coverImageUrl || "/images/dogs/ace.jpg"} alt={`${nextBooking?.dogName ?? "Client"} profile photo`} fill sizes="56px" className="object-cover" /></div></div>
+        <div className="flex items-center gap-5"><button aria-label="Notifications" className="relative text-[#2f1b59]"><Bell className="size-6" /><span className="absolute right-0 top-0 size-2 rounded-full bg-[#8b5cf6]" /></button><div className="relative size-14 overflow-hidden rounded-full ring-2 ring-[#ead9b8]"><Image src={headerImage || "/images/dogs/ace.jpg"} alt={`${nextBooking?.dogName ?? "Client"} profile photo`} fill sizes="56px" className="object-cover" /></div></div>
       </header>
 
       <div className="mx-auto mt-10 max-w-6xl">
@@ -95,7 +100,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
 
         {nextBooking ? <BookingCard className="mt-5">
           <div className="grid lg:grid-cols-[2fr_2.4fr_1.25fr]">
-            <div className="relative min-h-80"><Image src={nextBooking?.coverImageUrl || "/images/dogs/ace.jpg"} alt={`${nextBooking.dogName} booking`} fill sizes="380px" className="object-cover" /></div>
+            <div className="relative min-h-80"><Image src={bookingImage || "/images/dogs/ace.jpg"} alt={`${nextBooking.dogName} booking`} fill sizes="380px" className="object-cover" /></div>
             <div className="p-8 lg:p-10">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-[#3f2581]">Upcoming session</p>
               <h2 className="mt-5 font-serif text-3xl text-[#25203d]">{nextBooking.serviceName}</h2>
@@ -127,7 +132,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
           </div>
         </section>
 
-        <section className="relative mt-9 overflow-hidden rounded-xl bg-[#f4eef8] p-9 sm:p-12"><Image src="/images/dogs/melakta.jpeg" alt="Jeroen with a happy dog" fill sizes="720px" className="object-cover object-right opacity-45" /><div className="relative max-w-md"><h2 className="font-serif text-2xl">Need to make a change?</h2><p className="mt-4 text-sm leading-7">Reschedule, ask a question or just say hi. I&apos;m here to help!</p><Link href="/contact" className="mt-7 inline-flex items-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">Send me a message <PawPrint className="size-4" /></Link></div></section>
+        <section className="relative mt-9 overflow-hidden rounded-xl bg-[#f4eef8] p-9 sm:p-12"><Image src={supportImage || "/images/dogs/melakta.jpeg"} alt="Your dog care support" fill sizes="720px" className="object-cover object-right opacity-45" /><div className="relative max-w-md"><h2 className="font-serif text-2xl">Need to make a change?</h2><p className="mt-4 text-sm leading-7">Reschedule, ask a question or just say hi. I&apos;m here to help!</p><Link href="/contact" className="mt-7 inline-flex items-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">Send me a message <PawPrint className="size-4" /></Link></div></section>
       </div>
     </div>
   );

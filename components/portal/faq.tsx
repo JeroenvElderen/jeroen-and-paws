@@ -21,6 +21,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { usePortalDogImages } from "./use-portal-dog-images";
+
 type FAQCategory =
   | "All"
   | "Bookings"
@@ -340,8 +342,10 @@ function normalise(value: string) {
 }
 
 export function FAQ({
+  accessToken,
   onBackToDashboard,
 }: {
+  accessToken?: string;
   onBackToDashboard: () => void;
 }) {
   const [activeCategory, setActiveCategory] = useState<FAQCategory>("All");
@@ -382,6 +386,7 @@ export function FAQ({
   }, []);
 
   const questionCountLabel = `${filteredQuestions.length} ${filteredQuestions.length === 1 ? "question" : "questions"}`;
+  const dogImages = usePortalDogImages(accessToken, 1);
 
   return (
     <div className="px-4 py-6 text-[#17132a] sm:px-8 lg:px-10 lg:py-10">
@@ -406,7 +411,7 @@ export function FAQ({
             <span className="absolute -right-1 -top-2 grid size-5 place-items-center rounded-full bg-[#17132a] text-[0.65rem] font-black text-white">2</span>
           </button>
           <div className="relative size-14 overflow-hidden rounded-full ring-2 ring-[#ead9b8]">
-            <Image src="/images/dogs/ace.jpg" alt="Teddy profile photo" fill sizes="56px" className="object-cover" />
+            <Image src={dogImages.getImage(0, "/images/dogs/ace.jpg") || "/images/dogs/ace.jpg"} alt="Client dog photo" fill sizes="56px" className="object-cover" />
           </div>
         </div>
       </header>

@@ -6,33 +6,10 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { emptyPortalDashboardData, mapPortalDashboardRows } from "./portal-data";
+import { usePortalDogImages } from "./use-portal-dog-images";
 import { useSupabaseLiveQuery } from "./use-supabase-live-query";
 
 const dashboardRealtimeTables = ["portal_clients", "portal_dogs", "portal_bookings", "portal_session_updates", "portal_gallery_items"];
-const galleryRealtimeTables = ["portal_gallery_items", "portal_bookings", "portal_dogs"];
-const dogProfileRealtimeTables = ["portal_dogs"];
-const dogImageStorageKey = "jeroen-and-paws-portal-dog-images";
-const emptyDogPhotos: PortalDogPhoto[] = [];
-
-type PortalDogPhoto = {
-  id: string;
-  dog_name: string | null;
-  image_url: string;
-};
-
-type PortalDogRow = {
-  id: string;
-  name: string | null;
-  profile_photo_url: string | null;
-  hero_photo_url: string | null;
-};
-
-type PortalImageSlots = {
-  heroPhotoUrl: string | null;
-  bookingPhotoUrl: string | null;
-  countdownPhotoUrl: string | null;
-  latestSessionPhotoUrl: string | null;
-};
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("en-IE", { dateStyle: "full" }).format(new Date(date));
@@ -62,80 +39,6 @@ function PortalCard({
   );
 }
 
-function mapDogPhotoRows(rows: unknown) {
-  return Array.isArray(rows)
-    ? (rows as PortalDogPhoto[]).filter((photo) => photo.image_url?.trim())
-    : [];
-}
-
-function mapDogRows(rows: unknown) {
-  if (!Array.isArray(rows)) return [];
-
-  return (rows as PortalDogRow[]).flatMap((dog) => [
-    ...(dog.profile_photo_url?.trim() ? [{
-      id: `${dog.id}-profile`,
-      dog_name: dog.name,
-      image_url: dog.profile_photo_url,
-    }] : []),
-    ...(dog.hero_photo_url?.trim() ? [{
-      id: `${dog.id}-hero`,
-      dog_name: dog.name,
-      image_url: dog.hero_photo_url,
-    }] : []),
-  ] satisfies PortalDogPhoto[]);
-}
-
-function getRandomIndex(max: number) {
-  return Math.floor(Math.random() * max);
-}
-
-function shuffle<T>(items: T[]) {
-  const shuffled = [...items];
-
-  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const swapIndex = getRandomIndex(index + 1);
-    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
-  }
-
-  return shuffled;
-}
-
-function getStoredImageUrls() {
-  try {
-    const stored = window.localStorage.getItem(dogImageStorageKey);
-    return stored ? (JSON.parse(stored) as string[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function chooseDogPhotos(photos: PortalDogPhoto[]) {
-  const galleryUrls = Array.from(new Set(photos.map((photo) => photo.image_url.trim()).filter(Boolean)));
-  const previousUrls = getStoredImageUrls();
-  const pool = galleryUrls;
-  const freshPool = pool.filter((url) => !previousUrls.includes(url));
-  const preferredUrls = [
-    ...shuffle(freshPool),
-    ...shuffle(pool.filter((url) => freshPool.length === 0 || !freshPool.includes(url))),
-  ];
-
-  const chosenUrls = [0, 1, 2, 3].map((index) => {
-    if (preferredUrls[index]) return preferredUrls[index];
-    return pool[index % Math.max(pool.length, 1)] || null;
-  });
-
-  if (chosenUrls.some(Boolean)) {
-    window.localStorage.setItem(dogImageStorageKey, JSON.stringify(chosenUrls.filter(Boolean)));
-  }
-
-  return {
-    heroPhotoUrl: chosenUrls[0] || null,
-    bookingPhotoUrl: chosenUrls[1] || chosenUrls[0] || null,
-    countdownPhotoUrl: chosenUrls[2] || chosenUrls[0] || null,
-    latestSessionPhotoUrl: chosenUrls[3] || chosenUrls[0] || null,
-  } satisfies PortalImageSlots;
-}
-
 function SupabaseImage({ alt, children, className, imageClassName = "object-cover", priority = false, sizes, src }: { alt: string; children?: React.ReactNode; className: string; imageClassName?: string; priority?: boolean; sizes: string; src: string | null }) {
   return (
     <div className={`${className} ${src ? "" : "grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]"}`}>
@@ -147,7 +50,6 @@ function SupabaseImage({ alt, children, className, imageClassName = "object-cove
 
 export function Dashboard({ accessToken }: { accessToken?: string }) {
   const [now, setNow] = useState(() => Date.now());
-  const [imageSlots, setImageSlots] = useState<PortalImageSlots | null>(null);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 60000);
     return () => window.clearInterval(timer);
@@ -159,33 +61,16 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
     realtimeTables: dashboardRealtimeTables,
     map: mapPortalDashboardRows,
   });
-  const { data: dogPhotos } = useSupabaseLiveQuery({
-    accessToken,
-    fallback: emptyDogPhotos,
-    path: "/rest/v1/portal_gallery?select=id,dog_name,image_url&order=created_at.desc",
-    realtimeTables: galleryRealtimeTables,
-    map: mapDogPhotoRows,
-  });
-  const { data: dogProfilePhotos } = useSupabaseLiveQuery({
-    accessToken,
-    fallback: emptyDogPhotos,
-    path: "/rest/v1/portal_dogs?select=id,name,profile_photo_url,hero_photo_url&status=eq.active&order=created_at.desc",
-    realtimeTables: dogProfileRealtimeTables,
-    map: mapDogRows,
-  });
+  const dogImages = usePortalDogImages(accessToken, 4);
   const elapsed = useMemo(() => getElapsedParts(data.clientSince, now), [data.clientSince, now]);
   const dogPossessive = `${data.dogNames}${data.dogNames.includes(",") || data.dogNames.includes(" and ") ? "’" : "’s"}`;
   const booking = data.upcomingBooking;
   
-  useEffect(() => {
-    queueMicrotask(() => setImageSlots(chooseDogPhotos([...dogProfilePhotos, ...dogPhotos])));
-  }, [dogPhotos, dogProfilePhotos]);
-
-  const displayedImages = imageSlots ?? {
-    heroPhotoUrl: data.heroPhotoUrl,
-    bookingPhotoUrl: booking?.imageUrl ?? data.dogPhotoUrl,
-    countdownPhotoUrl: data.dogPhotoUrl,
-    latestSessionPhotoUrl: data.latestSession?.imageUrl ?? data.dogPhotoUrl,
+  const displayedImages = {
+    heroPhotoUrl: dogImages.getImage(0, data.heroPhotoUrl),
+    bookingPhotoUrl: dogImages.getImage(1, booking?.imageUrl ?? data.dogPhotoUrl),
+    countdownPhotoUrl: dogImages.getImage(2, data.dogPhotoUrl),
+    latestSessionPhotoUrl: dogImages.getImage(3, data.latestSession?.imageUrl ?? data.dogPhotoUrl),
   };
 
   const journey = [

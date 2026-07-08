@@ -445,7 +445,7 @@ export function PortalShell() {
       return <Profile accessToken={portalSession.accessToken} onBackToDashboard={() => setActiveView("dashboard")} />;
     }
     if (activeView === "faq") {
-      return <FAQ onBackToDashboard={() => setActiveView("dashboard")} />;
+      return <FAQ accessToken={portalSession.accessToken} onBackToDashboard={() => setActiveView("dashboard")} />;
     }
 
     const current = navItems.find(([key]) => key === activeView);
