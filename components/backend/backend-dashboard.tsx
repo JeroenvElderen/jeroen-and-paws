@@ -290,15 +290,24 @@ export function BackendDashboard() {
           return;
         }
 
-        fetchBackendUserEmail(parsedSession.accessToken)
-          .then((verifiedEmail) => {
-            if (verifiedEmail?.toLowerCase() !== backendAdminEmail) {
+        const sessionPromise = parsedSession.expiresAt <= Date.now() + 120_000
+          ? refreshBackendSession(parsedSession)
+          : fetchBackendUserEmail(parsedSession.accessToken).then((verifiedEmail) => {
+              if (verifiedEmail?.toLowerCase() !== backendAdminEmail) return null;
+
+              return parsedSession;
+            });
+
+        sessionPromise
+          .then((verifiedSession) => {
+            if (!verifiedSession) {
               window.localStorage.removeItem(backendSessionStorageKey);
               setBackendSession(null);
               return;
             }
 
-            setBackendSession(parsedSession);
+            window.localStorage.setItem(backendSessionStorageKey, JSON.stringify(verifiedSession));
+            setBackendSession(verifiedSession);
           })
           .catch(() => {
             window.localStorage.removeItem(backendSessionStorageKey);

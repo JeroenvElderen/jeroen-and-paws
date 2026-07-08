@@ -99,7 +99,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ bookings: ((rows ?? []) as SupabaseBookingRow[]).map(mapBookingRow), dogs, isFallback: false });
     } catch (error) {
       console.error("Booking data unavailable", { route: "/api/bookings", scope, error });
-      return NextResponse.json({ error: "Unable to load bookings from Supabase." }, { status: 502 });
+      return NextResponse.json({ bookings: fallbackBookings, dogs: [], isFallback: true, error: "Unable to load bookings from Supabase." });
     }
   }
 

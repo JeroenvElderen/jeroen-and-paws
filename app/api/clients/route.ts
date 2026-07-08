@@ -7,6 +7,26 @@ export const runtime = "nodejs";
 const clientPlaceholderImage = "/images/dogs/kaiser.jpg";
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
 
+const fallbackClients = [
+  {
+    id: "fallback-client",
+    name: "Client data unavailable",
+    email: "Reconnect Supabase to load clients",
+    phone: "No phone available",
+    address: "No address available",
+    dogs: "0 Dogs",
+    dogNames: "No dogs linked",
+    bookings: 0,
+    spent: "—",
+    joinedDate: null,
+    lastBookingDate: null,
+    service: "No bookings yet",
+    status: "Inactive",
+    notes: "Live client data could not be loaded from Supabase.",
+    image: clientPlaceholderImage,
+  },
+];
+
 type AdminClientRow = {
   id: string;
   full_name: string | null;
@@ -108,12 +128,11 @@ export async function GET(request: Request) {
     const message = error instanceof Error ? error.message : "Unable to load clients from Supabase.";
     console.error("Client data unavailable", { route: "/api/clients", error });
 
-    return NextResponse.json(
-      {
-        error: "Unable to load clients from Supabase.",
-        details: process.env.NODE_ENV === "production" ? undefined : message,
-      },
-      { status: 502 },
-    );
+    return NextResponse.json({
+      clients: fallbackClients,
+      isFallback: true,
+      error: "Unable to load clients from Supabase.",
+      details: process.env.NODE_ENV === "production" ? undefined : message,
+    });
   }
 }
