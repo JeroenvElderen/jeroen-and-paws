@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
@@ -66,6 +67,17 @@ type SupabaseAuthUser = {
 
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
 
+const dogWriteSchema = z.object({
+  id: z.string().uuid().optional(),
+  clientId: z.string().uuid().optional(),
+  name: z.string().trim().min(1).optional(),
+  breed: z.string().trim().optional(),
+  age: z.string().trim().optional(),
+  status: z.string().trim().optional(),
+  notes: z.string().trim().optional(),
+  profilePhotoUrl: z.string().trim().url().or(z.literal("")).optional(),
+});
+
 async function getVerifiedBackendAdminToken(request: Request) {
   const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
@@ -119,4 +131,53 @@ export async function GET(request: Request) {
       { status: 502 },
     );
   }
+}
+export async function POST(request: Request) {
+  const adminAccessToken = await getVerifiedBackendAdminToken(request);
+  if (!adminAccessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const payload = dogWriteSchema.safeParse(await request.json().catch(() => null));
+  if (!payload.success || !payload.data.clientId || !payload.data.name) {
+    return NextResponse.json({ error: payload.success ? "Client and dog name are required." : payload.error.issues[0]?.message || "Invalid dog payload." }, { status: 400 });
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("portal_dogs")
+    .insert({
+      client_id: payload.data.clientId,
+      name: payload.data.name,
+      breed: payload.data.breed || null,
+      age: payload.data.age || null,
+      status: payload.data.status?.toLowerCase() || "active",
+      notes: payload.data.notes || null,
+      profile_photo_url: payload.data.profilePhotoUrl || null,
+    })
+    .select("*")
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 502 });
+  return NextResponse.json({ dog: data }, { status: 201 });
+}
+
+export async function PATCH(request: Request) {
+  const adminAccessToken = await getVerifiedBackendAdminToken(request);
+  if (!adminAccessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const payload = dogWriteSchema.safeParse(await request.json().catch(() => null));
+  if (!payload.success || !payload.data.id) return NextResponse.json({ error: payload.success ? "Dog id is required." : payload.error.issues[0]?.message || "Invalid dog payload." }, { status: 400 });
+
+  const updates: Record<string, unknown> = {};
+  if (typeof payload.data.name === "string") updates.name = payload.data.name;
+  if (typeof payload.data.breed === "string") updates.breed = payload.data.breed || null;
+  if (typeof payload.data.age === "string") updates.age = payload.data.age || null;
+  if (typeof payload.data.status === "string") updates.status = payload.data.status.toLowerCase();
+  if (typeof payload.data.notes === "string") updates.notes = payload.data.notes || null;
+  if (typeof payload.data.profilePhotoUrl === "string") updates.profile_photo_url = payload.data.profilePhotoUrl || null;
+
+  if (!Object.keys(updates).length) return NextResponse.json({ error: "No valid dog updates supplied." }, { status: 400 });
+
+  const { data, error } = await supabaseAdmin.from("portal_dogs").update(updates).eq("id", payload.data.id).select("*").single();
+  if (error) return NextResponse.json({ error: error.message }, { status: 502 });
+
+  return NextResponse.json({ dog: data });
 }

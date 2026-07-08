@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
+
+const clientWriteSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().trim().min(1).optional(),
+  email: z.string().trim().email().optional(),
+  phone: z.string().trim().optional(),
+  address: z.string().trim().optional(),
+  status: z.string().trim().optional(),
+});
 
 const fallbackClients = [
   {
@@ -139,20 +149,38 @@ export async function PATCH(request: Request) {
   const adminAccessToken = await getVerifiedBackendAdminToken(request);
   if (!adminAccessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const payload = (await request.json().catch(() => null)) as Record<string, unknown> | null;
-  if (!payload || typeof payload.id !== "string") return NextResponse.json({ error: "Client id is required." }, { status: 400 });
+  const payload = clientWriteSchema.safeParse(await request.json().catch(() => null));
+  if (!payload.success || !payload.data.id) return NextResponse.json({ error: payload.success ? "Client id is required." : payload.error.issues[0]?.message || "Invalid client payload." }, { status: 400 });
 
   const updates: Record<string, unknown> = {};
-  if (typeof payload.name === "string") updates.full_name = payload.name.trim();
-  if (typeof payload.email === "string") updates.email = payload.email.trim();
-  if (typeof payload.phone === "string") updates.phone = payload.phone.trim();
-  if (typeof payload.address === "string") updates.address = payload.address.trim();
-  if (typeof payload.status === "string") updates.status = payload.status.trim().toLowerCase();
+  if (typeof payload.data.name === "string") updates.full_name = payload.data.name;
+  if (typeof payload.data.email === "string") updates.email = payload.data.email;
+  if (typeof payload.data.phone === "string") updates.phone = payload.data.phone;
+  if (typeof payload.data.address === "string") updates.address = payload.data.address;
+  if (typeof payload.data.status === "string") updates.status = payload.data.status.toLowerCase();
 
   if (!Object.keys(updates).length) return NextResponse.json({ error: "No valid client updates supplied." }, { status: 400 });
 
-  const { data, error } = await supabaseAdmin.from("portal_clients").update(updates).eq("id", payload.id).select("*").single();
+  const { data, error } = await supabaseAdmin.from("portal_clients").update(updates).eq("id", payload.data.id).select("*").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 502 });
 
   return NextResponse.json({ client: data });
+}
+export async function POST(request: Request) {
+  const adminAccessToken = await getVerifiedBackendAdminToken(request);
+  if (!adminAccessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const payload = clientWriteSchema.safeParse(await request.json().catch(() => null));
+  if (!payload.success || !payload.data.name || !payload.data.email) {
+    return NextResponse.json({ error: payload.success ? "Client name and email are required." : payload.error.issues[0]?.message || "Invalid client payload." }, { status: 400 });
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from("portal_clients")
+    .insert({ full_name: payload.data.name, email: payload.data.email, phone: payload.data.phone || null, address: payload.data.address || null })
+    .select("*")
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 502 });
+  return NextResponse.json({ client: data }, { status: 201 });
 }

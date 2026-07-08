@@ -45,6 +45,8 @@ type DogsApiResponse = {
   isFallback?: boolean;
 };
 
+type DogClientOption = { id: string; name: string };
+
 function getSupabaseRealtimeConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -77,6 +79,10 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
   const [dogError, setDogError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"Overview" | "Info" | "History" | "Notes">("Overview");
   const [isEditingDog, setIsEditingDog] = useState(false);
+  const [showNewDog, setShowNewDog] = useState(false);
+  const [clientOptions, setClientOptions] = useState<DogClientOption[]>([]);
+  const [newDog, setNewDog] = useState({ clientId: "", name: "", breed: "", age: "", notes: "" });
+  const [isSavingDog, setIsSavingDog] = useState(false);
 
   const loadDogs = useCallback(async () => {
     try {
@@ -94,9 +100,37 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
     }
   }, [accessToken]);
 
+
+  const loadClientOptions = useCallback(async () => {
+    const response = await fetch("/api/clients", { cache: "no-store", headers: { Authorization: `Bearer ${accessToken}` } });
+    if (!response.ok) return;
+    const payload = (await response.json()) as { clients?: Array<{ id: string; name: string }> };
+    const clients = payload.clients ?? [];
+    setClientOptions(clients.map((client) => ({ id: client.id, name: client.name })));
+    setNewDog((current) => ({ ...current, clientId: current.clientId || clients[0]?.id || "" }));
+  }, [accessToken]);
+
+  async function saveDogUpdates(dogId: string, updates: Partial<Pick<BackendDog, "name" | "breed" | "age" | "notesText" | "status">>) {
+    setDogRows((rows) => rows.map((dog) => dog.id === dogId ? { ...dog, ...updates } : dog));
+    const response = await fetch("/api/dogs", { method: "PATCH", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ id: dogId, ...updates, notes: updates.notesText }) });
+    if (!response.ok) setDogError("Supabase did not save the dog update. Please retry.");
+    await loadDogs();
+  }
+
+  async function createDog(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSavingDog(true);
+    const response = await fetch("/api/dogs", { method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify(newDog) });
+    setIsSavingDog(false);
+    if (!response.ok) { setDogError("Supabase did not create the dog. Please check the details and retry."); return; }
+    setNewDog({ clientId: clientOptions[0]?.id || "", name: "", breed: "", age: "", notes: "" });
+    setShowNewDog(false);
+    await loadDogs();
+  }
+
   useEffect(() => {
-    queueMicrotask(() => void loadDogs());
-  }, [loadDogs]);
+    queueMicrotask(() => { void loadDogs(); void loadClientOptions(); });
+  }, [loadClientOptions, loadDogs]);
 
   useEffect(() => {
     const config = getSupabaseRealtimeConfig();
@@ -147,8 +181,10 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
     <div className="p-5 md:p-10">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div><h1 className="font-serif text-3xl">Dogs <PawPrint className="inline size-6 text-[#6c38c2]" /></h1><p className="mt-1 text-sm text-[#6d667a]">View and manage all dogs in your care.</p></div>
-        <button className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25"><Plus className="mr-2 inline size-4" />Add New Dog</button>
+        <button onClick={() => setShowNewDog(true)} className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25"><Plus className="mr-2 inline size-4" />Add New Dog</button>
       </div>
+
+      {showNewDog && <div className="fixed inset-0 z-50 grid place-items-center bg-[#151124]/45 p-4 backdrop-blur-sm"><form onSubmit={createDog} className="w-full max-w-xl rounded-[1.5rem] bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#6c38c2]">New dog</p><h2 className="mt-2 font-serif text-3xl">Save dog to Supabase</h2></div><button type="button" onClick={() => setShowNewDog(false)} className="rounded-lg border border-[#151124]/10 p-2"><X className="size-5" /></button></div><div className="mt-6 grid gap-3"><select required value={newDog.clientId} onChange={(e) => setNewDog((v) => ({ ...v, clientId: e.target.value }))} className="rounded-lg border px-3 py-2"><option value="" disabled>Select owner</option>{clientOptions.map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}</select><input required value={newDog.name} onChange={(e) => setNewDog((v) => ({ ...v, name: e.target.value }))} placeholder="Dog name" className="rounded-lg border px-3 py-2" /><input value={newDog.breed} onChange={(e) => setNewDog((v) => ({ ...v, breed: e.target.value }))} placeholder="Breed" className="rounded-lg border px-3 py-2" /><input value={newDog.age} onChange={(e) => setNewDog((v) => ({ ...v, age: e.target.value }))} placeholder="Age" className="rounded-lg border px-3 py-2" /><textarea value={newDog.notes} onChange={(e) => setNewDog((v) => ({ ...v, notes: e.target.value }))} placeholder="Notes" className="rounded-lg border px-3 py-2" /></div><div className="mt-6 flex justify-end gap-3"><button type="button" onClick={() => setShowNewDog(false)} className="rounded-lg border px-5 py-3 text-sm font-bold">Cancel</button><button disabled={isSavingDog || !newDog.clientId} className="rounded-lg bg-[#4f2c91] px-5 py-3 text-sm font-bold text-white disabled:opacity-60">{isSavingDog ? "Saving…" : "Save to Supabase"}</button></div></form></div>}
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {statCards.map(([key, label, Icon, tone]) => (
@@ -192,7 +228,7 @@ export function BackendDogs({ accessToken }: { accessToken: string }) {
               <div className="mt-5 space-y-5 text-sm">
                 {(activeTab === "Overview" ? [[UserRound, "Owner", selectedDog.owner], [CalendarDays, "Last Service", `${formatDisplayDate(selectedDog.lastDate)}\n${selectedDog.lastService}`], [CalendarDays, "Live Status", isLoadingDogs ? "Refreshing from Supabase…" : "Synced from Supabase realtime"]] : activeTab === "Info" ? [[Phone, "Phone", selectedDog.phone], [Mail, "Email", selectedDog.email], [Cake, "Age", selectedDog.age], [Weight, "Breed", selectedDog.breed]] : activeTab === "History" ? [[CalendarDays, "Last Service", `${formatDisplayDate(selectedDog.lastDate)}\n${selectedDog.lastService}`], [StickyNote, "Updates", `${selectedDog.notes} saved update(s)`]] : [[StickyNote, "Notes", selectedDog.notesText]]).map(([Icon, label, value]) => <div key={String(label)} className="grid grid-cols-[1.2rem_5rem_1fr] gap-3 text-[#4f4863]"><Icon className="size-4 text-[#6c38c2]" /><span>{label as string}</span><span className="whitespace-pre-line text-[#4f4863]">{value as string}</span></div>)}
               </div>
-              {isEditingDog && <div className="mt-5 rounded-xl border border-[#151124]/10 bg-[#fbf9fd] p-4 text-sm"><p className="font-semibold">Edit dog info</p><input defaultValue={selectedDog.name} onBlur={(event) => setDogRows((rows) => rows.map((dog) => dog.id === selectedDog.id ? { ...dog, name: event.target.value } : dog))} className="mt-3 w-full rounded-lg border px-3 py-2" /><input defaultValue={selectedDog.breed} onBlur={(event) => setDogRows((rows) => rows.map((dog) => dog.id === selectedDog.id ? { ...dog, breed: event.target.value } : dog))} className="mt-3 w-full rounded-lg border px-3 py-2" /><textarea defaultValue={selectedDog.notesText} onBlur={(event) => setDogRows((rows) => rows.map((dog) => dog.id === selectedDog.id ? { ...dog, notesText: event.target.value } : dog))} className="mt-3 w-full rounded-lg border px-3 py-2" /></div>}
+              {isEditingDog && <div className="mt-5 rounded-xl border border-[#151124]/10 bg-[#fbf9fd] p-4 text-sm"><p className="font-semibold">Edit dog info</p><input defaultValue={selectedDog.name} onBlur={(event) => void saveDogUpdates(selectedDog.id, { name: event.target.value })} className="mt-3 w-full rounded-lg border px-3 py-2" /><input defaultValue={selectedDog.breed} onBlur={(event) => void saveDogUpdates(selectedDog.id, { breed: event.target.value })} className="mt-3 w-full rounded-lg border px-3 py-2" /><textarea defaultValue={selectedDog.notesText} onBlur={(event) => void saveDogUpdates(selectedDog.id, { notesText: event.target.value })} className="mt-3 w-full rounded-lg border px-3 py-2" /></div>}
               <button onClick={() => setIsEditingDog((value) => !value)} className="mt-3 w-full rounded-lg border border-[#151124]/10 px-5 py-3 text-sm font-semibold text-[#4f4863]"><Edit3 className="mr-2 inline size-4" />Edit Dog Info</button>
             </>
           ) : (
