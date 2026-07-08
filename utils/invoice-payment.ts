@@ -24,17 +24,19 @@ export function buildInvoicePaymentTitle({ dogNames, serviceName, durationMinute
   return parts.join(" - ");
 }
 
-export function buildInvoiceWhatsappMessage(input: { clientName: string; invoiceNumber: string; amount: string; paymentTitle: string; paymentUrl: string }) {
+export function buildInvoiceWhatsappMessage(input: { clientName: string; invoiceNumber: string; amount: string; paymentTitle: string; paymentUrl: string; dogNames?: string }) {
+  // Edit the lines below to adjust the WhatsApp invoice message text.
+  // Keep the placeholders (input.clientName, input.paymentUrl, etc.) where you want invoice details inserted.
+  const dogNames = input.dogNames || input.paymentTitle;
+
   return [
-    `Hi ${input.clientName || "there"},`,
+    "Hiya!",
     "",
-    `Your Jeroen & Paws invoice is ready: ${input.paymentTitle}.`,
-    `Invoice: ${input.invoiceNumber}`,
-    `Amount: ${input.amount}`,
+    `Hope your Friday is going well and ${dogNames} ${dogNames.includes(",") ? "are" : "is"} looking forward for the weekend.`,
     "",
-    `You can pay securely via Revolut here: ${input.paymentUrl}`,
+    "This weeks payment link:",
+    input.paymentUrl,
     "",
-    "Thank you!",
-    "Jeroen",
+    `Wishing you a wonderful weekend and lots of hugs to ${dogNames}`
   ].join("\n");
 }
