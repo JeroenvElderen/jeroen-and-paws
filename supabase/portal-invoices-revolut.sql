@@ -7,9 +7,13 @@ create table if not exists public.portal_invoices (
   invoice_number text not null unique,
   client_name text,
   client_email text,
+  client_address text,
   dog_names text[] not null default '{}',
   issued_on date not null default current_date,
   due_on date,
+  service_period_start date,
+  service_period_end date,
+  line_items jsonb not null default '[]'::jsonb,
   amount_cents integer not null check (amount_cents >= 0),
   currency text not null default 'EUR',
   status text not null default 'pending' check (status in ('draft', 'sent', 'pending', 'paid', 'overdue', 'refunded')),
@@ -25,6 +29,13 @@ create index if not exists portal_invoices_client_id_idx on public.portal_invoic
 create index if not exists portal_invoices_status_idx on public.portal_invoices(status);
 create index if not exists portal_invoices_due_on_idx on public.portal_invoices(due_on);
 create index if not exists portal_invoices_payment_reference_idx on public.portal_invoices(payment_reference);
+create index if not exists portal_invoices_client_email_idx on public.portal_invoices(lower(client_email));
+
+alter table public.portal_invoices
+  add column if not exists client_address text,
+  add column if not exists service_period_start date,
+  add column if not exists service_period_end date,
+  add column if not exists line_items jsonb not null default '[]'::jsonb;
 
 create or replace function public.set_portal_invoices_updated_at()
 returns trigger
@@ -40,6 +51,31 @@ drop trigger if exists portal_invoices_updated_at on public.portal_invoices;
 create trigger portal_invoices_updated_at
 before update on public.portal_invoices
 for each row execute function public.set_portal_invoices_updated_at();
+
+create or replace function public.link_unmatched_portal_invoices()
+returns trigger
+language plpgsql
+as $$
+begin
+  update public.portal_invoices
+  set portal_client_id = new.id
+  where portal_client_id is null
+    and (
+      lower(coalesce(client_email, '')) = lower(new.email)
+      or (
+        coalesce(client_email, '') = ''
+        and lower(coalesce(client_name, '')) = lower(new.full_name)
+      )
+    );
+
+  return new;
+end;
+$$;
+
+drop trigger if exists portal_clients_link_unmatched_invoices on public.portal_clients;
+create trigger portal_clients_link_unmatched_invoices
+after insert or update of email, full_name on public.portal_clients
+for each row execute function public.link_unmatched_portal_invoices();
 
 alter table public.portal_invoices enable row level security;
 
@@ -77,9 +113,13 @@ insert into public.portal_invoices (
   invoice_number,
   client_name,
   client_email,
+  client_address,
   dog_names,
   issued_on,
   due_on,
+  service_period_start,
+  service_period_end,
+  line_items,
   amount_cents,
   currency,
   status,
@@ -88,9 +128,13 @@ insert into public.portal_invoices (
   'INV-2026-0001',
   'Test Client',
   'client@example.com',
+  'A98 R275, Ireland',
   array['Test Dog'],
   current_date,
   current_date + interval '14 days',
+  current_date,
+  current_date + interval '14 days',
+  '[{"description":"Example dog care services","quantity":1,"unitAmountCents":6000}]'::jsonb,
   6000,
   'EUR',
   'pending',
