@@ -269,6 +269,7 @@ export function BackendDashboard() {
   const [backendSession, setBackendSession] = useState<BackendSession | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [activeView, setActiveView] = useState<BackendView>("dashboard");
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const activeTitle = getViewTitle(activeView);
 
   useEffect(() => {
@@ -339,6 +340,11 @@ export function BackendDashboard() {
     return <BackendAuthPrompt onAuthenticated={setBackendSession} />;
   }
 
+  function handleNavChange(view: BackendView) {
+    setActiveView(view);
+    setIsMobileNavOpen(false);
+  }
+
   const ActiveContent = (() => {
     if (activeView === "dashboard") return <BackendDashboardOverview />;
     if (activeView === "bookings") return <BackendBookings accessToken={backendSession.accessToken} />;
@@ -372,7 +378,7 @@ export function BackendDashboard() {
                         key={key}
                         type="button"
                         aria-current={isActive ? "page" : undefined}
-                        onClick={() => setActiveView(key)}
+                        onClick={() => handleNavChange(key)}
                         className={`flex w-full items-center gap-4 rounded-lg px-3 py-3 text-left text-sm font-semibold ${isActive ? "bg-[#4f2c91] text-white shadow-lg shadow-[#4f2c91]/30" : "text-white/88 hover:bg-white/8"}`}
                       >
                         <Icon className="size-5" /> {label}
@@ -386,10 +392,48 @@ export function BackendDashboard() {
         </aside>
 
         <div className="min-w-0">
-          <header className="flex h-20 items-center justify-between border-b border-[#151124]/10 bg-white/86 px-5 backdrop-blur md:px-10">
-            <Menu className="size-6" />
-            <div className="flex items-center gap-5"><span className="hidden text-sm font-semibold text-[#665d70] md:inline">{backendSession.email}</span><button type="button" onClick={() => { window.localStorage.removeItem(backendSessionStorageKey); setBackendSession(null); setActiveView("dashboard"); }} className="inline-flex items-center gap-2 rounded-lg border border-[#151124]/10 px-3 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#4f2c91]"><LogOut className="size-4" /> Log out</button><Bell className="size-5 text-[#3c246c]" /><label className="hidden items-center gap-3 rounded-lg border border-[#151124]/10 bg-white px-4 py-3 text-sm text-[#858093] shadow-sm sm:flex"><input className="w-56 bg-transparent outline-none" placeholder={activeView === "bookings" ? "Search bookings, clients, dogs..." : `Search ${activeTitle.toLowerCase()}...`} /><Search className="size-5" /></label></div>
+          <header className="relative flex h-20 items-center justify-between border-b border-[#151124]/10 bg-white/86 px-5 backdrop-blur md:px-10">
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-lg border border-[#151124]/10 px-3 py-2 text-sm font-black uppercase tracking-[0.12em] text-[#4f2c91] xl:hidden"
+              aria-controls="backend-mobile-navigation"
+              aria-expanded={isMobileNavOpen}
+              onClick={() => setIsMobileNavOpen((current) => !current)}
+            >
+              <Menu className="size-5" /> Menu
+            </button>
+            <Menu className="hidden size-6 xl:block" />
+            <div className="flex items-center gap-5"><span className="hidden text-sm font-semibold text-[#665d70] md:inline">{backendSession.email}</span><button type="button" onClick={() => { window.localStorage.removeItem(backendSessionStorageKey); setBackendSession(null); setActiveView("dashboard"); setIsMobileNavOpen(false); }} className="inline-flex items-center gap-2 rounded-lg border border-[#151124]/10 px-3 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#4f2c91]"><LogOut className="size-4" /> Log out</button><Bell className="size-5 text-[#3c246c]" /><label className="hidden items-center gap-3 rounded-lg border border-[#151124]/10 bg-white px-4 py-3 text-sm text-[#858093] shadow-sm sm:flex"><input className="w-56 bg-transparent outline-none" placeholder={activeView === "bookings" ? "Search bookings, clients, dogs..." : `Search ${activeTitle.toLowerCase()}...`} /><Search className="size-5" /></label></div>
           </header>
+
+          {isMobileNavOpen && (
+            <nav id="backend-mobile-navigation" className="border-b border-[#151124]/10 bg-[#070a14] px-5 py-5 text-white shadow-xl xl:hidden" aria-label="Backend portal mobile navigation">
+              <div className="grid gap-5 sm:grid-cols-2">
+                {navGroups.map((group) => (
+                  <div key={group.label || "main"}>
+                    {group.label && <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/58">{group.label}</p>}
+                    <div className="space-y-1.5">
+                      {group.items.map(([key, Icon, label]) => {
+                        const isActive = activeView === key;
+
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            aria-current={isActive ? "page" : undefined}
+                            onClick={() => handleNavChange(key)}
+                            className={`flex w-full items-center gap-4 rounded-lg px-3 py-3 text-left text-sm font-semibold ${isActive ? "bg-[#4f2c91] text-white shadow-lg shadow-[#4f2c91]/30" : "text-white/88 hover:bg-white/8"}`}
+                          >
+                            <Icon className="size-5" /> {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </nav>
+          )}
 
           {ActiveContent}
         </div>

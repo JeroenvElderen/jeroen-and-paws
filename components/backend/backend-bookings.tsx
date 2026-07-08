@@ -15,6 +15,12 @@ type BookingOptionDog = {
   image: string | null;
 };
 
+type BookingOptionClient = {
+  id: string;
+  name: string;
+  dogs: BookingOptionDog[];
+};
+
 type BookingsApiResponse = {
   bookings?: CalendarBooking[];
   dogs?: BookingOptionDog[];
@@ -67,7 +73,24 @@ function NewBookingModal({ accessToken, dogs, onClose, onCreated }: { accessToke
     value.setHours(10, 0, 0, 0);
     return toDateTimeLocalValue(value);
   }, []);
-  const [dogId, setDogId] = useState(dogs[0]?.id ?? "");
+  const clients = useMemo<BookingOptionClient[]>(() => {
+    const grouped = new Map<string, BookingOptionClient>();
+
+    dogs.forEach((dog) => {
+      const existing = grouped.get(dog.clientId);
+
+      if (existing) {
+        existing.dogs.push(dog);
+        return;
+      }
+
+      grouped.set(dog.clientId, { id: dog.clientId, name: dog.clientName, dogs: [dog] });
+    });
+
+    return Array.from(grouped.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [dogs]);
+  const [clientId, setClientId] = useState(clients[0]?.id ?? "");
+  const [selectedDogIds, setSelectedDogIds] = useState<string[]>(clients[0]?.dogs[0]?.id ? [clients[0].dogs[0].id] : []);
   const [serviceName, setServiceName] = useState(serviceOptions[0]);
   const [startsAt, setStartsAt] = useState(defaultStart);
   const [durationMinutes, setDurationMinutes] = useState("60");
@@ -88,7 +111,7 @@ function NewBookingModal({ accessToken, dogs, onClose, onCreated }: { accessToke
       const response = await fetch("/api/bookings", {
         method: "POST",
         headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ dogId, serviceName, startsAt: start.toISOString(), endsAt: end.toISOString(), location, notes, status }),
+        body: JSON.stringify({ clientId, dogIds: selectedDogIds, serviceName, startsAt: start.toISOString(), endsAt: end.toISOString(), location, notes, status }),
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error || `Bookings API returned ${response.status}`);
@@ -101,13 +124,42 @@ function NewBookingModal({ accessToken, dogs, onClose, onCreated }: { accessToke
     }
   }
 
+  const clientDogs = clients.find((client) => client.id === clientId)?.dogs ?? [];
+
+  function handleClientChange(nextClientId: string) {
+    const nextClient = clients.find((client) => client.id === nextClientId);
+
+    setClientId(nextClientId);
+    setSelectedDogIds(nextClient?.dogs[0]?.id ? [nextClient.dogs[0].id] : []);
+  }
+
+  function handleDogSelection(dogId: string, checked: boolean) {
+    setSelectedDogIds((current) => {
+      if (checked) return current.includes(dogId) ? current : [...current, dogId];
+
+      return current.filter((id) => id !== dogId);
+    });
+  }
+
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-[#151124]/45 p-4 backdrop-blur-sm">
       <form onSubmit={handleSubmit} className="w-full max-w-2xl rounded-[1.5rem] bg-white p-6 shadow-2xl">
         <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#6c38c2]">New booking</p><h2 className="mt-2 font-serif text-3xl">Book a care session</h2></div><button type="button" onClick={onClose} className="rounded-lg border border-[#151124]/10 p-2"><X className="size-5" /></button></div>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <label className="text-sm font-bold">Dog & client<select required value={dogId} onChange={(event) => setDogId(event.target.value)} className="mt-2 w-full rounded-xl border border-[#151124]/12 px-4 py-3 font-semibold outline-none"><option value="" disabled>Select a dog</option>{dogs.map((dog) => <option key={dog.id} value={dog.id}>{dog.name} — {dog.clientName}</option>)}</select></label>
-          <label className="text-sm font-bold">Service<input required list="booking-services" value={serviceName} onChange={(event) => setServiceName(event.target.value)} className="mt-2 w-full rounded-xl border border-[#151124]/12 px-4 py-3 font-semibold outline-none" /><datalist id="booking-services">{serviceOptions.map((service) => <option key={service} value={service} />)}</datalist></label>
+          <label className="text-sm font-bold">Client<select required value={clientId} onChange={(event) => handleClientChange(event.target.value)} className="mt-2 w-full rounded-xl border border-[#151124]/12 px-4 py-3 font-semibold outline-none"><option value="" disabled>Select a client</option>{clients.map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}</select></label>
+          <label className="text-sm font-bold">Service<select required value={serviceName} onChange={(event) => setServiceName(event.target.value)} className="mt-2 w-full rounded-xl border border-[#151124]/12 px-4 py-3 font-semibold outline-none">{serviceOptions.map((service) => <option key={service} value={service}>{service}</option>)}</select></label>
+          <fieldset className="md:col-span-2 rounded-xl border border-[#151124]/12 px-4 py-3">
+            <legend className="px-1 text-sm font-bold">Dogs for selected client</legend>
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              {clientDogs.map((dog) => (
+                <label key={dog.id} className="flex items-center gap-3 rounded-lg bg-[#fbf9fd] px-3 py-2 text-sm font-semibold">
+                  <input type="checkbox" checked={selectedDogIds.includes(dog.id)} onChange={(event) => handleDogSelection(dog.id, event.target.checked)} className="size-4 accent-[#4f2c91]" />
+                  {dog.name}
+                </label>
+              ))}
+            </div>
+            {!clientDogs.length && <p className="mt-2 text-sm text-[#6d667a]">No dogs are linked to this client yet.</p>}
+          </fieldset>
           <label className="text-sm font-bold">Starts at<input required type="datetime-local" value={startsAt} onChange={(event) => setStartsAt(event.target.value)} className="mt-2 w-full rounded-xl border border-[#151124]/12 px-4 py-3 font-semibold outline-none" /></label>
           <label className="text-sm font-bold">Duration<select value={durationMinutes} onChange={(event) => setDurationMinutes(event.target.value)} className="mt-2 w-full rounded-xl border border-[#151124]/12 px-4 py-3 font-semibold outline-none"><option value="30">30 minutes</option><option value="60">60 minutes</option><option value="90">90 minutes</option><option value="120">2 hours</option><option value="240">Half day</option><option value="480">Full day</option></select></label>
           <label className="text-sm font-bold">Status<select value={status} onChange={(event) => setStatus(event.target.value as BookingStatus)} className="mt-2 w-full rounded-xl border border-[#151124]/12 px-4 py-3 font-semibold outline-none"><option value="confirmed">Confirmed</option><option value="pending_confirmation">Pending confirmation</option><option value="requested">Requested</option><option value="needs_review">Needs review</option></select></label>
@@ -115,7 +167,7 @@ function NewBookingModal({ accessToken, dogs, onClose, onCreated }: { accessToke
           <label className="md:col-span-2 text-sm font-bold">Notes<textarea value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} className="mt-2 w-full rounded-xl border border-[#151124]/12 px-4 py-3 font-semibold outline-none" /></label>
         </div>
         {error && <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</p>}
-        <div className="mt-6 flex justify-end gap-3"><button type="button" onClick={onClose} className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm font-bold">Cancel</button><button disabled={isSaving || !dogId} className="rounded-lg bg-[#4f2c91] px-5 py-3 text-sm font-bold text-white disabled:opacity-60">{isSaving ? "Creating…" : "Create booking"}</button></div>
+        <div className="mt-6 flex justify-end gap-3"><button type="button" onClick={onClose} className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm font-bold">Cancel</button><button disabled={isSaving || !clientId || selectedDogIds.length === 0} className="rounded-lg bg-[#4f2c91] px-5 py-3 text-sm font-bold text-white disabled:opacity-60">{isSaving ? "Creating…" : "Create booking"}</button></div>
       </form>
     </div>
   );

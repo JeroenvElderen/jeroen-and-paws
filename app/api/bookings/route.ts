@@ -9,7 +9,8 @@ export const runtime = "nodejs";
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
 
 const createBookingSchema = z.object({
-  dogId: z.string().uuid(),
+  clientId: z.string().uuid(),
+  dogIds: z.array(z.string().uuid()).min(1, "Select at least one dog."),
   serviceName: z.string().trim().min(2),
   startsAt: z.string().datetime(),
   endsAt: z.string().datetime(),
@@ -133,19 +134,19 @@ export async function POST(request: Request) {
     const { data: dogRows, error: dogError } = await supabaseAdmin
       .from("portal_dogs")
       .select("id,client_id")
-      .eq("id", payload.data.dogId)
-      .limit(1);
+      .in("id", payload.data.dogIds);
 
     if (dogError) throw dogError;
 
-    const dog = (dogRows as Array<{ id: string; client_id: string }> | null)?.[0];
+    const dogs = (dogRows as Array<{ id: string; client_id: string }> | null) ?? [];
 
-    if (!dog) return NextResponse.json({ error: "Selected dog was not found." }, { status: 404 });
+    if (dogs.length !== payload.data.dogIds.length) return NextResponse.json({ error: "One or more selected dogs were not found." }, { status: 404 });
+    if (dogs.some((dog) => dog.client_id !== payload.data.clientId)) return NextResponse.json({ error: "Selected dogs must belong to the selected client." }, { status: 400 });
 
     const { data: rows, error: insertError } = await supabaseAdmin
       .from("portal_bookings")
-      .insert({
-        client_id: dog.client_id,
+      .insert(dogs.map((dog) => ({
+        client_id: payload.data.clientId,
         dog_id: dog.id,
         service_name: payload.data.serviceName,
         starts_at: payload.data.startsAt,
@@ -156,12 +157,12 @@ export async function POST(request: Request) {
         status: payload.data.status satisfies BookingStatus,
         source: "admin_import",
         sync_status: "not_synced",
-      })
+      })))
       .select("*");
 
     if (insertError) throw insertError;
 
-    return NextResponse.json({ booking: rows?.[0] ? mapBookingRow(rows[0] as SupabaseBookingRow) : null }, { status: 201 });
+    return NextResponse.json({ bookings: ((rows ?? []) as SupabaseBookingRow[]).map(mapBookingRow) }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to create booking.";
     console.error("Booking create failed", { route: "/api/bookings", error });
