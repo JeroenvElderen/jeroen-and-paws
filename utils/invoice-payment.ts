@@ -1,4 +1,5 @@
 export type InvoiceTitleInput = {
+  invoiceNumber?: string;
   dogNames: string[];
   serviceName: string;
   durationMinutes?: number | null;
@@ -7,11 +8,11 @@ export type InvoiceTitleInput = {
 
 const servicesWithoutDuration = ["boarding", "day care", "daycare"];
 
-export function buildInvoicePaymentTitle({ dogNames, serviceName, durationMinutes, billingDays }: InvoiceTitleInput) {
+export function buildInvoicePaymentTitle({ invoiceNumber, dogNames, serviceName, durationMinutes, billingDays }: InvoiceTitleInput) {
   const dogTitle = dogNames.filter(Boolean).join(", ") || "Dog";
   const service = serviceName.trim() || "Service";
   const serviceKey = service.toLowerCase().replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
-  const parts = [dogTitle, service];
+  const parts = [invoiceNumber?.trim(), dogTitle, service].filter(Boolean);
 
   if (durationMinutes && !servicesWithoutDuration.includes(serviceKey)) {
     parts.push(`${durationMinutes}min`);

@@ -3,5 +3,11 @@
   "framework": "nextjs",
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
+  "crons": [
+    {
+      "path": "/api/invoices/sync",
+      "schedule": "*/30 * * * *"
+    }
+  ],
   "outputDirectory": null
 }

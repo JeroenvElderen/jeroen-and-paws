@@ -254,7 +254,7 @@ export async function POST(request: Request) {
 
     const matchedClient = await findMatchingClient(clientEmail, clientName);
     const paymentReference = cleanString(payload.paymentReference) || invoiceNumber;
-    const paymentTitle = cleanString(payload.paymentTitle) || buildInvoicePaymentTitle({ dogNames, serviceName, durationMinutes, billingDays });
+    const paymentTitle = cleanString(payload.paymentTitle) || buildInvoicePaymentTitle({ invoiceNumber, dogNames, serviceName, durationMinutes, billingDays });
     const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")}/portal?invoice=${encodeURIComponent(invoiceNumber)}` : null;
     const revolutOrder = status === "draft"
       ? { configured: false as const, error: "Draft invoice saved without creating a Revolut checkout link." }
