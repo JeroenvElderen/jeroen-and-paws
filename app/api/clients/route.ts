@@ -45,6 +45,7 @@ type AdminClientRow = {
   avatar_url: string | null;
   created_at: string | null;
   updated_at: string | null;
+  status: string | null;
   portal_dogs: Array<{ id: string; name: string | null; profile_photo_url: string | null }> | null;
   portal_bookings: Array<{ id: string; service_name: string | null; starts_at: string | null; status: string | null }> | null;
   portal_client_activity: Array<{ id: string; body: string | null; title: string | null }> | null;
@@ -84,7 +85,7 @@ function mapClient(row: AdminClientRow) {
     joinedDate: row.created_at,
     lastBookingDate: latestBooking?.starts_at || row.updated_at || row.created_at || null,
     service: latestBooking?.service_name?.trim() || "No bookings yet",
-    status: formatStatus(activeBooking?.status || (bookings.length ? "active" : "inactive")),
+    status: formatStatus(row.status || activeBooking?.status || (bookings.length ? "active" : "inactive")),
     notes: row.portal_client_activity?.[0]?.body?.trim() || row.portal_client_activity?.[0]?.title?.trim() || "No notes saved yet.",
     image: row.avatar_url || null,
   };
@@ -123,7 +124,7 @@ export async function GET(request: Request) {
   try {
     const { data: rows, error } = await supabaseAdmin
       .from("portal_clients")
-      .select("id,full_name,email,phone,address,avatar_url,created_at,updated_at,portal_dogs(id,name,profile_photo_url),portal_bookings(id,service_name,starts_at,status),portal_client_activity(id,title,body)")
+      .select("id,full_name,email,phone,address,avatar_url,created_at,updated_at,status,portal_dogs(id,name,profile_photo_url),portal_bookings(id,service_name,starts_at,status),portal_client_activity(id,title,body)")
       .order("starts_at", { referencedTable: "portal_bookings", ascending: false })
       .order("created_at", { referencedTable: "portal_client_activity", ascending: false })
       .limit(1, { referencedTable: "portal_client_activity" })
@@ -177,7 +178,7 @@ export async function POST(request: Request) {
 
   const { data, error } = await supabaseAdmin
     .from("portal_clients")
-    .insert({ full_name: payload.data.name, email: payload.data.email, phone: payload.data.phone || null, address: payload.data.address || null })
+    .insert({ full_name: payload.data.name, email: payload.data.email, phone: payload.data.phone || null, address: payload.data.address || null, status: payload.data.status?.toLowerCase() || "active" })
     .select("*")
     .single();
 

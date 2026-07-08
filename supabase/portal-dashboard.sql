@@ -14,7 +14,8 @@ create table if not exists public.portal_clients (
 );
 
 alter table public.portal_clients
-  add column if not exists calendar_feed_token text unique default encode(gen_random_bytes(24), 'hex');
+  add column if not exists calendar_feed_token text unique default encode(gen_random_bytes(24), 'hex'),
+  add column if not exists status text not null default 'active';
 
 update public.portal_clients
 set calendar_feed_token = encode(gen_random_bytes(24), 'hex')
@@ -247,7 +248,7 @@ grant select on public.portal_clients, public.portal_dogs, public.portal_booking
 grant select on public.portal_clients, public.portal_dogs, public.portal_bookings to service_role;
 grant select, insert, update on public.portal_outlook_imports to service_role;
 grant insert, delete on public.portal_dogs to authenticated;
-grant update (full_name, email) on public.portal_clients to authenticated;
+grant update (full_name, email, status) on public.portal_clients to authenticated;
 grant update (name, breed, age, status, profile_photo_url, hero_photo_url, notes) on public.portal_dogs to authenticated;
 
 alter table public.portal_dogs enable row level security;
