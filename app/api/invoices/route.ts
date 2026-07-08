@@ -130,6 +130,25 @@ function createInvoiceNumber() {
   return `INV-${year}-${stamp}`;
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) return error.message;
+  if (error && typeof error === "object") {
+    const candidate = error as { message?: unknown; details?: unknown; hint?: unknown; code?: unknown };
+    const parts = [candidate.message, candidate.details, candidate.hint, candidate.code]
+      .filter((value): value is string | number => typeof value === "string" || typeof value === "number")
+      .map(String)
+      .filter(Boolean);
+
+    if (parts.length) return parts.join(" ");
+  }
+
+  return fallback;
+}
+
+function getRevolutOrderError(revolutOrder: { configured: boolean; error?: string }) {
+  return revolutOrder.configured ? undefined : revolutOrder.error;
+}
+
 async function getVerifiedBackendAdminToken(request: Request) {
   const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
@@ -244,6 +263,11 @@ export async function POST(request: Request) {
       reference: paymentReference,
       customerEmail: clientEmail || matchedClient?.email || null,
       redirectUrl,
+    }).catch((error: unknown) => {
+      const message = getErrorMessage(error, "Revolut checkout link could not be created.");
+      console.error("Revolut checkout link creation failed", { route: "/api/invoices", error });
+
+      return { configured: false as const, error: message };
     });
     const { data: row, error } = await supabaseAdmin
       .from("portal_invoices")
@@ -277,15 +301,22 @@ export async function POST(request: Request) {
 
     if (error) throw error;
 
+    const revolutError = getRevolutOrderError(revolutOrder);
+
     return NextResponse.json({
       invoice: mapInvoice(row as InvoiceRow),
       clientMatched: Boolean(matchedClient),
       revolut: revolutOrder.configured
         ? { status: "checkout_created", createsRevolutCheckout: true, orderId: revolutOrder.orderId, checkoutUrl: revolutOrder.checkoutUrl }
-        : { status: "merchant_api_key_missing", createsRevolutCheckout: false, message: "Invoice saved, but REVOLUT_MERCHANT_API_KEY is not configured so no Revolut checkout link was generated." },
+        : {
+          status: revolutError ? "checkout_failed" : "merchant_api_key_missing",
+          createsRevolutCheckout: false,
+          message: revolutError || "Invoice saved, but REVOLUT_MERCHANT_API_KEY is not configured so no Revolut checkout link was generated.",
+        },
     }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to create invoice.";
+    console.error("Invoice creation failed", { route: "/api/invoices", error });
+    const message = getErrorMessage(error, "Unable to create invoice.");
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

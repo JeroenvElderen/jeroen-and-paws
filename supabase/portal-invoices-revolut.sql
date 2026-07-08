@@ -47,9 +47,12 @@ alter table public.portal_invoices
   add column if not exists payment_title text,
   add column if not exists payment_url text,
   add column if not exists revolut_order_id text,
+  add column if not exists revolut_transaction_id text,
   add column if not exists service_name text,
   add column if not exists duration_minutes integer,
   add column if not exists billing_days integer,
+  add column if not exists paid_on timestamptz,
+  add column if not exists notes text,
   add column if not exists line_items jsonb not null default '[]'::jsonb;
 
 create or replace function public.set_portal_invoices_updated_at()

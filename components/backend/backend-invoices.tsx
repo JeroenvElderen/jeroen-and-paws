@@ -261,9 +261,13 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
         headers: { "Content-Type": "application/json", ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
         body: JSON.stringify(payload),
       });
-      const result = (await response.json()) as { invoice?: BackendInvoice; clientMatched?: boolean; error?: string };
+      const result = (await response.json()) as { invoice?: BackendInvoice; clientMatched?: boolean; error?: string; revolut?: { createsRevolutCheckout?: boolean; message?: string } };
       if (!response.ok) throw new Error(result.error || "Invoice creation failed.");
-      setCreateMessage(`Created ${result.invoice?.number ?? "invoice"}. ${result.clientMatched ? "Linked to an existing client." : "Saved without a client link until a matching client exists."}`);
+      setCreateMessage([
+        `Created ${result.invoice?.number ?? "invoice"}.`,
+        result.clientMatched ? "Linked to an existing client." : "Saved without a client link until a matching client exists.",
+        result.revolut?.createsRevolutCheckout === false && result.revolut.message ? result.revolut.message : null,
+      ].filter(Boolean).join(" "));
       setDraftLineItems([{ description: "", quantity: "1", unitAmount: "" }]);
       setShowCreateForm(false);
       await loadInvoices();
