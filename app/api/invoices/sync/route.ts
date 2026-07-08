@@ -73,10 +73,21 @@ async function getVerifiedBackendAdminToken(request: Request) {
   return email?.toLowerCase() === backendAdminEmail ? accessToken : null;
 }
 
+function hasValidCronSecret(request: Request) {
+  const cronSecret = process.env.CRON_SECRET?.trim();
+  if (!cronSecret) return false;
+
+  const bearerToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const headerSecret = request.headers.get("x-cron-secret");
+
+  return bearerToken === cronSecret || headerSecret === cronSecret;
+}
+
 export async function POST(request: Request) {
   const adminAccessToken = await getVerifiedBackendAdminToken(request);
+  const isCronRequest = hasValidCronSecret(request);
 
-  if (!adminAccessToken && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (!adminAccessToken && !isCronRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -117,4 +128,8 @@ export async function POST(request: Request) {
     const message = error instanceof Error ? error.message : "Unable to sync Revolut payments.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
+}
+
+export async function GET(request: Request) {
+  return POST(request);
 }
