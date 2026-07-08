@@ -16,6 +16,34 @@ function BookingCard({ children, className = "" }: { children: React.ReactNode; 
   return <section className={`overflow-hidden rounded-xl border border-[#24163f]/10 bg-white shadow-[0_18px_55px_rgba(29,23,40,0.08)] ${className}`}>{children}</section>;
 }
 
+function getMonthStart(value: Date) {
+  return new Date(value.getFullYear(), value.getMonth(), 1);
+}
+
+function getCalendarDays(monthStart: Date) {
+  const firstDayOffset = (monthStart.getDay() + 6) % 7;
+  const gridStart = new Date(monthStart);
+  gridStart.setDate(monthStart.getDate() - firstDayOffset);
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const day = new Date(gridStart);
+    day.setDate(gridStart.getDate() + index);
+    return day;
+  });
+}
+
+function getDateKey(value: Date | string) {
+  const date = typeof value === "string" ? new Date(value) : value;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function getStatusTone(status: CalendarBooking["status"]) {
+  if (status === "cancelled" || status === "no_show") return "bg-[#f8e3df] text-[#8a2f20]";
+  if (status === "needs_review" || status === "reschedule_requested") return "bg-[#fff0cf] text-[#806013]";
+  if (status === "completed") return "bg-[#eee9e1] text-[#5f4d35]";
+  return "bg-[#e9f4df] text-[#356d28]";
+}
+
 export function MyBookings({ accessToken }: { accessToken?: string }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -23,6 +51,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
     return () => window.clearInterval(timer);
   }, []);
   const fallbackBookings = useMemo(() => [] as CalendarBooking[], []);
+  const [visibleMonth, setVisibleMonth] = useState(() => getMonthStart(new Date()));
   const realtimeTables = useMemo(() => ["portal_bookings", "portal_dogs", "portal_session_updates", "portal_gallery_items"], []);
   const { data: bookings, isLoading, error } = useSupabaseLiveQuery({
     accessToken,
@@ -32,10 +61,16 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
     map: mapBookingRows,
   });
 
-  const upcoming = useMemo(() => bookings.filter((booking) => booking.status !== "cancelled").sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()), [bookings]);
+  const upcoming = useMemo(() => bookings.filter((booking) => booking.status !== "cancelled" && new Date(booking.endsAt).getTime() >= now).sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()), [bookings, now]);
   const nextBooking = upcoming[0];
-  const futureBookings = upcoming.slice(1);
-  const dogCount = new Set(upcoming.map((booking) => booking.dogId || booking.dogName)).size;
+  const dogCount = new Set(bookings.map((booking) => booking.dogId || booking.dogName)).size;
+  const calendarDays = useMemo(() => getCalendarDays(visibleMonth), [visibleMonth]);
+  const bookingsByDay = useMemo(() => bookings.reduce<Record<string, CalendarBooking[]>>((days, booking) => {
+    const key = getDateKey(booking.startsAt);
+    days[key] = [...(days[key] || []), booking].sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+    return days;
+  }, {}), [bookings]);
+  const monthLabel = new Intl.DateTimeFormat("en-IE", { month: "long", year: "numeric" }).format(visibleMonth);
   const sessionPassed = nextBooking ? new Date(nextBooking.startsAt).getTime() < now : false;
   const timeline = nextBooking ? [
     [Check, "Booking", nextBooking.status.replace(/_/g, " "), formatBookingDate(nextBooking.startsAt, { day: "numeric", month: "short", year: "numeric" }), true],
@@ -56,7 +91,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
 
       <div className="mx-auto mt-10 max-w-6xl">
         {(isLoading || error || !nextBooking) && <p className="mb-5 rounded-xl border border-[#24163f]/10 bg-white px-5 py-4 text-sm text-[#665d70]">{isLoading ? "Loading live bookings…" : error ?? "No bookings yet."}</p>}
-        <div className="flex gap-14 border-b border-[#24163f]/10 text-sm font-medium"><a href="#" className="border-b-2 border-[#4d2e91] px-1 pb-5 text-[#17132a]">Upcoming</a><a href="#future-bookings" className="px-1 pb-5 text-[#17132a]">Future</a><a href="#" className="px-1 pb-5 text-[#17132a]">Cancelled</a></div>
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#24163f]/10 pb-5 text-sm font-medium"><p className="text-[#17132a]">Calendar view shows every booked, completed, review, and cancelled day in one place.</p><div className="flex gap-3"><button type="button" onClick={() => setVisibleMonth(getMonthStart(new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() - 1, 1)))} className="rounded border border-[#4d2e91]/20 px-4 py-2 text-[#3f2581]">Previous</button><button type="button" onClick={() => setVisibleMonth(getMonthStart(new Date()))} className="rounded border border-[#4d2e91]/20 px-4 py-2 text-[#3f2581]">Today</button><button type="button" onClick={() => setVisibleMonth(getMonthStart(new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1)))} className="rounded border border-[#4d2e91]/20 px-4 py-2 text-[#3f2581]">Next</button></div></div>
 
         {nextBooking ? <BookingCard className="mt-5">
           <div className="grid lg:grid-cols-[2fr_2.4fr_1.25fr]">
@@ -73,7 +108,24 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
           <div className="border-t border-[#24163f]/10 p-8 lg:p-10"><h3 className="font-serif text-xl">Session Timeline</h3><div className="mt-8 grid gap-8 md:grid-cols-4">{timeline.map(([Icon, title, status, date, active]) => <div key={title} className="relative text-center before:absolute before:left-0 before:top-8 before:hidden before:h-px before:w-full before:bg-[#24163f]/15 md:before:block"><div className={`relative z-10 mx-auto grid size-16 place-items-center rounded-full ${active ? "bg-[#28206e] text-white" : "bg-[#f0eaee] text-[#6a6170]"}`}><Icon className="size-7" /></div><p className="mt-4 text-xs font-black uppercase tracking-[0.14em]">{title}</p><p className="mt-1 text-sm capitalize text-[#665d70]">{status}</p>{date ? <p className="mt-2 text-xs text-[#665d70]">{date}</p> : null}</div>)}</div></div>
         </BookingCard> : null}
 
-        <section id="future-bookings" className="mt-9"><h2 className="font-serif text-2xl text-[#241f30]">Future Bookings</h2><div className="mt-6 space-y-4">{futureBookings.map((booking) => <article key={booking.id} className="grid overflow-hidden rounded-xl border border-[#24163f]/10 bg-white shadow-[0_12px_35px_rgba(29,23,40,0.06)] sm:grid-cols-[14rem_1fr_auto]"><div className="relative h-40 sm:h-auto"><Image src={booking.coverImageUrl || "/images/dogs/walk.jpeg"} alt={`${booking.dogName} session`} fill sizes="224px" className="object-cover" /></div><div className="p-7"><h3 className="font-serif text-xl text-[#25203d]">{booking.serviceName}</h3><p className="mt-5 text-sm text-[#342c3f]">{formatBookingDate(booking.startsAt, { day: "numeric", month: "long", year: "numeric" })} · {formatBookingTime(booking.startsAt)} – {formatBookingTime(booking.endsAt)}</p><p className="mt-2 text-sm text-[#342c3f]">{booking.location}</p></div><div className="flex items-center justify-between gap-6 p-7 sm:min-w-72"><span className="rounded-full bg-[#e9f4df] px-4 py-1 text-[0.65rem] font-black uppercase tracking-[0.14em] text-[#356d28]">{booking.status.replace(/_/g, " ")}</span><a href={`/api/bookings/${booking.id}`} className="rounded border border-[#4d2e91]/20 px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#3f2581]">.ics</a><ArrowRight className="size-5 text-[#3f2581]" /></div></article>)}</div></section>
+        <section id="booking-calendar" className="mt-9 overflow-hidden rounded-xl border border-[#24163f]/10 bg-white shadow-[0_18px_55px_rgba(29,23,40,0.08)]">
+          <div className="flex flex-col gap-4 border-b border-[#24163f]/10 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#3f2581]">Booking calendar</p>
+              <h2 className="mt-2 font-serif text-2xl text-[#241f30]">{monthLabel}</h2>
+            </div>
+            <div className="flex flex-wrap gap-3 text-xs font-bold uppercase tracking-[0.12em] text-[#665d70]"><span className="inline-flex items-center gap-2"><span className="size-3 rounded-full bg-[#e9f4df]" />Booked</span><span className="inline-flex items-center gap-2"><span className="size-3 rounded-full bg-[#fff0cf]" />Review</span><span className="inline-flex items-center gap-2"><span className="size-3 rounded-full bg-[#f8e3df]" />Cancelled</span></div>
+          </div>
+          <div className="grid grid-cols-7 border-b border-[#24163f]/10 bg-[#fbf9fd] text-center text-xs font-black uppercase tracking-[0.14em] text-[#3f2581]">{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => <div key={day} className="px-2 py-4">{day}</div>)}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-7">
+            {calendarDays.map((day) => {
+              const dayBookings = bookingsByDay[getDateKey(day)] || [];
+              const isCurrentMonth = day.getMonth() === visibleMonth.getMonth();
+              const isToday = getDateKey(day) === getDateKey(new Date(now));
+              return <article key={day.toISOString()} className={`min-h-36 border-b border-r border-[#24163f]/10 p-3 ${isCurrentMonth ? "bg-white" : "bg-[#fbf9fd] text-[#858093]"}`}><div className="flex items-center justify-between"><span className={`grid size-8 place-items-center rounded-full text-sm font-bold ${isToday ? "bg-[#4d2e91] text-white" : ""}`}>{day.getDate()}</span>{dayBookings.length ? <span className="text-xs font-bold text-[#3f2581]">{dayBookings.length}</span> : null}</div><div className="mt-3 space-y-2">{dayBookings.map((booking) => <a key={booking.id} href={`/api/bookings/${booking.id}`} className={`block rounded-lg px-3 py-2 text-xs leading-5 ${getStatusTone(booking.status)}`}><span className="block font-black uppercase tracking-[0.08em]">{formatBookingTime(booking.startsAt)}</span><span className="block truncate font-semibold">{booking.serviceName}</span><span className="block truncate">{booking.dogName}</span></a>)}</div></article>;
+            })}
+          </div>
+        </section>
 
         <section className="relative mt-9 overflow-hidden rounded-xl bg-[#f4eef8] p-9 sm:p-12"><Image src="/images/dogs/melakta.jpeg" alt="Jeroen with a happy dog" fill sizes="720px" className="object-cover object-right opacity-45" /><div className="relative max-w-md"><h2 className="font-serif text-2xl">Need to make a change?</h2><p className="mt-4 text-sm leading-7">Reschedule, ask a question or just say hi. I&apos;m here to help!</p><Link href="/contact" className="mt-7 inline-flex items-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">Send me a message <PawPrint className="size-4" /></Link></div></section>
       </div>

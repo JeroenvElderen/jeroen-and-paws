@@ -440,7 +440,7 @@ export function PortalShell() {
     if (activeView === "photos") {
       return <SessionGalleries accessToken={portalSession.accessToken} onBackToDashboard={() => setActiveView("dashboard")} />;
     }
-    if (activeView === "invoices") return <Invoices />;
+    if (activeView === "invoices") return <Invoices accessToken={portalSession.accessToken} />;
     if (activeView === "profile") {
       return <Profile accessToken={portalSession.accessToken} onBackToDashboard={() => setActiveView("dashboard")} />;
     }
