@@ -8,6 +8,7 @@ create table if not exists public.portal_invoices (
   client_name text,
   client_email text,
   client_address text,
+  client_phone text,
   dog_names text[] not null default '{}',
   issued_on date not null default current_date,
   due_on date,
@@ -18,7 +19,13 @@ create table if not exists public.portal_invoices (
   currency text not null default 'EUR',
   status text not null default 'pending' check (status in ('draft', 'sent', 'pending', 'paid', 'overdue', 'refunded')),
   payment_reference text not null unique,
+  payment_title text,
+  payment_url text,
+  revolut_order_id text unique,
   revolut_transaction_id text unique,
+  service_name text,
+  duration_minutes integer,
+  billing_days integer,
   paid_on timestamptz,
   notes text,
   created_at timestamptz not null default now(),
@@ -29,12 +36,20 @@ create index if not exists portal_invoices_client_id_idx on public.portal_invoic
 create index if not exists portal_invoices_status_idx on public.portal_invoices(status);
 create index if not exists portal_invoices_due_on_idx on public.portal_invoices(due_on);
 create index if not exists portal_invoices_payment_reference_idx on public.portal_invoices(payment_reference);
+create index if not exists portal_invoices_revolut_order_id_idx on public.portal_invoices(revolut_order_id);
 create index if not exists portal_invoices_client_email_idx on public.portal_invoices(lower(client_email));
 
 alter table public.portal_invoices
   add column if not exists client_address text,
   add column if not exists service_period_start date,
   add column if not exists service_period_end date,
+  add column if not exists client_phone text,
+  add column if not exists payment_title text,
+  add column if not exists payment_url text,
+  add column if not exists revolut_order_id text,
+  add column if not exists service_name text,
+  add column if not exists duration_minutes integer,
+  add column if not exists billing_days integer,
   add column if not exists line_items jsonb not null default '[]'::jsonb;
 
 create or replace function public.set_portal_invoices_updated_at()

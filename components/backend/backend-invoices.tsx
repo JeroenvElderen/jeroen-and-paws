@@ -16,6 +16,8 @@ import {
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import { useSupabaseLiveQuery } from "@/components/portal/use-supabase-live-query";
+import { buildInvoiceWhatsappMessage } from "@/utils/invoice-payment";
+import { getWhatsappClickToChatUrl } from "@/utils/chat-links";
 
 import { Card } from "./card";
 
@@ -36,6 +38,13 @@ type BackendInvoice = {
   paidOn: string | null;
   revolutTransactionId: string | null;
   paymentReference: string | null;
+  paymentTitle?: string | null;
+  paymentUrl?: string | null;
+  revolutOrderId?: string | null;
+  phone?: string;
+  serviceName?: string;
+  durationMinutes?: number | null;
+  billingDays?: number | null;
   isClientLinked?: boolean;
   lineItems?: Array<{ description: string; quantity: number; unitAmountCents: number }>;
   notes?: string | null;
@@ -52,6 +61,7 @@ type BackendClientOption = {
   email: string;
   address: string;
   dogNames: string;
+  phone: string;
 };
 
 type ClientsResponse = {
@@ -104,7 +114,11 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [clientAddress, setClientAddress] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
   const [dogNames, setDogNames] = useState("");
+  const [serviceName, setServiceName] = useState("");
+  const [durationMinutes, setDurationMinutes] = useState("60");
+  const [billingDays, setBillingDays] = useState("1");
   const [draftLineItems, setDraftLineItems] = useState<DraftLineItem[]>([{ description: "", quantity: "1", unitAmount: "" }]);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
   const [invoiceQuery, setInvoiceQuery] = useState("");
@@ -160,6 +174,7 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
 
     setClientEmail(match.email === "No email saved" ? "" : match.email);
     setClientAddress(match.address === "No address saved" ? "" : match.address);
+    setClientPhone(match.phone === "No phone saved" ? "" : match.phone);
     setDogNames(match.dogNames === "No dogs linked" ? "" : match.dogNames);
   }
 
@@ -200,6 +215,20 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
     { label: "Overdue Invoices", value: overdueInvoices.length.toString(), helper: `${formatMoney(overdueAmount, currency)} overdue`, tone: "red", icon: X },
   ] as const;
 
+  function getInvoiceWhatsappUrl(invoice: BackendInvoice) {
+    if (!invoice.phone || !invoice.paymentUrl) return null;
+    const amount = formatMoney(invoice.amountCents, invoice.currency);
+    const message = buildInvoiceWhatsappMessage({
+      clientName: invoice.client,
+      invoiceNumber: invoice.number,
+      amount,
+      paymentTitle: invoice.paymentTitle || invoice.number,
+      paymentUrl: invoice.paymentUrl,
+    });
+
+    return getWhatsappClickToChatUrl(invoice.phone, message);
+  }
+
   async function createInvoice(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsCreating(true);
@@ -214,6 +243,10 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
       clientName: clientName.trim(),
       clientEmail: clientEmail.trim(),
       clientAddress: clientAddress.trim(),
+      clientPhone: clientPhone.trim(),
+      serviceName: serviceName.trim(),
+      durationMinutes: Number(durationMinutes || 0) || null,
+      billingDays: Number(billingDays || 0) || null,
       dogNames: dogNames.split(",").map((name) => name.trim()).filter(Boolean),
       issuedOn: String(form.get("issuedOn") || ""),
       dueOn: String(form.get("dueOn") || ""),
@@ -272,12 +305,16 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
           <form onSubmit={createInvoice} className="grid gap-4 lg:grid-cols-4">
             <div className="lg:col-span-4">
               <h2 className="font-serif text-xl">Create website invoice</h2>
-              <p className="mt-1 text-sm text-[#6d667a]">Invoice data stays in the website first. If the client email or name already exists, the invoice links automatically; otherwise it remains unmatched until a client is added later. This does not create a Revolut invoice; it creates a payment reference for Revolut reconciliation.</p>
+              <p className="mt-1 text-sm text-[#6d667a]">Invoice data stays in the website first. If the client email or name already exists, the invoice links automatically; otherwise it remains unmatched until a client is added later. When the Merchant API key is configured, this also creates a Revolut checkout link that can be sent to the client by WhatsApp.</p>
             </div>
             <input name="clientName" list="invoice-client-options" value={clientName} onChange={(event) => applyClientOption(event.target.value)} className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Start typing client name" />
             <datalist id="invoice-client-options">{clientOptions.map((client) => <option key={client.id} value={client.name} />)}</datalist>
             <input name="clientEmail" type="email" value={clientEmail} onChange={(event) => setClientEmail(event.target.value)} className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Client email" />
+            <input name="clientPhone" value={clientPhone} onChange={(event) => setClientPhone(event.target.value)} className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Client WhatsApp phone" />
             <input name="dogNames" value={dogNames} onChange={(event) => setDogNames(event.target.value)} className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Dog names, comma separated" />
+            <input name="serviceName" value={serviceName} onChange={(event) => setServiceName(event.target.value)} className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Service, e.g. Walk, Boarding, Day care" />
+            <input name="durationMinutes" value={durationMinutes} onChange={(event) => setDurationMinutes(event.target.value)} type="number" min="0" step="30" className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Minutes (skip for boarding/day care)" />
+            <input name="billingDays" value={billingDays} onChange={(event) => setBillingDays(event.target.value)} type="number" min="1" step="1" className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Days this week" />
             <input name="clientAddress" value={clientAddress} onChange={(event) => setClientAddress(event.target.value)} className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Billing address" />
             <input name="currency" defaultValue="EUR" className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Currency" />
             <input name="issuedOn" type="date" className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" aria-label="Issued on" />
@@ -317,13 +354,13 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
             <label className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-[#151124]/10 px-4 py-3 text-sm text-[#858093] xl:max-w-lg"><Search className="size-5" /><input value={invoiceQuery} onChange={(event) => setInvoiceQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent outline-none" placeholder="Search invoices by number, client or dog..." /></label>
             <div className="flex flex-wrap gap-3"><label className="relative"><select value={invoiceStatusFilter} onChange={(event) => setInvoiceStatusFilter(event.target.value as "all" | "overdue" | "pending" | "paid")} className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 text-sm"><option value="all">All Statuses</option><option value="overdue">Overdue</option><option value="pending">Pending</option><option value="paid">Paid</option></select><ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" /></label><label className="relative"><select value={invoiceWeekFilter} onChange={(event) => setInvoiceWeekFilter(event.target.value)} className="appearance-none rounded-lg border border-[#151124]/10 bg-white px-5 py-3 pr-10 text-sm"><option value="all">All weeks</option>{weekOptions.map((week) => <option key={week} value={week}>{formatDate(week)}</option>)}</select><CalendarDays className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" /></label><button onClick={() => { setInvoiceQuery(""); setInvoiceStatusFilter("all"); setInvoiceWeekFilter("all"); }} className="rounded-lg border border-[#151124]/10 px-5 py-3 text-sm"><Filter className="mr-2 inline size-4" />Reset</button></div>
           </div>
-          <div className="overflow-x-auto"><table className="w-full min-w-[1030px] text-left text-sm"><thead className="bg-[#fbf9fd] text-xs font-semibold text-[#4f2c91]"><tr>{["Invoice # ↕", "Client", "Dog(s)", "Date", "Due Date", "Amount", "Status", "Actions"].map((h)=><th key={h} className="px-6 py-4">{h}</th>)}</tr></thead><tbody className="divide-y divide-[#151124]/10">{filteredInvoices.map((invoice)=><tr key={invoice.id} onClick={() => setSelectedInvoiceId(invoice.id)} className={`cursor-pointer ${latestInvoice?.id === invoice.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}><td className="px-6 py-4"><p className="font-semibold">{invoice.number}</p><p className="mt-1 text-[#6d667a]">Ref: {invoice.paymentReference || invoice.number}</p></td><td className="px-6 py-4"><div className="flex items-center gap-4"><div className="grid size-11 place-items-center rounded-full bg-[#efe8ff] font-serif text-[#4f2c91]">{invoice.client.charAt(0)}</div><div><p className="font-semibold">{invoice.client}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.email || "No email"}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.isClientLinked ? "Linked client" : "Unmatched invoice"}</p></div></div></td><td className="px-6 py-4"><div className="flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" />{invoice.dogs}</div></td><td className="px-6 py-4">{formatDate(invoice.issuedOn)}</td><td className="px-6 py-4">{formatDate(invoice.dueOn)}</td><td className="px-6 py-4 font-semibold">{formatMoney(invoice.amountCents, invoice.currency)}</td><td className="px-6 py-4"><StatusPill status={displayStatus(invoice.status)} /></td><td className="px-6 py-4"><div className="flex gap-3"><button onClick={() => setSelectedInvoiceId(invoice.id)} aria-label={`View ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f2c91]"><Eye className="size-5" /></button><button aria-label={`Actions for ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button></div></td></tr>)}</tbody></table></div>
+          <div className="overflow-x-auto"><table className="w-full min-w-[1030px] text-left text-sm"><thead className="bg-[#fbf9fd] text-xs font-semibold text-[#4f2c91]"><tr>{["Invoice # ↕", "Client", "Dog(s)", "Date", "Due Date", "Amount", "Status", "Actions"].map((h)=><th key={h} className="px-6 py-4">{h}</th>)}</tr></thead><tbody className="divide-y divide-[#151124]/10">{filteredInvoices.map((invoice)=><tr key={invoice.id} onClick={() => setSelectedInvoiceId(invoice.id)} className={`cursor-pointer ${latestInvoice?.id === invoice.id ? "bg-[#f6f0ff]" : "bg-white hover:bg-[#fbf9fd]"}`}><td className="px-6 py-4"><p className="font-semibold">{invoice.number}</p><p className="mt-1 text-[#6d667a]">Ref: {invoice.paymentReference || invoice.number}</p></td><td className="px-6 py-4"><div className="flex items-center gap-4"><div className="grid size-11 place-items-center rounded-full bg-[#efe8ff] font-serif text-[#4f2c91]">{invoice.client.charAt(0)}</div><div><p className="font-semibold">{invoice.client}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.email || "No email"}</p><p className="mt-1 text-xs text-[#6d667a]">{invoice.isClientLinked ? "Linked client" : "Unmatched invoice"}</p></div></div></td><td className="px-6 py-4"><div className="flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" />{invoice.dogs}</div></td><td className="px-6 py-4">{formatDate(invoice.issuedOn)}</td><td className="px-6 py-4">{formatDate(invoice.dueOn)}</td><td className="px-6 py-4 font-semibold">{formatMoney(invoice.amountCents, invoice.currency)}</td><td className="px-6 py-4"><StatusPill status={displayStatus(invoice.status)} /></td><td className="px-6 py-4"><div className="flex gap-3"><button onClick={() => setSelectedInvoiceId(invoice.id)} aria-label={`View ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f2c91]"><Eye className="size-5" /></button>{getInvoiceWhatsappUrl(invoice) ? <a href={getInvoiceWhatsappUrl(invoice) || undefined} target="_blank" rel="noreferrer" aria-label={`Send ${invoice.number} payment link on WhatsApp`} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">WhatsApp</a> : <button disabled title={invoice.paymentUrl ? "No client WhatsApp phone saved" : "No Revolut payment link generated"} className="rounded-lg border border-[#151124]/10 px-3 py-2 text-xs text-[#8b8497] disabled:opacity-60">WhatsApp</button>}<button aria-label={`Actions for ${invoice.number}`} className="rounded-lg border border-[#151124]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button></div></td></tr>)}</tbody></table></div>
           <div className="flex flex-col gap-4 border-t border-[#151124]/10 p-5 text-sm text-[#6d667a] sm:flex-row sm:items-center sm:justify-between"><p>Showing {filteredInvoices.length ? `1 to ${filteredInvoices.length} of ${invoices.length}` : "0"} invoices</p>{invoices.length >= 10 && <div className="flex gap-2">{["‹", "1", "2", "3", "...", "16", "›"].map((p)=><button key={p} className={`grid size-9 place-items-center rounded-md border border-[#151124]/10 ${p === "1" ? "border-[#5b2aa0] text-[#5b2aa0]" : "text-[#4f4863]"}`}>{p}</button>)}</div>}</div>
         </Card>
 
         <aside className="space-y-5">
           <Card className="p-5"><h2 className="font-serif text-xl">Invoice Summary</h2><div className="mt-6 flex items-center gap-5"><div className="grid size-28 place-items-center rounded-full bg-[#f0e9fb]"><div className="grid size-16 place-items-center rounded-full bg-white text-center text-xs"><span>Total<br /><strong>{formatMoney(totalAmount, currency)}</strong></span></div></div><div className="space-y-3 text-xs"><p><span className="mr-2 inline-block size-2 rounded-full bg-rose-500" />Overdue<br /><span className="text-[#6d667a]">{formatMoney(overdueAmount, currency)}</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-orange-500" />Pending<br /><span className="text-[#6d667a]">{formatMoney(pendingAmount, currency)}</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-green-500" />Paid<br /><span className="text-[#6d667a]">{formatMoney(paidAmount, currency)}</span></p></div></div></Card>
-          <Card className="p-5"><h2 className="font-serif text-xl">Invoice Details</h2><div className="mt-5 flex items-center justify-between"><p className="font-serif text-xl">{latestInvoice?.number ?? "No invoice"}</p><StatusPill status={latestInvoice ? displayStatus(latestInvoice.status) : "Pending"} /></div><dl className="mt-5 space-y-4 text-sm"><div className="flex justify-between"><dt className="text-[#6d667a]">Issued On</dt><dd>{formatDate(latestInvoice?.issuedOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Due Date</dt><dd>{formatDate(latestInvoice?.dueOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Amount</dt><dd>{latestInvoice ? formatMoney(latestInvoice.amountCents, latestInvoice.currency) : "—"}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Paid On</dt><dd>{formatDate(latestInvoice?.paidOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Payment Method</dt><dd>{latestInvoice?.revolutTransactionId ? "Revolut bank transfer" : "Awaiting Revolut match"}</dd></div></dl><button className="mt-5 w-full rounded-lg border border-[#5b2aa0]/15 bg-[#f4efff] px-4 py-3 text-sm font-semibold text-[#5b2aa0]"><Download className="mr-2 inline size-4" />Download PDF</button></Card>
+          <Card className="p-5"><h2 className="font-serif text-xl">Invoice Details</h2><div className="mt-5 flex items-center justify-between"><p className="font-serif text-xl">{latestInvoice?.number ?? "No invoice"}</p><StatusPill status={latestInvoice ? displayStatus(latestInvoice.status) : "Pending"} /></div><dl className="mt-5 space-y-4 text-sm"><div className="flex justify-between"><dt className="text-[#6d667a]">Issued On</dt><dd>{formatDate(latestInvoice?.issuedOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Due Date</dt><dd>{formatDate(latestInvoice?.dueOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Amount</dt><dd>{latestInvoice ? formatMoney(latestInvoice.amountCents, latestInvoice.currency) : "—"}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Paid On</dt><dd>{formatDate(latestInvoice?.paidOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Payment Method</dt><dd>{latestInvoice?.revolutTransactionId ? "Revolut bank transfer" : latestInvoice?.paymentUrl ? "Revolut checkout link" : "Awaiting Revolut link"}</dd></div><div className="flex justify-between gap-4"><dt className="text-[#6d667a]">Payment title</dt><dd className="text-right">{latestInvoice?.paymentTitle || "—"}</dd></div></dl>{latestInvoice && getInvoiceWhatsappUrl(latestInvoice) ? <a href={getInvoiceWhatsappUrl(latestInvoice) || undefined} target="_blank" rel="noreferrer" className="mt-5 block w-full rounded-lg bg-emerald-600 px-4 py-3 text-center text-sm font-semibold text-white">Send payment link on WhatsApp</a> : null}<button className="mt-5 w-full rounded-lg border border-[#5b2aa0]/15 bg-[#f4efff] px-4 py-3 text-sm font-semibold text-[#5b2aa0]"><Download className="mr-2 inline size-4" />Download PDF</button></Card>
           <Card className="p-5"><h2 className="font-serif text-lg">Client</h2><div className="mt-4"><p className="font-semibold">{latestInvoice?.client ?? "No client"}</p><p className="text-xs text-[#6d667a]">{latestInvoice?.email || "No email"}<br />{latestInvoice?.address || "No address"}</p></div></Card>
           <Card className="p-5"><h2 className="font-serif text-lg">Dog(s)</h2><div className="mt-4 flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" /><div><p className="font-semibold">{latestInvoice?.dogs ?? "No dogs"}</p><p className="text-xs text-[#6d667a]">From selected invoice</p></div></div></Card>
         </aside>

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { buildInvoicePaymentTitle } from "@/utils/invoice-payment";
+import { createRevolutMerchantOrder } from "@/utils/revolut/merchant";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
@@ -32,6 +34,13 @@ type InvoiceRow = {
   paid_on: string | null;
   revolut_transaction_id: string | null;
   payment_reference: string | null;
+  payment_title: string | null;
+  payment_url: string | null;
+  revolut_order_id: string | null;
+  client_phone: string | null;
+  service_name: string | null;
+  duration_minutes: number | null;
+  billing_days: number | null;
   notes: string | null;
 };
 
@@ -45,6 +54,8 @@ type ClientMatchRow = {
   id: string;
   full_name: string | null;
   email: string | null;
+  phone?: string | null;
+  address?: string | null;
 };
 
 function mapInvoice(row: InvoiceRow) {
@@ -67,6 +78,13 @@ function mapInvoice(row: InvoiceRow) {
     paidOn: row.paid_on,
     revolutTransactionId: row.revolut_transaction_id,
     paymentReference: row.payment_reference,
+    paymentTitle: row.payment_title,
+    paymentUrl: row.payment_url,
+    revolutOrderId: row.revolut_order_id,
+    phone: row.client_phone || "",
+    serviceName: row.service_name || "",
+    durationMinutes: row.duration_minutes,
+    billingDays: row.billing_days,
     notes: row.notes,
     isClientLinked: Boolean(row.portal_client_id),
   };
@@ -140,7 +158,7 @@ async function findMatchingClient(clientEmail: string, clientName: string) {
 
   let query = supabaseAdmin
     .from("portal_clients")
-    .select("id,full_name,email")
+    .select("id,full_name,email,phone,address")
     .limit(1);
 
   if (clientEmail) {
@@ -207,6 +225,9 @@ export async function POST(request: Request) {
     const currency = (cleanString(payload.currency) || "EUR").toUpperCase();
     const invoiceNumber = cleanString(payload.invoiceNumber) || createInvoiceNumber();
     const status = (cleanString(payload.status) || "pending") as InvoiceStatus;
+    const serviceName = cleanString(payload.serviceName);
+    const durationMinutes = Number(payload.durationMinutes || 0) || null;
+    const billingDays = Number(payload.billingDays || 0) || null;
 
     if (!clientName && !clientEmail) return NextResponse.json({ error: "Add at least a client name or email so the invoice can be matched later." }, { status: 400 });
     if (amountCents <= 0) return NextResponse.json({ error: "Invoice amount must be greater than zero." }, { status: 400 });
@@ -214,6 +235,16 @@ export async function POST(request: Request) {
 
     const matchedClient = await findMatchingClient(clientEmail, clientName);
     const paymentReference = cleanString(payload.paymentReference) || invoiceNumber;
+    const paymentTitle = cleanString(payload.paymentTitle) || buildInvoicePaymentTitle({ dogNames, serviceName, durationMinutes, billingDays });
+    const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")}/portal?invoice=${encodeURIComponent(invoiceNumber)}` : null;
+    const revolutOrder = await createRevolutMerchantOrder({
+      amountCents,
+      currency,
+      description: paymentTitle,
+      reference: paymentReference,
+      customerEmail: clientEmail || matchedClient?.email || null,
+      redirectUrl,
+    });
     const { data: row, error } = await supabaseAdmin
       .from("portal_invoices")
       .insert({
@@ -221,7 +252,8 @@ export async function POST(request: Request) {
         invoice_number: invoiceNumber,
         client_name: clientName || matchedClient?.full_name || null,
         client_email: clientEmail || matchedClient?.email || null,
-        client_address: clientAddress || null,
+        client_phone: cleanString(payload.clientPhone) || matchedClient?.phone || null,
+        client_address: clientAddress || matchedClient?.address || null,
         dog_names: dogNames,
         issued_on: getSafeDate(payload.issuedOn) ?? new Date().toISOString().slice(0, 10),
         due_on: getSafeDate(payload.dueOn),
@@ -232,6 +264,12 @@ export async function POST(request: Request) {
         currency,
         status,
         payment_reference: paymentReference,
+        payment_title: paymentTitle,
+        payment_url: revolutOrder.configured ? revolutOrder.checkoutUrl : null,
+        revolut_order_id: revolutOrder.configured ? revolutOrder.orderId : null,
+        service_name: serviceName || null,
+        duration_minutes: durationMinutes,
+        billing_days: billingDays,
         notes: cleanString(payload.notes) || null,
       })
       .select("*")
@@ -242,11 +280,9 @@ export async function POST(request: Request) {
     return NextResponse.json({
       invoice: mapInvoice(row as InvoiceRow),
       clientMatched: Boolean(matchedClient),
-      revolut: {
-        status: "website_only_ready_for_reconciliation",
-        createsRevolutInvoice: false,
-        message: "Revolut Business does not expose an invoice-creation endpoint in the Business API used here. This invoice is saved on the website with a Revolut payment reference; use Sync Revolut after payment to match incoming transactions.",
-      },
+      revolut: revolutOrder.configured
+        ? { status: "checkout_created", createsRevolutCheckout: true, orderId: revolutOrder.orderId, checkoutUrl: revolutOrder.checkoutUrl }
+        : { status: "merchant_api_key_missing", createsRevolutCheckout: false, message: "Invoice saved, but REVOLUT_MERCHANT_API_KEY is not configured so no Revolut checkout link was generated." },
     }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to create invoice.";
