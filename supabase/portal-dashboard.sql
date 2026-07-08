@@ -95,6 +95,7 @@ create table if not exists public.portal_bookings (
   id uuid primary key default gen_random_uuid(),
   client_id uuid not null references public.portal_clients(id) on delete cascade,
   dog_id uuid not null references public.portal_dogs(id) on delete cascade,
+  dog_ids uuid[] not null default array[]::uuid[],
   service_name text not null,
   starts_at timestamptz not null,
   ends_at timestamptz not null,
@@ -120,6 +121,7 @@ create table if not exists public.portal_bookings (
 );
 
 alter table public.portal_bookings
+  add column if not exists dog_ids uuid[] not null default array[]::uuid[],
   add column if not exists timezone text not null default 'Europe/Dublin',
   add column if not exists source text not null default 'website',
   add column if not exists sync_status text not null default 'not_synced',
@@ -382,7 +384,7 @@ select
   c.full_name as client_name,
   c.email as client_email,
   b.dog_id,
-  d.name as dog_name,
+  coalesce(booking_dogs.dog_names, d.name) as dog_name,
   b.service_name,
   b.starts_at,
   b.ends_at,
@@ -394,11 +396,18 @@ select
   b.outlook_event_id,
   b.outlook_web_link,
   b.needs_review,
-  coalesce(b.cover_image_url, d.profile_photo_url) as cover_image_url,
+  coalesce(b.cover_image_url, booking_dogs.cover_image_url, d.profile_photo_url) as cover_image_url,
   b.notes
 from public.portal_bookings b
 join public.portal_clients c on c.id = b.client_id
 join public.portal_dogs d on d.id = b.dog_id
+left join lateral (
+  select
+    string_agg(pd.name, ' & ' order by array_position(coalesce(nullif(b.dog_ids, array[]::uuid[]), array[b.dog_id]), pd.id)) as dog_names,
+    (array_agg(pd.profile_photo_url order by array_position(coalesce(nullif(b.dog_ids, array[]::uuid[]), array[b.dog_id]), pd.id)) filter (where pd.profile_photo_url is not null))[1] as cover_image_url
+  from public.portal_dogs pd
+  where pd.id = any(coalesce(nullif(b.dog_ids, array[]::uuid[]), array[b.dog_id]))
+) booking_dogs on true
 where c.auth_user_id = auth.uid();
 
 create or replace view public.portal_calendar_feed
@@ -410,7 +419,7 @@ select
   c.full_name as client_name,
   c.email as client_email,
   b.dog_id,
-  d.name as dog_name,
+  coalesce(booking_dogs.dog_names, d.name) as dog_name,
   b.service_name,
   b.starts_at,
   b.ends_at,
@@ -422,11 +431,18 @@ select
   b.outlook_event_id,
   b.outlook_web_link,
   b.needs_review,
-  coalesce(b.cover_image_url, d.profile_photo_url) as cover_image_url,
+  coalesce(b.cover_image_url, booking_dogs.cover_image_url, d.profile_photo_url) as cover_image_url,
   b.notes
 from public.portal_bookings b
 join public.portal_clients c on c.id = b.client_id
 join public.portal_dogs d on d.id = b.dog_id
+left join lateral (
+  select
+    string_agg(pd.name, ' & ' order by array_position(coalesce(nullif(b.dog_ids, array[]::uuid[]), array[b.dog_id]), pd.id)) as dog_names,
+    (array_agg(pd.profile_photo_url order by array_position(coalesce(nullif(b.dog_ids, array[]::uuid[]), array[b.dog_id]), pd.id)) filter (where pd.profile_photo_url is not null))[1] as cover_image_url
+  from public.portal_dogs pd
+  where pd.id = any(coalesce(nullif(b.dog_ids, array[]::uuid[]), array[b.dog_id]))
+) booking_dogs on true
 where b.status in ('confirmed', 'reschedule_requested', 'completed');
 
 create or replace view public.admin_booking_calendar as
@@ -436,7 +452,7 @@ select
   c.full_name as client_name,
   c.email as client_email,
   b.dog_id,
-  d.name as dog_name,
+  coalesce(booking_dogs.dog_names, d.name) as dog_name,
   b.service_name,
   b.starts_at,
   b.ends_at,
@@ -448,11 +464,18 @@ select
   b.outlook_event_id,
   b.outlook_web_link,
   b.needs_review,
-  coalesce(b.cover_image_url, d.profile_photo_url) as cover_image_url,
+  coalesce(b.cover_image_url, booking_dogs.cover_image_url, d.profile_photo_url) as cover_image_url,
   b.notes
 from public.portal_bookings b
 join public.portal_clients c on c.id = b.client_id
 join public.portal_dogs d on d.id = b.dog_id
+left join lateral (
+  select
+    string_agg(pd.name, ' & ' order by array_position(coalesce(nullif(b.dog_ids, array[]::uuid[]), array[b.dog_id]), pd.id)) as dog_names,
+    (array_agg(pd.profile_photo_url order by array_position(coalesce(nullif(b.dog_ids, array[]::uuid[]), array[b.dog_id]), pd.id)) filter (where pd.profile_photo_url is not null))[1] as cover_image_url
+  from public.portal_dogs pd
+  where pd.id = any(coalesce(nullif(b.dog_ids, array[]::uuid[]), array[b.dog_id]))
+) booking_dogs on true
 union all
 select
   i.id,

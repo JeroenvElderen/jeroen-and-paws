@@ -8,11 +8,11 @@ export const runtime = "nodejs";
 
 function toOutlookInput(booking: CalendarBooking) {
   return {
-    subject: `[JP] ${booking.serviceName} - ${booking.dogName} - ${booking.clientName}`,
+    subject: `[JP] ${booking.dogName}`,
     body: [
       `Jeroen & Paws booking ${booking.id}`,
       `Client: ${booking.clientName}`,
-      `Dog: ${booking.dogName}`,
+      `Dogs: ${booking.dogName}`,
       `Status: ${booking.status}`,
       booking.notes ? `Notes: ${booking.notes}` : "",
     ].filter(Boolean).join("\n"),

@@ -22,7 +22,7 @@ export function buildBookingIcs(bookings: CalendarBooking[], calendarName = "Jer
       `DTSTAMP:${toIcsDate(new Date().toISOString())}`,
       `DTSTART:${toIcsDate(booking.startsAt)}`,
       `DTEND:${toIcsDate(booking.endsAt)}`,
-      `SUMMARY:${escapeIcsText(`${booking.serviceName} - ${booking.dogName}`)}`,
+      `SUMMARY:${escapeIcsText(booking.dogName)}`,
       `LOCATION:${escapeIcsText(booking.location)}`,
       `DESCRIPTION:${escapeIcsText([`Status: ${booking.status}`, booking.notes || ""].filter(Boolean).join("\n"))}`,
       "END:VEVENT",

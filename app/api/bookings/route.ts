@@ -42,11 +42,11 @@ function getClientFullName(portalClients: BookingOptionDogRow["portal_clients"])
 
 function toOutlookInput(booking: CalendarBooking) {
   return {
-    subject: `[JP] ${booking.serviceName} - ${booking.dogName} - ${booking.clientName}`,
+    subject: `[JP] ${booking.dogName}`,
     body: [
       `Jeroen & Paws booking ${booking.id}`,
       `Client: ${booking.clientName}`,
-      `Dog: ${booking.dogName}`,
+      `Dogs: ${booking.dogName}`,
       `Status: ${booking.status}`,
       booking.notes ? `Notes: ${booking.notes}` : "",
     ].filter(Boolean).join("\n"),
@@ -222,11 +222,15 @@ export async function POST(request: Request) {
     if (dogs.length !== payload.data.dogIds.length) return NextResponse.json({ error: "One or more selected dogs were not found." }, { status: 404 });
     if (dogs.some((dog) => dog.client_id !== payload.data.clientId)) return NextResponse.json({ error: "Selected dogs must belong to the selected client." }, { status: 400 });
 
+    const orderedDogs = payload.data.dogIds.map((dogId) => dogs.find((dog) => dog.id === dogId)).filter((dog): dog is { id: string; client_id: string } => Boolean(dog));
+    const primaryDog = orderedDogs[0];
+
     const { data: rows, error: insertError } = await supabaseAdmin
       .from("portal_bookings")
-      .insert(dogs.map((dog) => ({
+      .insert({
         client_id: payload.data.clientId,
-        dog_id: dog.id,
+        dog_id: primaryDog.id,
+        dog_ids: orderedDogs.map((dog) => dog.id),
         service_name: payload.data.serviceName,
         starts_at: payload.data.startsAt,
         ends_at: payload.data.endsAt,
@@ -236,7 +240,7 @@ export async function POST(request: Request) {
         status: payload.data.status satisfies BookingStatus,
         source: "admin_import",
         sync_status: payload.data.status === "confirmed" ? "pending" : "not_synced",
-      })))
+      })
       .select("*");
 
     if (insertError) throw insertError;

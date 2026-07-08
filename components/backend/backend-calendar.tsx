@@ -71,8 +71,8 @@ function EventCard({ booking }: { booking: CalendarBooking }) {
 
   return (
     <article className={`m-1 rounded-lg p-3 text-xs shadow-sm ${style.bg} ${style.text}`}>
-      <div className="flex items-center gap-2 font-bold"><Icon className="size-4" />{booking.serviceName}</div>
-      <p className="mt-2 font-medium text-[#151124]">{booking.dogName} · {booking.clientName}</p>
+      <div className="flex items-center gap-2 font-bold"><Icon className="size-4" />{booking.dogName}</div>
+      <p className="mt-2 font-medium text-[#151124]">{booking.serviceName} · {booking.clientName}</p>
       <p className="mt-1 text-[#151124]">{formatBookingTime(booking.startsAt)} – {formatBookingTime(booking.endsAt)}</p>
       <p className="mt-2 inline-flex rounded-full bg-white/70 px-2 py-1 font-semibold capitalize text-[#151124]">{booking.syncStatus.replace(/_/g, " ")}</p>
     </article>
