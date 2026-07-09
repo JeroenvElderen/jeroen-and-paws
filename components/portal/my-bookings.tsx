@@ -80,15 +80,24 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
     realtimeTables,
     map: mapBookingRows,
   });
+  const { data: dogs } = useSupabaseLiveQuery({
+  accessToken,
+  fallback: [] as { id: string; name: string }[],
+  path: "/rest/v1/portal_dogs?select=id,name&status=eq.active&order=name",
+  realtimeTables: ["portal_dogs"],
+  map: (rows) =>
+    Array.isArray(rows)
+      ? rows.map((row) => ({
+          id: (row as { id: string }).id,
+          name: (row as { name: string }).name,
+        }))
+      : [],
+});
   const dogImages = usePortalDogImages(accessToken, 3);
 
   const upcoming = useMemo(() => bookings.filter((booking) => booking.status !== "cancelled" && new Date(booking.endsAt).getTime() >= now).sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()), [bookings, now]);
   const nextBooking = upcoming[0];
-  const dogOptions = useMemo(() => Array.from(bookings.reduce<Map<string, string>>((dogs, booking) => {
-    const key = booking.dogId || booking.dogName;
-    if (key && !dogs.has(key)) dogs.set(key, booking.dogName);
-    return dogs;
-  }, new Map()).entries()).map(([id, name]) => ({ id, name })), [bookings]);
+  const dogOptions = dogs;
   const dogCount = dogOptions.length;
   const calendarDays = useMemo(() => getCalendarDays(visibleMonth), [visibleMonth]);
   const bookingsByDay = useMemo(() => bookings.reduce<Record<string, CalendarBooking[]>>((days, booking) => {
