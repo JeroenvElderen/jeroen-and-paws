@@ -7,6 +7,7 @@ export const runtime = "nodejs";
 
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
 const storageBucket = "portal-images";
+let bucketLimitPromise: Promise<void> | null = null;
 
 type SupabaseAuthUser = { email?: string; user?: { email?: string } };
 
@@ -32,6 +33,20 @@ function sanitizeFileName(fileName: string) {
   return fileName.replace(/[^a-zA-Z0-9._-]+/g, "-");
 }
 
+async function allowUnlimitedImageUploads() {
+  bucketLimitPromise ??= supabaseAdmin.storage
+    .updateBucket(storageBucket, { public: true, fileSizeLimit: null, allowedMimeTypes: null })
+    .then(({ error }) => {
+      if (error) throw error;
+    })
+    .catch((error) => {
+      bucketLimitPromise = null;
+      throw error;
+    });
+
+  return bucketLimitPromise;
+}
+
 export async function POST(request: Request) {
   if (!(await getVerifiedBackendAdminToken(request))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -41,6 +56,13 @@ export async function POST(request: Request) {
   const { data: gallery, error: galleryError } = await supabaseAdmin.from("portal_galleries").select("id").eq("id", payload.data.galleryId).single();
   if (galleryError || !gallery) return NextResponse.json({ error: galleryError?.message || "Gallery not found." }, { status: 404 });
 
+  try {
+    await allowUnlimitedImageUploads();
+  } catch (bucketError) {
+    const message = bucketError instanceof Error ? bucketError.message : "Unable to remove gallery upload size limits.";
+    return NextResponse.json({ error: message }, { status: 502 });
+  }
+  
   const path = `galleries/${payload.data.galleryId}/${Date.now()}-${crypto.randomUUID()}-${sanitizeFileName(payload.data.fileName)}`;
   const { data, error } = await supabaseAdmin.storage.from(storageBucket).createSignedUploadUrl(path);
   if (error) return NextResponse.json({ error: error.message }, { status: 502 });
