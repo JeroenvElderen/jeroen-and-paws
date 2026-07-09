@@ -4,11 +4,13 @@ import {
   CalendarDays,
   ChevronRight,
   Edit3,
+  Trash2,
   FileText,
   ImageIcon,
   LockKeyhole,
   Mail,
   MapPin,
+  MoreVertical,
   PawPrint,
   Phone,
   Plus,
@@ -142,6 +144,9 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
   const [isDogFormOpen, setIsDogFormOpen] = useState(false);
   const [isProfileFormOpen, setIsProfileFormOpen] = useState(false);
   const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
+  const [editingDogId, setEditingDogId] = useState<string | null>(null);
+  const [openDogActionId, setOpenDogActionId] = useState<string | null>(null);
+  const [dogActionMenuPosition, setDogActionMenuPosition] = useState<{ top: number; left: number } | null>(null);
 
   function getSupabaseWriteConfig() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
@@ -297,6 +302,79 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
     }
   }
 
+  async function updateDog(dogId: string, updates: Partial<Pick<DogRow, "name" | "breed" | "age" | "status" | "profile_photo_url" | "notes">>) {
+    const config = getSupabaseWriteConfig();
+    if (!config) return false;
+    const response = await fetch(`${config.url}/rest/v1/portal_dogs?id=eq.${dogId}`, {
+      method: "PATCH",
+      headers: { apikey: config.key, Authorization: `Bearer ${config.accessToken}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      setMessage(await getSupabaseWriteError(response));
+      return false;
+    }
+
+    setMessage("Dog updated. Realtime will refresh this page automatically.");
+    return true;
+  }
+
+  async function saveDogEdit(event: React.FormEvent<HTMLFormElement>, dog: DogRow) {
+    event.preventDefault();
+    const config = getSupabaseWriteConfig();
+    if (!config) return;
+    const formData = new FormData(event.currentTarget);
+    const dogName = String(formData.get("name") ?? "").trim();
+
+    if (!dogName) {
+      setMessage("Add your dog’s name before saving.");
+      return;
+    }
+
+    try {
+      const photoFile = formData.get("profile_photo_file");
+      const uploadedPhotoUrl = photoFile instanceof File ? await uploadPortalImage(config, photoFile, "dogs") : null;
+      const saved = await updateDog(dog.id, {
+        name: dogName,
+        breed: String(formData.get("breed") ?? "").trim() || null,
+        age: String(formData.get("age") ?? "").trim() || null,
+        profile_photo_url: uploadedPhotoUrl ?? dog.profile_photo_url,
+        notes: String(formData.get("notes") ?? "").trim() || null,
+      });
+      if (saved) {
+        setEditingDogId(null);
+        setOpenDogActionId(null);
+        setDogActionMenuPosition(null);
+      }
+    } catch (uploadError) {
+      setMessage(uploadError instanceof Error ? uploadError.message : "Unable to upload dog photo.");
+    }
+  }
+
+  async function deactivateDog(dog: DogRow) {
+    setOpenDogActionId(null);
+    setDogActionMenuPosition(null);
+    await updateDog(dog.id, { status: dog.status === "inactive" ? "active" : "inactive" });
+  }
+
+  async function deleteDog(dog: DogRow) {
+    const config = getSupabaseWriteConfig();
+    if (!config) return;
+    const response = await fetch(`${config.url}/rest/v1/portal_dogs?id=eq.${dog.id}`, {
+      method: "DELETE",
+      headers: { apikey: config.key, Authorization: `Bearer ${config.accessToken}`, Prefer: "return=minimal" },
+    });
+
+    if (response.ok) {
+      setOpenDogActionId(null);
+      setDogActionMenuPosition(null);
+      setMessage("Dog deleted. Realtime will refresh this page automatically.");
+    } else {
+      setMessage(await getSupabaseWriteError(response));
+    }
+  }
+
   const profile = data.profile;
   const dogs = dogRows.length ? dogRows : profile?.dogs?.length ? profile.dogs : [];
   const profileError = error ?? dogError;
@@ -387,9 +465,21 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                   <SectionTitle>My Dogs</SectionTitle>
                   <div className="mt-6 divide-y divide-[#24163f]/10">
                     {dogs.map((dog) => (
-                      <article key={dog.id} className="flex items-center justify-between gap-4 py-5 first:pt-0">
-                        <span className="flex items-center gap-4"><span className="relative size-16 overflow-hidden rounded-full"><DogImage src={dog.profile_photo_url} alt={dog.name} sizes="64px" className="object-cover" /></span><span><span className="font-serif text-2xl text-[#241f30]">{dog.name}</span><span className="mt-1 block text-sm text-[#665d70]">{dog.breed || "Dog"}{dog.age ? ` • ${formatDogAge(dog.age)}` : ""}</span></span></span>
-                        <span className="rounded-full bg-[#f0e8f8] px-4 py-1 text-xs font-semibold text-[#5b2aa0]">{dog.status || "Active"}</span>
+                      <article key={dog.id} className="py-5 first:pt-0">
+                        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                          <span className="flex items-center gap-4"><span className="relative size-16 overflow-hidden rounded-full"><DogImage src={dog.profile_photo_url} alt={dog.name} sizes="64px" className="object-cover" /></span><span><span className="font-serif text-2xl text-[#241f30]">{dog.name}</span><span className="mt-1 block text-sm text-[#665d70]">{dog.breed || "Dog"}{dog.age ? ` • ${formatDogAge(dog.age)}` : ""}</span></span></span>
+                          <div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-[#f0e8f8] px-4 py-1 text-xs font-semibold text-[#5b2aa0]">{dog.status || "Active"}</span><button type="button" aria-label={`Actions for ${dog.name}`} onClick={(event) => { const rect = event.currentTarget.getBoundingClientRect(); setDogActionMenuPosition({ top: Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - 168)), left: Math.max(12, Math.min(rect.right - 176, window.innerWidth - 188)) }); setOpenDogActionId((current) => current === dog.id ? null : dog.id); }} className="rounded-lg border border-[#24163f]/10 p-2 text-[#4f4863]"><MoreVertical className="size-5" /></button>{openDogActionId === dog.id && dogActionMenuPosition ? <div style={{ top: dogActionMenuPosition.top, left: dogActionMenuPosition.left }} className="fixed z-50 w-44 rounded-xl border border-[#24163f]/10 bg-white p-2 text-[#17132a] shadow-2xl"><button type="button" onClick={() => { setEditingDogId((current) => current === dog.id ? null : dog.id); setOpenDogActionId(null); setDogActionMenuPosition(null); }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]"><Edit3 className="size-4" />Edit</button><button type="button" onClick={() => deactivateDog(dog)} className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#fbf9fd]">{dog.status === "inactive" ? "Reactivate" : "Deactivate"}</button><button type="button" onClick={() => deleteDog(dog)} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-rose-600 hover:bg-rose-50"><Trash2 className="size-4" />Delete</button></div> : null}</div>
+                        </div>
+                        {editingDogId === dog.id ? (
+                          <form onSubmit={(event) => saveDogEdit(event, dog)} className="mt-4 grid gap-3 rounded-xl bg-[#fbf8ff] p-4">
+                            <input className="rounded border border-[#24163f]/15 px-4 py-3" name="name" defaultValue={dog.name} placeholder="Dog name" required />
+                            <input className="rounded border border-[#24163f]/15 px-4 py-3" name="breed" defaultValue={dog.breed ?? ""} placeholder="Breed" />
+                            <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Date of birth<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="age" type="date" defaultValue={dog.age ?? ""} aria-label="Dog date of birth" /></label>
+                            <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Replace dog photo<input className="rounded border border-[#24163f]/15 bg-white px-4 py-3 font-normal" name="profile_photo_file" type="file" accept="image/*" /></label>
+                            <textarea className="min-h-24 rounded border border-[#24163f]/15 px-4 py-3" name="notes" defaultValue={dog.notes ?? ""} placeholder="Notes, routines, behaviour, or care instructions" />
+                            <div className="flex flex-wrap gap-3"><button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save dog</button><button type="button" onClick={() => setEditingDogId(null)} className="inline-flex w-fit items-center gap-2 rounded border border-[#5b2aa0]/30 px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#5b2aa0]"><X className="size-4" />Cancel</button></div>
+                          </form>
+                        ) : null}
                       </article>
                     ))}
                     {!dogs.length ? <p className="py-5 text-sm text-[#665d70]">Add your dog here and it will be saved to your profile.</p> : null}
