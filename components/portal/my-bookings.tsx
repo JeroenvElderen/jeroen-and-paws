@@ -1,11 +1,13 @@
 "use client";
 
-import { ArrowRight, Bell, CalendarDays, Check, Clock3, Download, ImageIcon, MapPin, PawPrint, Send, Users, X } from "lucide-react";
+import { ArrowRight, Bell, CalendarDays, Check, Clock3, Download, ImageIcon, MapPin, PawPrint, Send, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { formatBookingDate, formatBookingTime, mapBookingRow, type CalendarBooking } from "@/utils/bookings";
+import { BookingCalendar } from "./booking-calendar";
+import { BookingRequestModal } from "./booking-request-modal";
 import { usePortalDogImages } from "./use-portal-dog-images";
 import { useSupabaseLiveQuery } from "./use-supabase-live-query";
 
@@ -38,13 +40,6 @@ function getDateKey(value: Date | string) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-function getStatusTone(status: CalendarBooking["status"]) {
-  if (status === "cancelled" || status === "no_show") return "bg-[#f8e3df] text-[#8a2f20]";
-  if (status === "needs_review" || status === "reschedule_requested") return "bg-[#fff0cf] text-[#806013]";
-  if (status === "completed") return "bg-[#eee9e1] text-[#5f4d35]";
-  return "bg-[#e9f4df] text-[#356d28]";
-}
-
 type BookingRequestSlot = {
   id: string;
   date: string;
@@ -64,7 +59,8 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
   const fallbackBookings = useMemo(() => [] as CalendarBooking[], []);
   const [visibleMonth, setVisibleMonth] = useState(() => getMonthStart(new Date()));
   const [requestServiceName, setRequestServiceName] = useState("Dog walking");
-  const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
   const [requestDogChoice, setRequestDogChoice] = useState("both");
   const [requestSlots, setRequestSlots] = useState<BookingRequestSlot[]>(() => [createBookingRequestSlot()]);
   const [requestDurationMinutes, setRequestDurationMinutes] = useState("60");
@@ -167,12 +163,31 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
       setRequestStatus({ tone: "success", message: result.message || "Your booking request has been sent for review." });
       setRequestNotes("");
       setRequestSlots([createBookingRequestSlot()]);
-      setIsRequestFormOpen(false);
+      setIsRequestModalOpen(false);
     } catch (error) {
       setRequestStatus({ tone: "error", message: error instanceof Error ? error.message : "Unable to send this booking request." });
     } finally {
       setIsRequestingBooking(false);
     }
+  };
+
+  const openBookingRequestModal = (date?: Date) => {
+    setRequestStatus(null);
+    setRequestSlots([date ? { ...createBookingRequestSlot(), date: getDateKey(date) } : createBookingRequestSlot()]);
+    setIsRequestModalOpen(true);
+  };
+
+  const handleSelectCalendarDay = (day: Date) => {
+    const dayKey = getDateKey(day);
+    if (dayKey < getDateKey(new Date(now))) return;
+    setSelectedDateKey((current) => (current === dayKey ? null : dayKey));
+  };
+
+  const handleRequestBookingFromCalendar = (day: Date) => {
+    const dayKey = getDateKey(day);
+    if (dayKey < getDateKey(new Date(now))) return;
+    setSelectedDateKey(dayKey);
+    openBookingRequestModal(day);
   };
 
   const timeline = nextBooking ? [
@@ -218,97 +233,48 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
               <h2 className="mt-3 font-serif text-2xl text-[#241f30]">Need another date?</h2>
               <p className="mt-3 text-sm leading-7 text-[#665d70]">Send one or more booking requests from your portal. Each date will appear as <strong>needs review</strong> until Jeroen confirms availability.</p>
             </div>
-            <button type="button" onClick={() => setIsRequestFormOpen((isOpen) => !isOpen)} className="inline-flex items-center justify-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">
-              {isRequestFormOpen ? "Close form" : "Request booking"} {isRequestFormOpen ? <X className="size-4" /> : <Send className="size-4" />}
+            <button type="button" onClick={() => openBookingRequestModal()} className="inline-flex items-center justify-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">
+              Request booking <Send className="size-4" />
             </button>
           </div>
           {requestStatus ? <p className={`mt-5 rounded-lg px-4 py-3 text-sm font-semibold ${requestStatus.tone === "success" ? "bg-[#e9f4df] text-[#356d28]" : "bg-[#f8e3df] text-[#8a2f20]"}`}>{requestStatus.message}</p> : null}
-          {isRequestFormOpen ? <form onSubmit={handleBookingRequest} className="mt-8 grid gap-5 lg:grid-cols-2">
-            <fieldset className="lg:col-span-2">
-              <legend className="text-sm font-semibold text-[#342c3f]">Who is this booking for?</legend>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {dogOptions.map((dog) => <label key={dog.id} className="flex cursor-pointer items-center gap-3 rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-semibold text-[#342c3f]">
-                  <input type="radio" name="dogChoice" value={dog.id} checked={requestDogChoice === dog.id || (dogOptions.length === 1 && requestDogChoice === "both")} onChange={(event) => setRequestDogChoice(event.target.value)} />
-                  {dog.name}
-                </label>)}
-                {dogOptions.length > 1 ? <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-semibold text-[#342c3f]">
-                  <input type="radio" name="dogChoice" value="both" checked={requestDogChoice === "both"} onChange={(event) => setRequestDogChoice(event.target.value)} />
-                  Both dogs ({dogOptions.map((dog) => dog.name).join(" + ")})
-                </label> : null}
-                {!dogOptions.length ? <p className="text-sm text-[#8a2f20]">No dogs found yet.</p> : null}
-              </div>
-            </fieldset>
-            <label className="text-sm font-semibold text-[#342c3f] lg:col-span-2">
-              Service
-              <input value={requestServiceName} onChange={(event) => setRequestServiceName(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" placeholder="Dog walking, day care, overnight care…" />
-            </label>
-            <div className="lg:col-span-2">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-[#342c3f]">Dates and start times</p>
-                  <p className="mt-1 text-xs leading-5 text-[#665d70]">Add as many days as you need. The service, duration, location, and notes below apply to every requested slot.</p>
-                </div>
-                <button type="button" onClick={addRequestSlot} className="rounded border border-[#4d2e91]/30 px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#3f2581]">Add another date</button>
-              </div>
-              <div className="mt-4 grid gap-4">
-                {requestSlots.map((slot, index) => <div key={slot.id} className="grid gap-3 rounded-lg border border-[#24163f]/10 bg-[#fbf9fd] p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
-                  <label className="text-sm font-semibold text-[#342c3f]">
-                    Date {index + 1}
-                    <input type="date" value={slot.date} onChange={(event) => updateRequestSlot(slot.id, { date: event.target.value })} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 bg-white px-4 py-3 text-sm font-normal text-[#17132a]" />
-                  </label>
-                  <label className="text-sm font-semibold text-[#342c3f]">
-                    Start time
-                    <input type="time" value={slot.startTime} onChange={(event) => updateRequestSlot(slot.id, { startTime: event.target.value })} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 bg-white px-4 py-3 text-sm font-normal text-[#17132a]" />
-                  </label>
-                  <button type="button" onClick={() => removeRequestSlot(slot.id)} disabled={requestSlots.length === 1} className="rounded border border-[#4d2e91]/20 px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#3f2581] disabled:cursor-not-allowed disabled:opacity-40">Remove</button>
-                </div>)}
-              </div>
-            </div>
-            <label className="text-sm font-semibold text-[#342c3f] lg:col-span-2">
-              How long?
-              <select value={requestDurationMinutes} onChange={(event) => setRequestDurationMinutes(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 bg-white px-4 py-3 text-sm font-normal text-[#17132a]">
-                <option value="30">30 minutes</option>
-                <option value="45">45 minutes</option>
-                <option value="60">1 hour</option>
-                <option value="90">1 hour 30 minutes</option>
-                <option value="120">2 hours</option>
-                <option value="240">Half day</option>
-                <option value="480">Full day</option>
-                <option value="1440">Overnight / 24 hours</option>
-              </select>
-            </label>
-            <label className="text-sm font-semibold text-[#342c3f] lg:col-span-2">
-              Location
-              <input value={requestLocation} onChange={(event) => setRequestLocation(event.target.value)} className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" placeholder="Home address, usual pick-up point, or to be confirmed" />
-            </label>
-            <label className="text-sm font-semibold text-[#342c3f] lg:col-span-2">
-              Notes
-              <textarea value={requestNotes} onChange={(event) => setRequestNotes(event.target.value)} rows={4} className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" placeholder="Add preferred times, care notes, or anything Jeroen should know." />
-            </label>
-            <button type="submit" disabled={isRequestingBooking || !dogOptions.length} className="inline-flex items-center justify-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white disabled:cursor-not-allowed disabled:opacity-60 lg:col-span-2">{isRequestingBooking ? "Sending…" : `Send ${requestSlots.length} booking request${requestSlots.length === 1 ? "" : "s"}`} <Send className="size-4" /></button>
-          </form> : null}
         </section>
 
-        <section id="booking-calendar" className="mt-9 overflow-hidden rounded-xl border border-[#24163f]/10 bg-white shadow-[0_18px_55px_rgba(29,23,40,0.08)]">
-          <div className="flex flex-col gap-4 border-b border-[#24163f]/10 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#3f2581]">Booking calendar</p>
-              <h2 className="mt-2 font-serif text-2xl text-[#241f30]">{monthLabel}</h2>
-            </div>
-            <div className="flex flex-wrap gap-3 text-xs font-bold uppercase tracking-[0.12em] text-[#665d70]"><span className="inline-flex items-center gap-2"><span className="size-3 rounded-full bg-[#e9f4df]" />Booked</span><span className="inline-flex items-center gap-2"><span className="size-3 rounded-full bg-[#fff0cf]" />Review</span><span className="inline-flex items-center gap-2"><span className="size-3 rounded-full bg-[#f8e3df]" />Cancelled</span></div>
-          </div>
-          <div className="grid grid-cols-7 border-b border-[#24163f]/10 bg-[#fbf9fd] text-center text-xs font-black uppercase tracking-[0.14em] text-[#3f2581]">{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => <div key={day} className="px-2 py-4">{day}</div>)}</div>
-          <div className="grid grid-cols-1 sm:grid-cols-7">
-            {calendarDays.map((day) => {
-              const dayBookings = bookingsByDay[getDateKey(day)] || [];
-              const isCurrentMonth = day.getMonth() === visibleMonth.getMonth();
-              const isToday = getDateKey(day) === getDateKey(new Date(now));
-              return <article key={day.toISOString()} className={`min-h-36 border-b border-r border-[#24163f]/10 p-3 ${isCurrentMonth ? "bg-white" : "bg-[#fbf9fd] text-[#858093]"}`}><div className="flex items-center justify-between"><span className={`grid size-8 place-items-center rounded-full text-sm font-bold ${isToday ? "bg-[#4d2e91] text-white" : ""}`}>{day.getDate()}</span>{dayBookings.length ? <span className="text-xs font-bold text-[#3f2581]">{dayBookings.length}</span> : null}</div><div className="mt-3 space-y-2">{dayBookings.map((booking) => <a key={booking.id} href={`/api/bookings/${booking.id}`} className={`block rounded-lg px-3 py-2 text-xs leading-5 ${getStatusTone(booking.status)}`}><span className="block font-black uppercase tracking-[0.08em]">{formatBookingTime(booking.startsAt)}</span><span className="block truncate font-semibold">{booking.serviceName}</span><span className="block truncate">{booking.dogName}</span></a>)}</div></article>;
-            })}
-          </div>
-        </section>
+        <BookingCalendar
+          monthLabel={monthLabel}
+          calendarDays={calendarDays}
+          visibleMonth={visibleMonth}
+          bookingsByDay={bookingsByDay}
+          selectedDateKey={selectedDateKey}
+          now={now}
+          getDateKey={getDateKey}
+          onSelectDay={handleSelectCalendarDay}
+          onRequestBooking={handleRequestBookingFromCalendar}
+        />
 
         <section className="relative mt-9 overflow-hidden rounded-xl bg-[#f4eef8] p-9 sm:p-12"><Image src={supportImage || "/images/dogs/melakta.jpeg"} alt="Your dog care support" fill sizes="720px" className="object-cover object-right opacity-45" /><div className="relative max-w-md"><h2 className="font-serif text-2xl">Need to make a change?</h2><p className="mt-4 text-sm leading-7">Reschedule, ask a question or just say hi. I&apos;m here to help!</p><Link href="/contact" className="mt-7 inline-flex items-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">Send me a message <PawPrint className="size-4" /></Link></div></section>
+        
+        <BookingRequestModal
+          isOpen={isRequestModalOpen}
+          dogOptions={dogOptions}
+          requestDogChoice={requestDogChoice}
+          requestServiceName={requestServiceName}
+          requestSlots={requestSlots}
+          requestDurationMinutes={requestDurationMinutes}
+          requestLocation={requestLocation}
+          requestNotes={requestNotes}
+          isRequestingBooking={isRequestingBooking}
+          onClose={() => setIsRequestModalOpen(false)}
+          onSubmit={handleBookingRequest}
+          onDogChoiceChange={setRequestDogChoice}
+          onServiceNameChange={setRequestServiceName}
+          onSlotChange={updateRequestSlot}
+          onAddSlot={addRequestSlot}
+          onRemoveSlot={removeRequestSlot}
+          onDurationChange={setRequestDurationMinutes}
+          onLocationChange={setRequestLocation}
+          onNotesChange={setRequestNotes}
+        />
       </div>
     </div>
   );
