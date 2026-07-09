@@ -12,6 +12,7 @@ type ClientDogMatch = {
   clientName: string;
   clientEmail: string | null;
   dogId: string;
+  dogIds: string[];
   dogName: string;
   source: "portal_dogs" | "admin_booking_calendar";
 };
@@ -68,23 +69,34 @@ function uniqueMatches(matches: ClientDogMatch[]) {
   });
 }
 
-async function findConnectedClient(dogName: string, clientName: string) {
-  if (isPlaceholderName(dogName) || isPlaceholderName(clientName)) return null;
+function splitDogNames(dogName: string) {
+  return dogName
+    .split(/\s+(?:&|and)\s+/i)
+    .map((name) => name.trim())
+    .filter(Boolean);
+}
 
-  const dogFilter = `%${escapePostgrestLike(dogName.trim())}%`;
+function getPortalClient(row: PortalDogMatchRow) {
+  return Array.isArray(row.portal_clients) ? row.portal_clients[0] : row.portal_clients;
+}
+
+async function findConnectedClient(dogName: string, clientName: string) {
+  const dogNames = splitDogNames(dogName);
+  if (!dogNames.length || dogNames.some(isPlaceholderName) || isPlaceholderName(clientName)) return null;
+
   const clientFilter = `%${escapePostgrestLike(clientName.trim())}%`;
+  const primaryDogFilter = `%${escapePostgrestLike(dogNames[0].trim())}%`;
 
   const [dogResult, calendarResult] = await Promise.all([
     supabaseAdmin
       .from("portal_dogs")
       .select("id,name,client_id,portal_clients(id,full_name,email)")
-      .ilike("name", dogFilter)
       .ilike("portal_clients.full_name", clientFilter)
-      .limit(25),
+      .limit(100),
     supabaseAdmin
       .from("admin_booking_calendar")
       .select("client_id,client_name,client_email,dog_id,dog_name")
-      .ilike("dog_name", dogFilter)
+      .ilike("dog_name", primaryDogFilter)
       .ilike("client_name", clientFilter)
       .not("client_id", "is", null)
       .not("dog_id", "is", null)
@@ -96,31 +108,41 @@ async function findConnectedClient(dogName: string, clientName: string) {
 
   const dogRows = (dogResult.data ?? []) as PortalDogMatchRow[];
   const calendarRows = (calendarResult.data ?? []) as AdminCalendarMatchRow[];
+  const groupedDogs = new Map<string, { client: NonNullable<ReturnType<typeof getPortalClient>>; rows: PortalDogMatchRow[] }>();
+
+  dogRows.forEach((row) => {
+    const client = getPortalClient(row);
+    if (!row.client_id || !client || !namesMatch(client.full_name, clientName)) return;
+
+    const existing = groupedDogs.get(row.client_id);
+    if (existing) {
+      existing.rows.push(row);
+      return;
+    }
+
+    groupedDogs.set(row.client_id, { client, rows: [row] });
+  });
+
+  const portalMatches = Array.from(groupedDogs.entries()).flatMap(([clientId, group]) => {
+    const matchedDogs = dogNames
+      .map((name) => group.rows.find((row) => namesMatch(row.name, name)))
+      .filter((row): row is PortalDogMatchRow => Boolean(row));
+
+    if (matchedDogs.length !== dogNames.length) return [];
+
+    return [{
+      clientId,
+      clientName: group.client.full_name?.trim() || clientName,
+      clientEmail: group.client.email ?? null,
+      dogId: matchedDogs[0].id,
+      dogIds: matchedDogs.map((row) => row.id),
+      dogName: matchedDogs.map((row) => row.name?.trim()).filter(Boolean).join(" & ") || dogName,
+      source: "portal_dogs" as const,
+    }];
+  });
 
   const matches = uniqueMatches([
-    ...dogRows
-      .filter((row) => {
-  const client = row.portal_clients?.[0];
-
-  return (
-    row.client_id &&
-    client &&
-    namesMatch(row.name, dogName) &&
-    namesMatch(client.full_name, clientName)
-  );
-})
-      .map((row) => {
-  const client = row.portal_clients?.[0];
-
-  return {
-    clientId: row.client_id as string,
-    clientName: client?.full_name?.trim() || clientName,
-    clientEmail: client?.email ?? null,
-    dogId: row.id,
-    dogName: row.name?.trim() || dogName,
-    source: "portal_dogs" as const,
-  };
-}),
+    ...portalMatches,
     ...calendarRows
       .filter((row) => row.client_id && row.dog_id && namesMatch(row.dog_name, dogName) && namesMatch(row.client_name, clientName))
       .map((row) => ({
@@ -128,6 +150,7 @@ async function findConnectedClient(dogName: string, clientName: string) {
         clientName: row.client_name?.trim() || clientName,
         clientEmail: row.client_email ?? null,
         dogId: row.dog_id as string,
+        dogIds: [row.dog_id as string],
         dogName: row.dog_name?.trim() || dogName,
         source: "admin_booking_calendar" as const,
       })),
