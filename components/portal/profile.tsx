@@ -98,6 +98,10 @@ function InfoLine({ label, value }: { label: string; value: string }) {
   );
 }
 
+function isSupabaseStorageUrl(src: string | null | undefined) {
+  return Boolean(src?.includes("/storage/v1/object/"));
+}
+
 function DogImagePlaceholder({ alt, className }: { alt: string; className: string }) {
   return (
     <span aria-label={`${alt} has no Supabase image`} className={`${className} grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]`}>
@@ -114,7 +118,7 @@ function DogImage({ alt, className, src, sizes }: { alt: string; className: stri
     return <DogImagePlaceholder alt={alt} className={className} />;
   }
 
-  return <Image src={cleanSrc} alt={alt} fill sizes={sizes} className={className} onError={() => setFailedSrc(cleanSrc)} />;
+  return <Image src={cleanSrc} alt={alt} fill sizes={sizes} unoptimized={isSupabaseStorageUrl(cleanSrc)} className={className} onError={() => setFailedSrc(cleanSrc)} />;
 }
 
 export function Profile({ accessToken, onBackToDashboard }: { accessToken?: string; onBackToDashboard: () => void }) {

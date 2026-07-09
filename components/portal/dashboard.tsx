@@ -11,6 +11,10 @@ import { useSupabaseLiveQuery } from "./use-supabase-live-query";
 
 const dashboardRealtimeTables = ["portal_clients", "portal_dogs", "portal_bookings", "portal_session_updates", "portal_gallery_items"];
 
+function isSupabaseStorageUrl(src: string | null | undefined) {
+  return Boolean(src?.includes("/storage/v1/object/"));
+}
+
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("en-IE", { dateStyle: "full" }).format(new Date(date));
 }
@@ -42,7 +46,7 @@ function PortalCard({
 function SupabaseImage({ alt, children, className, imageClassName = "object-cover", priority = false, sizes, src }: { alt: string; children?: React.ReactNode; className: string; imageClassName?: string; priority?: boolean; sizes: string; src: string | null }) {
   return (
     <div className={`${className} ${src ? "" : "grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]"}`}>
-      {src ? <Image src={src} alt={alt} fill priority={priority} loading={priority ? "eager" : undefined} sizes={sizes} className={imageClassName} /> : <PawPrint aria-hidden="true" className="size-10" />}
+      {src ? <Image src={src} alt={alt} fill priority={priority} loading={priority ? "eager" : undefined} sizes={sizes} unoptimized={isSupabaseStorageUrl(src)} className={imageClassName} /> : <PawPrint aria-hidden="true" className="size-10" />}
       {children}
     </div>
   );
@@ -101,7 +105,7 @@ export function Dashboard({ accessToken }: { accessToken?: string }) {
           <p className="mt-1 text-sm text-[#665d70]">Everything for {data.dogNames} is kept up to date here</p>
         </div>
         <div className="relative size-12 overflow-hidden rounded-full ring-2 ring-[#ead9b8]">
-          {data.avatarUrl ? <Image src={data.avatarUrl} alt={`${data.clientName} profile photo`} fill sizes="48px" className="object-cover" /> : <span className="grid size-full place-items-center bg-[#f0e8f8] text-[#5b2aa0]"><PawPrint className="size-5" /></span>}
+          {data.avatarUrl ? <Image src={data.avatarUrl} alt={`${data.clientName} profile photo`} fill sizes="48px" unoptimized={isSupabaseStorageUrl(data.avatarUrl)} className="object-cover" /> : <span className="grid size-full place-items-center bg-[#f0e8f8] text-[#5b2aa0]"><PawPrint className="size-5" /></span>}
         </div>
       </header>
 

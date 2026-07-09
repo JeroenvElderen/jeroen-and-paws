@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Bell, CalendarDays, Check, Clock3, Download, ImageIcon, MapPin, PawPrint, Users } from "lucide-react";
+import { ArrowRight, Bell, CalendarDays, Check, Clock3, Download, ImageIcon, MapPin, PawPrint, Send, Users, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -53,6 +53,16 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
   }, []);
   const fallbackBookings = useMemo(() => [] as CalendarBooking[], []);
   const [visibleMonth, setVisibleMonth] = useState(() => getMonthStart(new Date()));
+  const [requestServiceName, setRequestServiceName] = useState("Dog walking");
+  const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
+  const [requestDogChoice, setRequestDogChoice] = useState("both");
+  const [requestDate, setRequestDate] = useState("");
+  const [requestStartTime, setRequestStartTime] = useState("");
+  const [requestDurationMinutes, setRequestDurationMinutes] = useState("60");
+  const [requestLocation, setRequestLocation] = useState("");
+  const [requestNotes, setRequestNotes] = useState("");
+  const [requestStatus, setRequestStatus] = useState<{ tone: "success" | "error"; message: string } | null>(null);
+  const [isRequestingBooking, setIsRequestingBooking] = useState(false);
   const realtimeTables = useMemo(() => ["portal_bookings", "portal_dogs", "portal_session_updates", "portal_gallery_items"], []);
   const { data: bookings, isLoading, error } = useSupabaseLiveQuery({
     accessToken,
@@ -65,7 +75,12 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
 
   const upcoming = useMemo(() => bookings.filter((booking) => booking.status !== "cancelled" && new Date(booking.endsAt).getTime() >= now).sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()), [bookings, now]);
   const nextBooking = upcoming[0];
-  const dogCount = new Set(bookings.map((booking) => booking.dogId || booking.dogName)).size;
+  const dogOptions = useMemo(() => Array.from(bookings.reduce<Map<string, string>>((dogs, booking) => {
+    const key = booking.dogId || booking.dogName;
+    if (key && !dogs.has(key)) dogs.set(key, booking.dogName);
+    return dogs;
+  }, new Map()).entries()).map(([id, name]) => ({ id, name })), [bookings]);
+  const dogCount = dogOptions.length;
   const calendarDays = useMemo(() => getCalendarDays(visibleMonth), [visibleMonth]);
   const bookingsByDay = useMemo(() => bookings.reduce<Record<string, CalendarBooking[]>>((days, booking) => {
     const key = getDateKey(booking.startsAt);
@@ -77,6 +92,54 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
   const bookingImage = dogImages.getImage(1, nextBooking?.coverImageUrl || "/images/dogs/ace.jpg");
   const supportImage = dogImages.getImage(2, "/images/dogs/melakta.jpeg");
   const sessionPassed = nextBooking ? new Date(nextBooking.startsAt).getTime() < now : false;
+  const buildRequestDate = (time: string, durationMinutes = 0) => {
+    const date = new Date(`${requestDate}T${time}`);
+    date.setMinutes(date.getMinutes() + durationMinutes);
+    return date.toISOString();
+  };
+
+  const handleBookingRequest = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setRequestStatus(null);
+
+    if (!accessToken) {
+      setRequestStatus({ tone: "error", message: "Please sign in again before requesting a booking." });
+      return;
+    }
+
+    setIsRequestingBooking(true);
+
+    try {
+      const response = await fetch("/api/portal/booking-requests", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dogIds: requestDogChoice === "both" ? dogOptions.map((dog) => dog.id) : [requestDogChoice],
+          serviceName: requestServiceName,
+          startsAt: buildRequestDate(requestStartTime),
+          endsAt: buildRequestDate(requestStartTime, Number(requestDurationMinutes)),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Dublin",
+          location: requestLocation,
+          notes: requestNotes,
+        }),
+      });
+      const result = (await response.json().catch(() => ({}))) as { error?: string; message?: string };
+
+      if (!response.ok) throw new Error(result.error || "Unable to send this booking request.");
+
+      setRequestStatus({ tone: "success", message: result.message || "Your booking request has been sent for review." });
+      setRequestNotes("");
+      setIsRequestFormOpen(false);
+    } catch (error) {
+      setRequestStatus({ tone: "error", message: error instanceof Error ? error.message : "Unable to send this booking request." });
+    } finally {
+      setIsRequestingBooking(false);
+    }
+  };
+
   const timeline = nextBooking ? [
     [Check, "Booking", nextBooking.status.replace(/_/g, " "), formatBookingDate(nextBooking.startsAt, { day: "numeric", month: "short", year: "numeric" }), true],
     [Check, "Calendar", nextBooking.syncStatus.replace(/_/g, " "), "Added to your portal", true],
@@ -112,6 +175,70 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
 
           <div className="border-t border-[#24163f]/10 p-8 lg:p-10"><h3 className="font-serif text-xl">Session Timeline</h3><div className="mt-8 grid gap-8 md:grid-cols-4">{timeline.map(([Icon, title, status, date, active]) => <div key={title} className="relative text-center before:absolute before:left-0 before:top-8 before:hidden before:h-px before:w-full before:bg-[#24163f]/15 md:before:block"><div className={`relative z-10 mx-auto grid size-16 place-items-center rounded-full ${active ? "bg-[#28206e] text-white" : "bg-[#f0eaee] text-[#6a6170]"}`}><Icon className="size-7" /></div><p className="mt-4 text-xs font-black uppercase tracking-[0.14em]">{title}</p><p className="mt-1 text-sm capitalize text-[#665d70]">{status}</p>{date ? <p className="mt-2 text-xs text-[#665d70]">{date}</p> : null}</div>)}</div></div>
         </BookingCard> : null}
+
+        <section className="mt-9 overflow-hidden rounded-xl border border-[#24163f]/10 bg-white p-8 shadow-[0_18px_55px_rgba(29,23,40,0.08)] lg:p-10">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#3f2581]">Request a booking</p>
+              <h2 className="mt-3 font-serif text-2xl text-[#241f30]">Need another date?</h2>
+              <p className="mt-3 text-sm leading-7 text-[#665d70]">Send a booking request from your portal. It will appear as <strong>needs review</strong> until Jeroen confirms availability.</p>
+            </div>
+            <button type="button" onClick={() => setIsRequestFormOpen((isOpen) => !isOpen)} className="inline-flex items-center justify-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">
+              {isRequestFormOpen ? "Close form" : "Request booking"} {isRequestFormOpen ? <X className="size-4" /> : <Send className="size-4" />}
+            </button>
+          </div>
+          {requestStatus ? <p className={`mt-5 rounded-lg px-4 py-3 text-sm font-semibold ${requestStatus.tone === "success" ? "bg-[#e9f4df] text-[#356d28]" : "bg-[#f8e3df] text-[#8a2f20]"}`}>{requestStatus.message}</p> : null}
+          {isRequestFormOpen ? <form onSubmit={handleBookingRequest} className="mt-8 grid gap-5 lg:grid-cols-2">
+            <fieldset className="lg:col-span-2">
+              <legend className="text-sm font-semibold text-[#342c3f]">Who is this booking for?</legend>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {dogOptions.map((dog) => <label key={dog.id} className="flex cursor-pointer items-center gap-3 rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-semibold text-[#342c3f]">
+                  <input type="radio" name="dogChoice" value={dog.id} checked={requestDogChoice === dog.id || (dogOptions.length === 1 && requestDogChoice === "both")} onChange={(event) => setRequestDogChoice(event.target.value)} />
+                  {dog.name}
+                </label>)}
+                {dogOptions.length > 1 ? <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-semibold text-[#342c3f]">
+                  <input type="radio" name="dogChoice" value="both" checked={requestDogChoice === "both"} onChange={(event) => setRequestDogChoice(event.target.value)} />
+                  Both dogs ({dogOptions.map((dog) => dog.name).join(" + ")})
+                </label> : null}
+                {!dogOptions.length ? <p className="text-sm text-[#8a2f20]">No dogs found yet.</p> : null}
+              </div>
+            </fieldset>
+            <label className="text-sm font-semibold text-[#342c3f] lg:col-span-2">
+              Service
+              <input value={requestServiceName} onChange={(event) => setRequestServiceName(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" placeholder="Dog walking, day care, overnight care…" />
+            </label>
+            <label className="text-sm font-semibold text-[#342c3f]">
+              Date
+              <input type="date" value={requestDate} onChange={(event) => setRequestDate(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" />
+            </label>
+            <label className="text-sm font-semibold text-[#342c3f]">
+              Start time
+              <input type="time" value={requestStartTime} onChange={(event) => setRequestStartTime(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" />
+            </label>
+            <label className="text-sm font-semibold text-[#342c3f] lg:col-span-2">
+              How long?
+              <select value={requestDurationMinutes} onChange={(event) => setRequestDurationMinutes(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 bg-white px-4 py-3 text-sm font-normal text-[#17132a]">
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="90">1 hour 30 minutes</option>
+                <option value="120">2 hours</option>
+                <option value="240">Half day</option>
+                <option value="480">Full day</option>
+                <option value="1440">Overnight / 24 hours</option>
+              </select>
+            </label>
+            <label className="text-sm font-semibold text-[#342c3f] lg:col-span-2">
+              Location
+              <input value={requestLocation} onChange={(event) => setRequestLocation(event.target.value)} className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" placeholder="Home address, usual pick-up point, or to be confirmed" />
+            </label>
+            <label className="text-sm font-semibold text-[#342c3f] lg:col-span-2">
+              Notes
+              <textarea value={requestNotes} onChange={(event) => setRequestNotes(event.target.value)} rows={4} className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" placeholder="Add preferred times, care notes, or anything Jeroen should know." />
+            </label>
+            <button type="submit" disabled={isRequestingBooking || !dogOptions.length} className="inline-flex items-center justify-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white disabled:cursor-not-allowed disabled:opacity-60 lg:col-span-2">{isRequestingBooking ? "Sending…" : "Send booking request"} <Send className="size-4" /></button>
+          </form> : null}
+        </section>
 
         <section id="booking-calendar" className="mt-9 overflow-hidden rounded-xl border border-[#24163f]/10 bg-white shadow-[0_18px_55px_rgba(29,23,40,0.08)]">
           <div className="flex flex-col gap-4 border-b border-[#24163f]/10 p-6 sm:flex-row sm:items-center sm:justify-between">

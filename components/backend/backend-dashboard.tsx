@@ -362,7 +362,7 @@ export function BackendDashboard() {
     if (activeView === "clients") return <BackendClients accessToken={backendSession.accessToken} />;
     if (activeView === "calendar") return <BackendCalendar accessToken={backendSession.accessToken} />;
     if (activeView === "invoices") return <BackendInvoices accessToken={backendSession.accessToken} />;
-    if (activeView === "photo-updates") return <BackendPhotoUpdates />;
+    if (activeView === "photo-updates") return <BackendPhotoUpdates accessToken={backendSession.accessToken} />;
     if (activeView === "faq") return <BackendFAQ />;
     if (activeView === "settings") return <BackendSettings />;
 

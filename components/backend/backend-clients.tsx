@@ -48,6 +48,10 @@ type BackendClient = {
   image: string | null;
 };
 
+function isSupabaseStorageUrl(src: string | null | undefined) {
+  return Boolean(src?.includes("/storage/v1/object/"));
+}
+
 const fallbackClients: BackendClient[] = [];
 
 type ClientsApiResponse = {
@@ -69,7 +73,7 @@ function formatDisplayDate(value: string | null) {
 }
 
 function SupabaseAvatar({ alt, className, height, src, width }: { alt: string; className: string; height: number; src: string | null; width: number }) {
-  return src?.trim() ? <Image src={src} alt={alt} width={width} height={height} className={className} /> : <span aria-label={`${alt} has no Supabase image`} className={`${className} grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]`}><PawPrint className="size-5" /></span>;
+  return src?.trim() ? <Image src={src} alt={alt} width={width} height={height} unoptimized={isSupabaseStorageUrl(src)} className={className} /> : <span aria-label={`${alt} has no Supabase image`} className={`${className} grid place-items-center bg-[#f0e8f8] text-[#5b2aa0]`}><PawPrint className="size-5" /></span>;
 }
 
 export function BackendClients({ accessToken }: { accessToken: string }) {
