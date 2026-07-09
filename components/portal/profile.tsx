@@ -19,6 +19,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+import { formatDogAge } from "@/utils/dog-age";
+
 import { useSupabaseLiveQuery } from "./use-supabase-live-query";
 
 type DogRow = {
@@ -386,7 +388,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                   <div className="mt-6 divide-y divide-[#24163f]/10">
                     {dogs.map((dog) => (
                       <article key={dog.id} className="flex items-center justify-between gap-4 py-5 first:pt-0">
-                        <span className="flex items-center gap-4"><span className="relative size-16 overflow-hidden rounded-full"><DogImage src={dog.profile_photo_url} alt={dog.name} sizes="64px" className="object-cover" /></span><span><span className="font-serif text-2xl text-[#241f30]">{dog.name}</span><span className="mt-1 block text-sm text-[#665d70]">{dog.breed || "Dog"}{dog.age ? ` • ${dog.age}` : ""}</span></span></span>
+                        <span className="flex items-center gap-4"><span className="relative size-16 overflow-hidden rounded-full"><DogImage src={dog.profile_photo_url} alt={dog.name} sizes="64px" className="object-cover" /></span><span><span className="font-serif text-2xl text-[#241f30]">{dog.name}</span><span className="mt-1 block text-sm text-[#665d70]">{dog.breed || "Dog"}{dog.age ? ` • ${formatDogAge(dog.age)}` : ""}</span></span></span>
                         <span className="rounded-full bg-[#f0e8f8] px-4 py-1 text-xs font-semibold text-[#5b2aa0]">{dog.status || "Active"}</span>
                       </article>
                     ))}
@@ -397,7 +399,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                     <form onSubmit={saveDog} className="mt-4 grid gap-3 rounded-xl bg-[#fbf8ff] p-4">
                       <input className="rounded border border-[#24163f]/15 px-4 py-3" name="name" placeholder="Dog name" required />
                       <input className="rounded border border-[#24163f]/15 px-4 py-3" name="breed" placeholder="Breed" />
-                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="age" placeholder="Age" />
+                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Date of birth<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="age" type="date" aria-label="Dog date of birth" /></label>
                       <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Dog photo<input className="rounded border border-[#24163f]/15 bg-white px-4 py-3 font-normal" name="profile_photo_file" type="file" accept="image/*" /></label>
                       <textarea className="min-h-24 rounded border border-[#24163f]/15 px-4 py-3" name="notes" placeholder="Notes, routines, behaviour, or care instructions" />
                       <button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save dog</button>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { formatDogAge } from "@/utils/dog-age";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
@@ -50,7 +51,8 @@ function mapDog(row: AdminDogRow) {
   phone: owner?.phone?.trim() || "No phone saved",
   email: owner?.email?.trim() || "No email saved",
   breed: row.breed?.trim() || "Breed unknown",
-  age: row.age?.trim() || "Age unknown",
+  age: formatDogAge(row.age),
+  dateOfBirth: row.age?.trim() || null,
   status: formatStatus(row.status),
   lastDate: latestBooking?.starts_at || row.created_at || null,
   lastService: latestBooking?.service_name?.trim() || "No bookings yet",

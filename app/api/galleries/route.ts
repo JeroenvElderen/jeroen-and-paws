@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { formatDogAge } from "@/utils/dog-age";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
@@ -60,7 +61,7 @@ function mapGallery(row: GalleryRow) {
     updatedAt: row.updated_at,
     publishedAt: row.published_at,
     client: { name: client?.full_name || "Unnamed client", email: client?.email || "No email saved", phone: client?.phone || "No phone saved", avatarUrl: client?.avatar_url || null },
-    dog: { name: dog?.name || "Unnamed dog", breed: dog?.breed || "Breed unknown", age: dog?.age || "Age unknown", photoUrl: dog?.profile_photo_url || null },
+    dog: { name: dog?.name || "Unnamed dog", breed: dog?.breed || "Breed unknown", age: formatDogAge(dog?.age), photoUrl: dog?.profile_photo_url || null },
     photos: images.map((image) => ({ id: image.id, imageUrl: image.image_url, altText: image.alt_text, createdAt: image.created_at })),
   };
 }
