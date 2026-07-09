@@ -9,11 +9,17 @@ export const runtime = "nodejs";
 
 const notificationEmail = "jeroen@jeroenandpaws.com";
 
+const bookingSlotSchema = z.object({
+  startsAt: z.string().datetime("Please choose a valid start date and time."),
+  endsAt: z.string().datetime("Please choose a valid end date and time."),
+});
+
 const bookingRequestSchema = z.object({
   dogIds: z.array(z.string().uuid()).min(1, "Please choose at least one dog for this booking request."),
   serviceName: z.string().trim().min(2, "Please add the service you would like."),
-  startsAt: z.string().datetime("Please choose a valid start date and time."),
-  endsAt: z.string().datetime("Please choose a valid end date and time."),
+  startsAt: z.string().datetime("Please choose a valid start date and time.").optional(),
+  endsAt: z.string().datetime("Please choose a valid end date and time.").optional(),
+  bookings: z.array(bookingSlotSchema).min(1, "Please add at least one booking date.").max(30, "Please request no more than 30 bookings at a time.").optional(),
   timezone: z.string().trim().min(1).default("Europe/Dublin"),
   location: z.string().trim().max(240, "Please keep the location shorter.").optional(),
   notes: z.string().trim().max(1200, "Please keep notes under 1,200 characters.").optional(),
@@ -76,8 +82,7 @@ function buildNotificationBody(input: {
   client: PortalClientRow;
   dogs: PortalDogRow[];
   serviceName: string;
-  startsAt: string;
-  endsAt: string;
+  bookings: Array<{ startsAt: string; endsAt: string }>;
   timezone: string;
   location?: string;
   notes?: string;
@@ -89,8 +94,8 @@ function buildNotificationBody(input: {
     `Client email: ${input.client.email || "Not available"}`,
     `Dogs: ${input.dogs.map((dog) => dog.name || "Dog to confirm").join(", ")}`,
     `Service: ${input.serviceName}`,
-    `Starts: ${input.startsAt}`,
-    `Ends: ${input.endsAt}`,
+    `Requested slots: ${input.bookings.length}`,
+    ...input.bookings.flatMap((booking, index) => [`Slot ${index + 1} starts: ${booking.startsAt}`, `Slot ${index + 1} ends: ${booking.endsAt}`]),
     `Timezone: ${input.timezone}`,
     `Location: ${input.location || "To be confirmed"}`,
     "",
@@ -110,8 +115,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: payload.error.issues[0]?.message || "Please check the booking request." }, { status: 400 });
   }
 
-  if (new Date(payload.data.endsAt) <= new Date(payload.data.startsAt)) {
-    return NextResponse.json({ error: "The booking end time must be after the start time." }, { status: 400 });
+  const requestedBookings = payload.data.bookings ?? (payload.data.startsAt && payload.data.endsAt ? [{ startsAt: payload.data.startsAt, endsAt: payload.data.endsAt }] : []);
+
+  if (!requestedBookings.length) {
+    return NextResponse.json({ error: "Please add at least one booking date." }, { status: 400 });
+  }
+
+  if (requestedBookings.some((booking) => new Date(booking.endsAt) <= new Date(booking.startsAt))) {
+    return NextResponse.json({ error: "Each booking end time must be after its start time." }, { status: 400 });
   }
 
   try {
@@ -131,25 +142,26 @@ export async function POST(request: Request) {
 
     const primaryDog = dogs[0];
 
-    const { data: booking, error: insertError } = await supabaseAdmin
+    const bookingRows = requestedBookings.map((booking) => ({
+      client_id: (client as PortalClientRow).id,
+      dog_id: primaryDog.id,
+      dog_ids: dogs.map((dog) => dog.id),
+      service_name: payload.data.serviceName,
+      starts_at: booking.startsAt,
+      ends_at: booking.endsAt,
+      timezone: payload.data.timezone,
+      location: payload.data.location || null,
+      notes: payload.data.notes || null,
+      status: "needs_review",
+      source: "website",
+      sync_status: "needs_review",
+      needs_review: true,
+    }));
+
+    const { data: bookings, error: insertError } = await supabaseAdmin
       .from("portal_bookings")
-      .insert({
-        client_id: (client as PortalClientRow).id,
-        dog_id: primaryDog.id,
-        dog_ids: dogs.map((dog) => dog.id),
-        service_name: payload.data.serviceName,
-        starts_at: payload.data.startsAt,
-        ends_at: payload.data.endsAt,
-        timezone: payload.data.timezone,
-        location: payload.data.location || null,
-        notes: payload.data.notes || null,
-        status: "needs_review",
-        source: "website",
-        sync_status: "needs_review",
-        needs_review: true,
-      })
-      .select("id")
-      .single();
+      .insert(bookingRows)
+      .select("id");
 
     if (insertError) throw insertError;
 
@@ -161,20 +173,20 @@ export async function POST(request: Request) {
           to: notificationEmail,
           replyTo: (client as PortalClientRow).email || businessInfo.email,
           replyToName: (client as PortalClientRow).full_name || "Portal client",
-          subject: `New portal booking request: ${payload.data.serviceName}`,
-          text: buildNotificationBody({ client: client as PortalClientRow, dogs, ...payload.data }),
+          subject: `New portal booking request: ${payload.data.serviceName}${requestedBookings.length > 1 ? ` (${requestedBookings.length} slots)` : ""}`,
+          text: buildNotificationBody({ client: client as PortalClientRow, dogs, ...payload.data, bookings: requestedBookings }),
         });
       } catch (error) {
-        console.error("Portal booking request email failed", { route: "/api/portal/booking-requests", bookingId: booking?.id, error });
+        console.error("Portal booking request email failed", { route: "/api/portal/booking-request", bookingIds: bookings?.map((booking) => booking.id), error });
       }
     } else {
-      console.error("Portal booking request email is not configured", { route: "/api/portal/booking-requests", bookingId: booking?.id });
+      console.error("Portal booking request email is not configured", { route: "/api/portal/booking-request", bookingIds: bookings?.map((booking) => booking.id) });
     }
 
-    return NextResponse.json({ bookingId: booking?.id, message: "Your booking request has been sent for review." }, { status: 201 });
+    return NextResponse.json({ bookingIds: bookings?.map((booking) => booking.id) ?? [], message: requestedBookings.length === 1 ? "Your booking request has been sent for review." : `Your ${requestedBookings.length} booking requests have been sent for review.` }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to request this booking.";
-    console.error("Portal booking request failed", { route: "/api/portal/booking-requests", error });
+    console.error("Portal booking request failed", { route: "/api/portal/booking-request", error });
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }

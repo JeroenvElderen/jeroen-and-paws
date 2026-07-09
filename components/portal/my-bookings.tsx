@@ -45,6 +45,16 @@ function getStatusTone(status: CalendarBooking["status"]) {
   return "bg-[#e9f4df] text-[#356d28]";
 }
 
+type BookingRequestSlot = {
+  id: string;
+  date: string;
+  startTime: string;
+};
+
+function createBookingRequestSlot(): BookingRequestSlot {
+  return { id: crypto.randomUUID(), date: "", startTime: "" };
+}
+
 export function MyBookings({ accessToken }: { accessToken?: string }) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -56,8 +66,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
   const [requestServiceName, setRequestServiceName] = useState("Dog walking");
   const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
   const [requestDogChoice, setRequestDogChoice] = useState("both");
-  const [requestDate, setRequestDate] = useState("");
-  const [requestStartTime, setRequestStartTime] = useState("");
+  const [requestSlots, setRequestSlots] = useState<BookingRequestSlot[]>(() => [createBookingRequestSlot()]);
   const [requestDurationMinutes, setRequestDurationMinutes] = useState("60");
   const [requestLocation, setRequestLocation] = useState("");
   const [requestNotes, setRequestNotes] = useState("");
@@ -92,8 +101,20 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
   const bookingImage = dogImages.getImage(1, nextBooking?.coverImageUrl || "/images/dogs/ace.jpg");
   const supportImage = dogImages.getImage(2, "/images/dogs/melakta.jpeg");
   const sessionPassed = nextBooking ? new Date(nextBooking.startsAt).getTime() < now : false;
-  const buildRequestDate = (time: string, durationMinutes = 0) => {
-    const date = new Date(`${requestDate}T${time}`);
+  const updateRequestSlot = (slotId: string, updates: Partial<Omit<BookingRequestSlot, "id">>) => {
+    setRequestSlots((slots) => slots.map((slot) => (slot.id === slotId ? { ...slot, ...updates } : slot)));
+  };
+
+  const addRequestSlot = () => {
+    setRequestSlots((slots) => [...slots, createBookingRequestSlot()]);
+  };
+
+  const removeRequestSlot = (slotId: string) => {
+    setRequestSlots((slots) => (slots.length > 1 ? slots.filter((slot) => slot.id !== slotId) : slots));
+  };
+
+  const buildRequestDate = (slot: BookingRequestSlot, durationMinutes = 0) => {
+    const date = new Date(`${slot.date}T${slot.startTime}`);
     date.setMinutes(date.getMinutes() + durationMinutes);
     return date.toISOString();
   };
@@ -110,7 +131,12 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
     setIsRequestingBooking(true);
 
     try {
-      const response = await fetch("/api/portal/booking-requests", {
+      const requestedSlots = requestSlots.map((slot) => ({
+        startsAt: buildRequestDate(slot),
+        endsAt: buildRequestDate(slot, Number(requestDurationMinutes)),
+      }));
+
+      const response = await fetch("/api/portal/booking-request", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -119,8 +145,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
         body: JSON.stringify({
           dogIds: requestDogChoice === "both" ? dogOptions.map((dog) => dog.id) : [requestDogChoice],
           serviceName: requestServiceName,
-          startsAt: buildRequestDate(requestStartTime),
-          endsAt: buildRequestDate(requestStartTime, Number(requestDurationMinutes)),
+          bookings: requestedSlots,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Dublin",
           location: requestLocation,
           notes: requestNotes,
@@ -132,6 +157,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
 
       setRequestStatus({ tone: "success", message: result.message || "Your booking request has been sent for review." });
       setRequestNotes("");
+      setRequestSlots([createBookingRequestSlot()]);
       setIsRequestFormOpen(false);
     } catch (error) {
       setRequestStatus({ tone: "error", message: error instanceof Error ? error.message : "Unable to send this booking request." });
@@ -181,7 +207,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
             <div className="max-w-3xl">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#3f2581]">Request a booking</p>
               <h2 className="mt-3 font-serif text-2xl text-[#241f30]">Need another date?</h2>
-              <p className="mt-3 text-sm leading-7 text-[#665d70]">Send a booking request from your portal. It will appear as <strong>needs review</strong> until Jeroen confirms availability.</p>
+              <p className="mt-3 text-sm leading-7 text-[#665d70]">Send one or more booking requests from your portal. Each date will appear as <strong>needs review</strong> until Jeroen confirms availability.</p>
             </div>
             <button type="button" onClick={() => setIsRequestFormOpen((isOpen) => !isOpen)} className="inline-flex items-center justify-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white">
               {isRequestFormOpen ? "Close form" : "Request booking"} {isRequestFormOpen ? <X className="size-4" /> : <Send className="size-4" />}
@@ -207,14 +233,28 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
               Service
               <input value={requestServiceName} onChange={(event) => setRequestServiceName(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" placeholder="Dog walking, day care, overnight care…" />
             </label>
-            <label className="text-sm font-semibold text-[#342c3f]">
-              Date
-              <input type="date" value={requestDate} onChange={(event) => setRequestDate(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" />
-            </label>
-            <label className="text-sm font-semibold text-[#342c3f]">
-              Start time
-              <input type="time" value={requestStartTime} onChange={(event) => setRequestStartTime(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" />
-            </label>
+            <div className="lg:col-span-2">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-[#342c3f]">Dates and start times</p>
+                  <p className="mt-1 text-xs leading-5 text-[#665d70]">Add as many days as you need. The service, duration, location, and notes below apply to every requested slot.</p>
+                </div>
+                <button type="button" onClick={addRequestSlot} className="rounded border border-[#4d2e91]/30 px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#3f2581]">Add another date</button>
+              </div>
+              <div className="mt-4 grid gap-4">
+                {requestSlots.map((slot, index) => <div key={slot.id} className="grid gap-3 rounded-lg border border-[#24163f]/10 bg-[#fbf9fd] p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                  <label className="text-sm font-semibold text-[#342c3f]">
+                    Date {index + 1}
+                    <input type="date" value={slot.date} onChange={(event) => updateRequestSlot(slot.id, { date: event.target.value })} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 bg-white px-4 py-3 text-sm font-normal text-[#17132a]" />
+                  </label>
+                  <label className="text-sm font-semibold text-[#342c3f]">
+                    Start time
+                    <input type="time" value={slot.startTime} onChange={(event) => updateRequestSlot(slot.id, { startTime: event.target.value })} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 bg-white px-4 py-3 text-sm font-normal text-[#17132a]" />
+                  </label>
+                  <button type="button" onClick={() => removeRequestSlot(slot.id)} disabled={requestSlots.length === 1} className="rounded border border-[#4d2e91]/20 px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-[#3f2581] disabled:cursor-not-allowed disabled:opacity-40">Remove</button>
+                </div>)}
+              </div>
+            </div>
             <label className="text-sm font-semibold text-[#342c3f] lg:col-span-2">
               How long?
               <select value={requestDurationMinutes} onChange={(event) => setRequestDurationMinutes(event.target.value)} required className="mt-2 w-full rounded-lg border border-[#24163f]/15 bg-white px-4 py-3 text-sm font-normal text-[#17132a]">
@@ -236,7 +276,7 @@ export function MyBookings({ accessToken }: { accessToken?: string }) {
               Notes
               <textarea value={requestNotes} onChange={(event) => setRequestNotes(event.target.value)} rows={4} className="mt-2 w-full rounded-lg border border-[#24163f]/15 px-4 py-3 text-sm font-normal text-[#17132a]" placeholder="Add preferred times, care notes, or anything Jeroen should know." />
             </label>
-            <button type="submit" disabled={isRequestingBooking || !dogOptions.length} className="inline-flex items-center justify-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white disabled:cursor-not-allowed disabled:opacity-60 lg:col-span-2">{isRequestingBooking ? "Sending…" : "Send booking request"} <Send className="size-4" /></button>
+            <button type="submit" disabled={isRequestingBooking || !dogOptions.length} className="inline-flex items-center justify-center gap-3 rounded bg-[#4d2e91] px-7 py-4 text-xs font-black uppercase tracking-[0.16em] text-white disabled:cursor-not-allowed disabled:opacity-60 lg:col-span-2">{isRequestingBooking ? "Sending…" : `Send ${requestSlots.length} booking request${requestSlots.length === 1 ? "" : "s"}`} <Send className="size-4" /></button>
           </form> : null}
         </section>
 
