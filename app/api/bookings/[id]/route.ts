@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { buildBookingIcs } from "@/utils/calendar-feed";
 import { fallbackBookings, type BookingStatus } from "@/utils/bookings";
 import { deleteOutlookEvent, getGraphCalendarConfig } from "@/utils/microsoft-graph-calendar";
-import { getExistingBookingSyncRow, loadAdminBooking, outlookRemovalStatuses, syncBookingToOutlook } from "@/utils/outlook-booking-sync";
+import { getExistingBookingSyncRow, loadAdminBooking, outlookRemovalStatuses } from "@/utils/outlook-booking-sync";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
@@ -85,10 +85,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (error) return NextResponse.json({ error: error.message }, { status: 502 });
 
   const booking = await loadAdminBooking(id);
-  const outlookSyncResult = await syncBookingToOutlook(booking, existing?.outlook_event_id ?? null);
-  const syncedBooking = await loadAdminBooking(id);
-
-  return NextResponse.json({ booking: syncedBooking, outlookSyncError: outlookSyncResult.error });
+  return NextResponse.json({ booking, outlookSyncError: null });
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
