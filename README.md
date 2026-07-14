@@ -57,6 +57,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 RESEND_API_KEY=
 RESEND_FROM_EMAIL=Jeroen & Paws <onboarding@yourdomain.com>
 ADMIN_CALENDAR_FEED_TOKEN=
+BOOKING_SYNC_WEBHOOK_SECRET=
 ```
 
 `NEXT_PUBLIC_WHATSAPP_NUMBER` is preferred when you want service-card buttons to create prefilled WhatsApp messages. If `NEXT_PUBLIC_WHATSAPP_CHAT_URL` is used, messages are appended only for WhatsApp-compatible URLs.
@@ -81,7 +82,19 @@ NEXT_PUBLIC_OUTLOOK_CALENDAR_EMAIL=
 
 Email routing defaults to `CONTACT_NOTIFICATION_EMAIL` for delivery, then falls back to `ADMIN_EMAIL`, `JEROEN_AND_PAWS_EMAIL`, or the public business email. The sender mailbox defaults to `BOOKING_NOTIFICATION_EMAIL`, then falls back to `JEROEN_AND_PAWS_EMAIL`, `OUTLOOK_CALENDAR_EMAIL`, or the legacy `NEXT_PUBLIC_OUTLOOK_CALENDAR_EMAIL` fallback.
 
-In Microsoft Entra/Azure, the app registration must be allowed to send mail with Microsoft Graph for the sender mailbox used above. For calendar sync, the same app also needs Microsoft Graph calendar permissions for `OUTLOOK_CALENDAR_EMAIL`. Website-created bookings can be pushed to Outlook through `/api/outlook/bookings/[id]`, and Outlook-created events that start with `[JP]` can be imported through `/api/outlook/sync`.
+In Microsoft Entra/Azure, the app registration must be allowed to send mail with Microsoft Graph for the sender mailbox used above. For calendar sync, the same app also needs Microsoft Graph calendar permissions for `OUTLOOK_CALENDAR_EMAIL`. Approved bookings are pushed to Outlook automatically when calendar sync is configured. Bookings that start as `needs_review`, `requested`, or `pending_confirmation` stay out of Outlook until they are approved with `confirmed`, `busy`, or `completed` status. Existing bookings can also be pushed or refreshed through `/api/outlook/bookings/[id]`, and Outlook-created events that start with `[JP]` can be imported through `/api/outlook/sync`.
+
+`supabase/portal-dashboard.sql` installs a `portal_bookings` insert/update trigger that calls `/api/bookings/sync-outlook` through `pg_net`, so mobile apps only need to insert or update the Supabase row; no mobile-side sync request is required. After deploying the website and setting `BOOKING_SYNC_WEBHOOK_SECRET` in the app environment, add the matching private Supabase setting once in SQL:
+
+```sql
+insert into app_private.booking_sync_settings (id, endpoint_url, webhook_secret, enabled)
+values (true, 'https://your-domain.com/api/bookings/sync-outlook', 'same-secret-as-booking-sync-webhook-secret', true)
+on conflict (id) do update
+set endpoint_url = excluded.endpoint_url,
+    webhook_secret = excluded.webhook_secret,
+    enabled = excluded.enabled;
+```
+
 
 
 ### Resend confirmation email setup

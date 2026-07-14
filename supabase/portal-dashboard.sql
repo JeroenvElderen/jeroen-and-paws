@@ -3,6 +3,7 @@
 -- It intentionally defines each object once, then uses CREATE OR REPLACE for views to avoid duplicate definitions.
 
 create extension if not exists pgcrypto;
+create extension if not exists pg_net with schema extensions;
 
 create table if not exists public.portal_clients (
   id uuid primary key default gen_random_uuid(),
@@ -211,6 +212,92 @@ drop trigger if exists portal_bookings_set_updated_at on public.portal_bookings;
 create trigger portal_bookings_set_updated_at
 before update on public.portal_bookings
 for each row execute function public.set_updated_at();
+
+create schema if not exists app_private;
+
+create table if not exists app_private.booking_sync_settings (
+  id boolean primary key default true check (id),
+  endpoint_url text not null,
+  webhook_secret text not null,
+  enabled boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+comment on table app_private.booking_sync_settings is
+  'Private settings for the portal_bookings -> Outlook sync trigger. Insert one row with endpoint_url set to https://your-domain.com/api/bookings/sync-outlook and webhook_secret matching BOOKING_SYNC_WEBHOOK_SECRET.';
+
+revoke all on schema app_private from anon, authenticated;
+revoke all on all tables in schema app_private from anon, authenticated;
+
+create or replace function app_private.touch_booking_sync_settings()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+drop trigger if exists booking_sync_settings_set_updated_at on app_private.booking_sync_settings;
+create trigger booking_sync_settings_set_updated_at
+before update on app_private.booking_sync_settings
+for each row execute function app_private.touch_booking_sync_settings();
+
+create or replace function app_private.notify_booking_outlook_sync()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, app_private, net
+as $$
+declare
+  settings app_private.booking_sync_settings%rowtype;
+begin
+  select *
+  into settings
+  from app_private.booking_sync_settings
+  where id = true
+    and enabled = true
+  limit 1;
+
+  if not found then
+    return new;
+  end if;
+
+  perform net.http_post(
+    url := settings.endpoint_url,
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'Authorization', 'Bearer ' || settings.webhook_secret
+    ),
+    body := jsonb_build_object(
+      'type', tg_op,
+      'table', tg_table_name,
+      'record', jsonb_build_object('id', new.id),
+      'old_record', case when tg_op = 'UPDATE' then jsonb_build_object('id', old.id) else null end
+    )
+  );
+
+  return new;
+end;
+$$;
+
+drop trigger if exists portal_bookings_notify_outlook_sync on public.portal_bookings;
+create trigger portal_bookings_notify_outlook_sync
+after insert or update of
+  client_id,
+  dog_id,
+  dog_ids,
+  service_name,
+  starts_at,
+  ends_at,
+  timezone,
+  location,
+  status,
+  notes,
+  cancelled_at
+on public.portal_bookings
+for each row execute function app_private.notify_booking_outlook_sync();
 
 drop trigger if exists portal_outlook_imports_set_updated_at on public.portal_outlook_imports;
 create trigger portal_outlook_imports_set_updated_at

@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server";
 
 import { buildBookingIcs } from "@/utils/calendar-feed";
-import { fallbackBookings, mapBookingRow, type BookingStatus, type CalendarBooking, type SupabaseBookingRow } from "@/utils/bookings";
-import { createOutlookEvent, deleteOutlookEvent, getGraphCalendarConfig, updateOutlookEvent } from "@/utils/microsoft-graph-calendar";
+import { fallbackBookings, type BookingStatus } from "@/utils/bookings";
+import { deleteOutlookEvent, getGraphCalendarConfig } from "@/utils/microsoft-graph-calendar";
+import { getExistingBookingSyncRow, loadAdminBooking, outlookRemovalStatuses, syncBookingToOutlook } from "@/utils/outlook-booking-sync";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export const runtime = "nodejs";
 
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
-const outlookRemovalStatuses = new Set<BookingStatus>(["cancelled", "no_show"]);
 const allowedStatuses = new Set<BookingStatus>(["requested", "pending_confirmation", "confirmed", "reschedule_requested", "cancelled", "completed", "no_show", "needs_review", "busy"]);
 
 type SupabaseAuthUser = { email?: string; user?: { email?: string } };
-type ExistingBookingSyncRow = { outlook_event_id?: string | null } | null;
 
 async function getVerifiedBackendAdminToken(request: Request) {
   const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
@@ -28,58 +27,6 @@ async function getVerifiedBackendAdminToken(request: Request) {
   const email = payload?.email ?? payload?.user?.email;
 
   return email?.toLowerCase() === backendAdminEmail ? accessToken : null;
-}
-
-function toOutlookInput(booking: CalendarBooking) {
-  return {
-    subject: `[JP] ${booking.dogName}`,
-    body: [
-      `Jeroen & Paws booking ${booking.id}`,
-      `Client: ${booking.clientName}`,
-      `Dogs: ${booking.dogName}`,
-      `Status: ${booking.status}`,
-      booking.notes ? `Notes: ${booking.notes}` : "",
-    ].filter(Boolean).join("\n"),
-    startsAt: booking.startsAt,
-    endsAt: booking.endsAt,
-    timezone: booking.timezone,
-    location: booking.location,
-  };
-}
-
-async function loadAdminBooking(id: string) {
-  const { data, error } = await supabaseAdmin.from("admin_booking_calendar").select("*").eq("id", id).limit(1).single();
-  if (error) throw error;
-  return mapBookingRow(data as SupabaseBookingRow);
-}
-
-async function syncOutlookAfterBookingChange(booking: CalendarBooking, previousOutlookEventId?: string | null) {
-  const config = getGraphCalendarConfig();
-  const shouldHaveOutlookEvent = booking.status === "confirmed" || booking.status === "busy";
-  const shouldRemoveOutlookEvent = outlookRemovalStatuses.has(booking.status) || !shouldHaveOutlookEvent;
-
-  if (!config) {
-    await supabaseAdmin.from("portal_bookings").update({ sync_status: shouldHaveOutlookEvent ? "failed" : "not_synced", sync_error: shouldHaveOutlookEvent ? "Microsoft Graph calendar is not configured." : null }).eq("id", booking.id);
-    return shouldHaveOutlookEvent ? "Microsoft Graph calendar is not configured." : null;
-  }
-
-  try {
-    if (previousOutlookEventId && shouldRemoveOutlookEvent) {
-      await deleteOutlookEvent(config, previousOutlookEventId);
-      await supabaseAdmin.from("portal_bookings").update({ outlook_event_id: null, outlook_ical_uid: null, outlook_change_key: null, outlook_web_link: null, sync_status: "not_synced", sync_error: null, outlook_last_synced_at: new Date().toISOString() }).eq("id", booking.id);
-      return null;
-    }
-
-    if (!shouldHaveOutlookEvent) return null;
-
-    const event = previousOutlookEventId ? await updateOutlookEvent(config, previousOutlookEventId, toOutlookInput(booking)) : await createOutlookEvent(config, toOutlookInput(booking));
-    await supabaseAdmin.from("portal_bookings").update({ outlook_event_id: event.id, outlook_ical_uid: event.iCalUId ?? null, outlook_change_key: event.changeKey ?? null, outlook_web_link: event.webLink ?? null, sync_status: "synced", sync_error: null, outlook_last_synced_at: new Date().toISOString() }).eq("id", booking.id);
-    return null;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Outlook sync failed.";
-    await supabaseAdmin.from("portal_bookings").update({ sync_status: "failed", sync_error: message }).eq("id", booking.id);
-    return message;
-  }
 }
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -115,8 +62,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (typeof payload.notes === "string") updates.notes = payload.notes;
   if (!Object.keys(updates).length) return NextResponse.json({ error: "No valid booking updates supplied." }, { status: 400 });
 
-  const { data: existing, error: existingError } = await supabaseAdmin.from("portal_bookings").select("outlook_event_id").eq("id", id).maybeSingle();
-  if (existingError) return NextResponse.json({ error: existingError.message }, { status: 502 });
+  let existing;
+  try {
+    existing = await getExistingBookingSyncRow(id);
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to load booking sync state." }, { status: 502 });
+  }
 
   if (!existing) {
     const importUpdates: Record<string, unknown> = {};
@@ -134,10 +85,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (error) return NextResponse.json({ error: error.message }, { status: 502 });
 
   const booking = await loadAdminBooking(id);
-  const outlookSyncError = await syncOutlookAfterBookingChange(booking, (existing as ExistingBookingSyncRow)?.outlook_event_id ?? null);
+  const outlookSyncResult = await syncBookingToOutlook(booking, existing?.outlook_event_id ?? null);
   const syncedBooking = await loadAdminBooking(id);
 
-  return NextResponse.json({ booking: syncedBooking, outlookSyncError });
+  return NextResponse.json({ booking: syncedBooking, outlookSyncError: outlookSyncResult.error });
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -154,7 +105,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   }
 
   const config = getGraphCalendarConfig();
-  const outlookEventId = (existing as ExistingBookingSyncRow)?.outlook_event_id;
+  const outlookEventId = existing?.outlook_event_id;
   if (config && outlookEventId) await deleteOutlookEvent(config, outlookEventId);
 
   const { error } = await supabaseAdmin.from("portal_bookings").delete().eq("id", id);
