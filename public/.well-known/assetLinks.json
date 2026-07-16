@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.jer0m3.jeroenandpawsmobile",
+      "sha256_cert_fingerprints": [
+        "9E:AF:59:51:EC:68:05:7B:94:7D:56:0F:C1:C8:42:9C:6E:FB:4D:1B:1B:CA:49:C4:58:F4:60:86:A9:DE:02:04"
+      ]
+    }
+  }
+]

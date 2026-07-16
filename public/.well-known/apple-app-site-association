@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "TEAM_ID.com.jer0m3.jeroenandpawsmobile"
+        ],
+        "components": [
+          {
+            "/": "/payment/*"
+          },
+          {
+            "/": "/portal/*"
+          }
+        ]
+      }
+    ]
+  }
+}
