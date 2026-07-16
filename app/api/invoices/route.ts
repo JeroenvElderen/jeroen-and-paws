@@ -243,7 +243,7 @@ export async function POST(request: Request) {
     const amountCents = getInvoiceTotalCents(lineItems, payload.amountCents);
     const currency = (cleanString(payload.currency) || "EUR").toUpperCase();
     const invoiceNumber = cleanString(payload.invoiceNumber) || createInvoiceNumber();
-    const status = (cleanString(payload.status) || "draft") as InvoiceStatus;
+    const status = (cleanString(payload.status) || "pending") as InvoiceStatus;
     const serviceName = cleanString(payload.serviceName);
     const durationMinutes = Number(payload.durationMinutes || 0) || null;
     const billingDays = Number(payload.billingDays || 0) || null;
@@ -256,21 +256,19 @@ export async function POST(request: Request) {
     const paymentReference = cleanString(payload.paymentReference) || invoiceNumber;
     const paymentTitle = cleanString(payload.paymentTitle) || buildInvoicePaymentTitle({ invoiceNumber, dogNames, serviceName, durationMinutes, billingDays });
     const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")}/portal?invoice=${encodeURIComponent(invoiceNumber)}` : null;
-    const revolutOrder = status === "draft"
-      ? { configured: false as const, error: "Draft invoice saved without creating a Revolut checkout link." }
-      : await createRevolutMerchantOrder({
-        amountCents,
-        currency,
-        description: paymentTitle,
-        reference: paymentReference,
-        customerEmail: clientEmail || matchedClient?.email || null,
-        redirectUrl,
-      }).catch((error: unknown) => {
-        const message = getErrorMessage(error, "Revolut checkout link could not be created.");
-        console.error("Revolut checkout link creation failed", { route: "/api/invoices", error });
+    const revolutOrder = await createRevolutMerchantOrder({
+      amountCents,
+      currency,
+      description: paymentTitle,
+      reference: paymentReference,
+      customerEmail: clientEmail || matchedClient?.email || null,
+      redirectUrl,
+    }).catch((error: unknown) => {
+      const message = getErrorMessage(error, "Revolut checkout link could not be created.");
+      console.error("Revolut checkout link creation failed", { route: "/api/invoices", error });
 
-        return { configured: false as const, error: message };
-      });
+      return { configured: false as const, error: message };
+    });
     const { data: row, error } = await supabaseAdmin
       .from("portal_invoices")
       .insert({

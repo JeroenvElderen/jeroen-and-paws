@@ -2,8 +2,8 @@ import {
   CalendarDays,
   Check,
   ChevronDown,
-  Download,
   Eye,
+  MessageCircle,
   FileText,
   Filter,
   MoreVertical,
@@ -256,7 +256,7 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
       dueOn: String(form.get("dueOn") || ""),
       currency: String(form.get("currency") || "EUR"),
       notes: String(form.get("notes") || ""),
-      status: "draft",
+      status: "pending",
       lineItems,
     };
 
@@ -269,8 +269,8 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
       const result = (await response.json()) as { invoice?: BackendInvoice; clientMatched?: boolean; error?: string; revolut?: { createsRevolutCheckout?: boolean; message?: string } };
       if (!response.ok) throw new Error(result.error || "Invoice creation failed.");
       setCreateMessage([
-        editingInvoiceId ? `Updated ${result.invoice?.number ?? "invoice"}.` : `Saved ${result.invoice?.number ?? "invoice"} as a draft.`,
-        "Use the three-dot menu to edit, delete, or send it on WhatsApp when ready.",
+        editingInvoiceId ? `Updated ${result.invoice?.number ?? "invoice"}.` : `Saved ${result.invoice?.number ?? "invoice"} as pending with a Revolut payment link.`,
+        "Use the invoice details or three-dot menu to send it on WhatsApp.",
         result.clientMatched ? "Linked to an existing client." : "Saved without a client link until a matching client exists.",
       ].filter(Boolean).join(" "));
       setDraftLineItems([{ description: "", quantity: "1", unitAmount: "" }]);
@@ -364,8 +364,8 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
         <Card className="mt-6 p-5">
           <form onSubmit={createInvoice} className="grid gap-4 lg:grid-cols-4">
             <div className="lg:col-span-4">
-              <h2 className="font-serif text-xl">{editingInvoiceId ? "Edit draft invoice" : "Create draft invoice"}</h2>
-              <p className="mt-1 text-sm text-[#6d667a]">Invoice data stays in the website first. If the client email or name already exists, the invoice links automatically; otherwise it remains unmatched until a client is added later. When the Merchant API key is configured, this also creates a Revolut checkout link that can be sent to the client by WhatsApp.</p>
+              <h2 className="font-serif text-xl">{editingInvoiceId ? "Edit invoice" : "Create invoice"}</h2>
+              <p className="mt-1 text-sm text-[#6d667a]">Manual invoices are saved as pending immediately so clients can pay them in the mobile app through Revolut. If the client email or name already exists, the invoice links automatically; otherwise it remains unmatched until a client is added later. When the Merchant API key is configured, this also creates a Revolut checkout link that can be sent to the client by WhatsApp.</p>
             </div>
             <input name="clientName" list="invoice-client-options" value={clientName} onChange={(event) => applyClientOption(event.target.value)} className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm" placeholder="Start typing client name" />
             <datalist id="invoice-client-options">{clientOptions.map((client) => <option key={client.id} value={client.name} />)}</datalist>
@@ -394,7 +394,7 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
               ))}
             </div>
             <textarea name="notes" className="rounded-lg border border-[#151124]/10 px-4 py-3 text-sm lg:col-span-4" placeholder="Notes shown in backend" />
-            <button disabled={isCreating} className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white disabled:opacity-60 lg:col-span-2">{isCreating ? "Saving…" : editingInvoiceId ? "Save invoice changes" : "Save draft invoice"}</button>
+            <button disabled={isCreating} className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white disabled:opacity-60 lg:col-span-2">{isCreating ? "Saving…" : editingInvoiceId ? "Save invoice changes" : "Create pending invoice"}</button>
             <button type="button" onClick={() => { setShowCreateForm(false); setEditingInvoiceId(null); }} className="rounded-lg border border-[#151124]/10 px-6 py-3 text-sm lg:col-span-2">Cancel</button>
           </form>
         </Card>
@@ -420,7 +420,7 @@ export function BackendInvoices({ accessToken }: { accessToken?: string }) {
 
         <aside className="space-y-5">
           <Card className="p-5"><h2 className="font-serif text-xl">Invoice Summary</h2><div className="mt-6 flex items-center gap-5"><div className="grid size-28 place-items-center rounded-full bg-[#f0e9fb]"><div className="grid size-16 place-items-center rounded-full bg-white text-center text-xs"><span>Total<br /><strong>{formatMoney(totalAmount, currency)}</strong></span></div></div><div className="space-y-3 text-xs"><p><span className="mr-2 inline-block size-2 rounded-full bg-rose-500" />Overdue<br /><span className="text-[#6d667a]">{formatMoney(overdueAmount, currency)}</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-orange-500" />Pending<br /><span className="text-[#6d667a]">{formatMoney(pendingAmount, currency)}</span></p><p><span className="mr-2 inline-block size-2 rounded-full bg-green-500" />Paid<br /><span className="text-[#6d667a]">{formatMoney(paidAmount, currency)}</span></p></div></div></Card>
-          <Card className="p-5"><h2 className="font-serif text-xl">Invoice Details</h2><div className="mt-5 flex items-center justify-between"><p className="font-serif text-xl">{latestInvoice?.number ?? "No invoice"}</p><StatusPill status={latestInvoice ? displayStatus(latestInvoice.status) : "Pending"} /></div><dl className="mt-5 space-y-4 text-sm"><div className="flex justify-between"><dt className="text-[#6d667a]">Issued On</dt><dd>{formatDate(latestInvoice?.issuedOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Due Date</dt><dd>{formatDate(latestInvoice?.dueOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Amount</dt><dd>{latestInvoice ? formatMoney(latestInvoice.amountCents, latestInvoice.currency) : "—"}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Paid On</dt><dd>{formatDate(latestInvoice?.paidOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Payment Method</dt><dd>{latestInvoice?.revolutTransactionId ? "Revolut bank transfer" : latestInvoice?.paymentUrl ? "Revolut checkout link" : "Awaiting Revolut link"}</dd></div><div className="flex justify-between gap-4"><dt className="text-[#6d667a]">Payment title</dt><dd className="text-right">{latestInvoice?.paymentTitle || "—"}</dd></div></dl><button className="mt-5 w-full rounded-lg border border-[#5b2aa0]/15 bg-[#f4efff] px-4 py-3 text-sm font-semibold text-[#5b2aa0]"><Download className="mr-2 inline size-4" />Download PDF</button></Card>
+          <Card className="p-5"><h2 className="font-serif text-xl">Invoice Details</h2><div className="mt-5 flex items-center justify-between"><p className="font-serif text-xl">{latestInvoice?.number ?? "No invoice"}</p><StatusPill status={latestInvoice ? displayStatus(latestInvoice.status) : "Pending"} /></div><dl className="mt-5 space-y-4 text-sm"><div className="flex justify-between"><dt className="text-[#6d667a]">Issued On</dt><dd>{formatDate(latestInvoice?.issuedOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Due Date</dt><dd>{formatDate(latestInvoice?.dueOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Amount</dt><dd>{latestInvoice ? formatMoney(latestInvoice.amountCents, latestInvoice.currency) : "—"}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Paid On</dt><dd>{formatDate(latestInvoice?.paidOn ?? null)}</dd></div><div className="flex justify-between"><dt className="text-[#6d667a]">Payment Method</dt><dd>{latestInvoice?.revolutTransactionId ? "Revolut bank transfer" : latestInvoice?.paymentUrl ? "Revolut checkout link" : "Awaiting Revolut link"}</dd></div><div className="flex justify-between gap-4"><dt className="text-[#6d667a]">Payment title</dt><dd className="text-right">{latestInvoice?.paymentTitle || "—"}</dd></div></dl><button type="button" onClick={() => latestInvoice ? sendInvoice(latestInvoice) : undefined} disabled={!latestInvoice} className="mt-5 w-full rounded-lg border border-[#5b2aa0]/15 bg-[#f4efff] px-4 py-3 text-sm font-semibold text-[#5b2aa0] disabled:opacity-50"><MessageCircle className="mr-2 inline size-4" />Send with WhatsApp</button></Card>
           <Card className="p-5"><h2 className="font-serif text-lg">Client</h2><div className="mt-4"><p className="font-semibold">{latestInvoice?.client ?? "No client"}</p><p className="text-xs text-[#6d667a]">{latestInvoice?.email || "No email"}<br />{latestInvoice?.address || "No address"}</p></div></Card>
           <Card className="p-5"><h2 className="font-serif text-lg">Dog(s)</h2><div className="mt-4 flex items-center gap-3"><PawPrint className="size-5 text-[#4f2c91]" /><div><p className="font-semibold">{latestInvoice?.dogs ?? "No dogs"}</p><p className="text-xs text-[#6d667a]">From selected invoice</p></div></div></Card>
         </aside>
