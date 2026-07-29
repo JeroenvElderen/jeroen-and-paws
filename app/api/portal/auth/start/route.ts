@@ -45,9 +45,16 @@ export async function POST(request: Request) {
       full_name: input.fullName,
     }).select("id,expires_at").single();
     if (error) throw error;
-    const birdVerificationId = await sendBirdOtp(phone);
-    const { error: updateError } = await supabaseAdmin.from("portal_auth_challenges").update({ bird_verification_id: birdVerificationId }).eq("id", challenge.id);
-    if (updateError) throw updateError;
+    try {
+      const birdVerificationId = await sendBirdOtp(phone);
+      const { error: updateError } = await supabaseAdmin.from("portal_auth_challenges").update({ bird_verification_id: birdVerificationId }).eq("id", challenge.id);
+      if (updateError) throw updateError;
+    } catch (birdError) {
+      // A failed provider request must not consume the customer's rate-limit allowance.
+      const { error: cleanupError } = await supabaseAdmin.from("portal_auth_challenges").delete().eq("id", challenge.id);
+      if (cleanupError) console.error("Unable to remove failed portal phone challenge", { error: cleanupError, challengeId: challenge.id });
+      throw birdError;
+    }
     return NextResponse.json({ challengeId: challenge.id, expiresAt: challenge.expires_at });
   } catch (error) {
     console.error("Portal phone registration start failed", { error });

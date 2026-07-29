@@ -6,8 +6,8 @@ type BirdVerification = {
 };
 
 function getBirdConfig() {
-  const accessKey = process.env.BIRD_ACCESS_KEY;
-  const workspaceId = process.env.BIRD_WORKSPACE_ID;
+  const accessKey = process.env.BIRD_ACCESS_KEY?.trim();
+  const workspaceId = process.env.BIRD_WORKSPACE_ID?.trim();
   if (!accessKey?.startsWith("bk_") || !workspaceId) {
     throw new Error("Bird Verify is not configured.");
   }
@@ -27,7 +27,16 @@ async function birdRequest(path: string, body: Record<string, unknown>) {
   const payload = (await response.json().catch(() => ({}))) as BirdVerification;
   if (!response.ok) {
     const message = payload.errors?.[0]?.message || payload.message;
-    console.error("Bird Verify request failed", { status: response.status, message });
+    const configurationHint = response.status === 404
+      ? "Confirm BIRD_WORKSPACE_ID is the workspace ID (not its name) and BIRD_ACCESS_KEY was created in that same workspace with Verify access."
+      : undefined;
+    console.error("Bird Verify request failed", {
+      status: response.status,
+      message,
+      configurationHint,
+      workspaceId,
+      requestPath: `/verify${path}`,
+    });
     throw new Error("Unable to send or verify the security code right now.");
   }
   return payload;
