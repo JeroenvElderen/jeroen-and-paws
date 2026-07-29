@@ -2,21 +2,22 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { renderConfirmationEmail } from "@/utils/confirmation-email-template";
-import { verifyBirdOtp } from "@/utils/bird-verify";
+import { verifyOtp } from "@/utils/portal-otp";
 import { createVerifiedPhoneUser, generateEmailConfirmationLink, signInPhoneUser } from "@/utils/portal-phone-auth";
 import { sendResendEmail } from "@/utils/resend-email";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
-const schema = z.object({ challengeId: z.string().uuid(), code: z.string().regex(/^\d{4,10}$/), password: z.string().min(8).max(128), redirectTo: z.string().url() });
+const schema = z.object({ challengeId: z.string().uuid(), code: z.string().regex(/^\d{6}$/), password: z.string().min(8).max(128), redirectTo: z.string().url() });
 
 export async function POST(request: Request) {
   try {
     const input = schema.parse(await request.json());
     const { data: challenge, error } = await supabaseAdmin.from("portal_auth_challenges").select("*").eq("id", input.challengeId).maybeSingle();
     if (error) throw error;
-    if (!challenge || !challenge.bird_verification_id || challenge.consumed_at || new Date(challenge.expires_at) <= new Date() || challenge.attempts >= 5) return NextResponse.json({ error: "This verification has expired. Request a new code." }, { status: 400 });
-    await supabaseAdmin.from("portal_auth_challenges").update({ attempts: challenge.attempts + 1 }).eq("id", challenge.id);
-    if (!(await verifyBirdOtp(challenge.bird_verification_id, input.code))) return NextResponse.json({ error: "The verification code is incorrect." }, { status: 400 });
+    if (!challenge || !challenge.otp_code_hash || !challenge.otp_expires_at || challenge.consumed_at || new Date(challenge.otp_expires_at) <= new Date() || challenge.attempts >= 5) return NextResponse.json({ error: "This verification has expired. Request a new code." }, { status: 400 });
+    const { error: attemptError } = await supabaseAdmin.from("portal_auth_challenges").update({ attempts: challenge.attempts + 1 }).eq("id", challenge.id);
+    if (attemptError) throw attemptError;
+    if (!verifyOtp(input.code, challenge.otp_code_hash, challenge.otp_expires_at)) return NextResponse.json({ error: "The verification code is incorrect." }, { status: 400 });
 
     const { data: claimed } = await supabaseAdmin.from("portal_auth_challenges").update({ consumed_at: new Date().toISOString() }).eq("id", challenge.id).is("consumed_at", null).select("id").maybeSingle();
     if (!claimed) return NextResponse.json({ error: "This verification code has already been used." }, { status: 409 });

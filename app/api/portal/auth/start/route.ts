@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { sendBirdOtp } from "@/utils/bird-verify";
+import { sendOtpSms } from "@/utils/bird-sms";
+import { generateOtp, hashOtp, otpExpiresAt } from "@/utils/portal-otp";
 import { hashSensitiveValue, normalizeE164 } from "@/utils/portal-phone-auth";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
@@ -36,6 +37,8 @@ export async function POST(request: Request) {
     const { data: invite } = await supabaseAdmin.from("portal_invites").select("id,expires_at,used_at").eq("code", input.inviteCode).maybeSingle();
     if (!invite || invite.used_at || new Date(invite.expires_at) <= new Date()) return NextResponse.json({ error: genericError }, { status: 400 });
 
+    const code = generateOtp();
+    const expiresAt = otpExpiresAt();
     const { data: challenge, error } = await supabaseAdmin.from("portal_auth_challenges").insert({
       invite_id: invite.id,
       phone,
@@ -43,19 +46,20 @@ export async function POST(request: Request) {
       phone_hash: phoneHash,
       ip_hash: ipHash,
       full_name: input.fullName,
-    }).select("id,expires_at").single();
+      otp_code_hash: hashOtp(code),
+      otp_expires_at: expiresAt,
+      expires_at: expiresAt,
+    }).select("id,otp_expires_at").single();
     if (error) throw error;
     try {
-      const birdVerificationId = await sendBirdOtp(phone);
-      const { error: updateError } = await supabaseAdmin.from("portal_auth_challenges").update({ bird_verification_id: birdVerificationId }).eq("id", challenge.id);
-      if (updateError) throw updateError;
+      await sendOtpSms(phone, code);
     } catch (birdError) {
       // A failed provider request must not consume the customer's rate-limit allowance.
       const { error: cleanupError } = await supabaseAdmin.from("portal_auth_challenges").delete().eq("id", challenge.id);
       if (cleanupError) console.error("Unable to remove failed portal phone challenge", { error: cleanupError, challengeId: challenge.id });
       throw birdError;
     }
-    return NextResponse.json({ challengeId: challenge.id, expiresAt: challenge.expires_at });
+    return NextResponse.json({ challengeId: challenge.id, expiresAt: challenge.otp_expires_at });
   } catch (error) {
     console.error("Portal phone registration start failed", { error });
     return NextResponse.json({ error: error instanceof z.ZodError ? error.issues[0]?.message : genericError }, { status: 400 });

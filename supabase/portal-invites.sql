@@ -52,7 +52,8 @@ create policy "No public invite access" on public.portal_invites
 -- Short-lived server-only records for Bird Verify OTP attempts and rate limiting.
 create table if not exists public.portal_auth_challenges (
   id uuid primary key default gen_random_uuid(),
-  bird_verification_id text unique,
+  otp_code_hash text not null,
+  otp_expires_at timestamptz not null default (now() + interval '10 minutes'),
   invite_id uuid references public.portal_invites(id) on delete set null,
   phone text not null,
   email text,
@@ -60,14 +61,16 @@ create table if not exists public.portal_auth_challenges (
   ip_hash text not null,
   full_name text not null,
   attempts integer not null default 0 check (attempts >= 0),
-  expires_at timestamptz not null default (now() + interval '5 minutes'),
+  expires_at timestamptz not null default (now() + interval '10 minutes'),
   consumed_at timestamptz,
   created_at timestamptz not null default now()
 );
 
 alter table public.portal_auth_challenges
   add column if not exists email text,
-  alter column bird_verification_id drop not null,
+  add column if not exists otp_code_hash text,
+  add column if not exists otp_expires_at timestamptz,
+  drop column if exists bird_verification_id,
   drop column if exists client_id,
   drop column if exists auth_user_id,
   drop column if exists mode;

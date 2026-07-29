@@ -1,19 +1,12 @@
-import { createHash } from "node:crypto";
-
 import { createClient } from "@supabase/supabase-js";
 
+export { hashSensitiveValue } from "@/utils/sensitive-hash";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 export function normalizeE164(value: string) {
   const phone = value.replace(/[\s().-]/g, "");
   if (!/^\+[1-9]\d{7,14}$/.test(phone)) throw new Error("Enter the phone number in international format, for example +31612345678.");
   return phone;
-}
-
-export function hashSensitiveValue(value: string) {
-  const secret = process.env.PORTAL_AUTH_HASH_SECRET;
-  if (!secret) throw new Error("Portal authentication is not configured.");
-  return createHash("sha256").update(`${secret}:${value}`).digest("hex");
 }
 
 export async function findSupabaseUserByPhone(phone: string) {
@@ -35,7 +28,7 @@ export async function createVerifiedPhoneUser(input: { phone: string; email?: st
     email: input.email,
     email_confirm: false,
     password: input.password,
-    user_metadata: { full_name: input.fullName, auth_provider: "bird_verify" },
+    user_metadata: { full_name: input.fullName, auth_provider: "bird_sms" },
   });
   if (error || !data.user) throw error || new Error("Supabase did not create the user.");
   return data.user;
