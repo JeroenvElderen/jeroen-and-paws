@@ -2,12 +2,10 @@
 
 import {
   CalendarDays,
-  ChevronRight,
   Edit3,
   Trash2,
   FileText,
   ImageIcon,
-  LockKeyhole,
   Mail,
   MapPin,
   MoreVertical,
@@ -37,7 +35,7 @@ type DogRow = {
 type ProfileRow = {
   client_id: string;
   full_name: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   address: string | null;
   avatar_url: string | null;
@@ -143,7 +141,6 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
   const [message, setMessage] = useState<string | null>(null);
   const [isDogFormOpen, setIsDogFormOpen] = useState(false);
   const [isProfileFormOpen, setIsProfileFormOpen] = useState(false);
-  const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
   const [editingDogId, setEditingDogId] = useState<string | null>(null);
   const [openDogActionId, setOpenDogActionId] = useState<string | null>(null);
   const [dogActionMenuPosition, setDogActionMenuPosition] = useState<{ top: number; left: number } | null>(null);
@@ -207,8 +204,6 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
         headers: { apikey: config.key, Authorization: `Bearer ${config.accessToken}`, "Content-Type": "application/json", Prefer: "return=minimal" },
         body: JSON.stringify({
           full_name: String(formData.get("full_name") ?? "").trim(),
-          email: String(formData.get("email") ?? "").trim(),
-          phone: String(formData.get("phone") ?? "").trim() || null,
           address: String(formData.get("address") ?? "").trim() || null,
           avatar_url: uploadedAvatarUrl ?? data.profile.avatar_url,
         }),
@@ -221,40 +216,6 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
       }
     } catch (uploadError) {
       setMessage(uploadError instanceof Error ? uploadError.message : "Unable to upload image.");
-    }
-  }
-
-  async function savePassword(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const config = getSupabaseWriteConfig();
-    if (!config) return;
-    const { url, key, accessToken } = config;
-    const formData = new FormData(event.currentTarget);
-    const password = String(formData.get("password") ?? "");
-    const confirmPassword = String(formData.get("confirm_password") ?? "");
-
-    if (password.length < 6) {
-      setMessage("Choose a password with at least 6 characters.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setMessage("Passwords do not match.");
-      return;
-    }
-
-    const response = await fetch(`${url}/auth/v1/user`, {
-      method: "PUT",
-      headers: { apikey: key, Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
-
-    if (response.ok) {
-      event.currentTarget.reset();
-      setIsPasswordFormOpen(false);
-      setMessage("Password updated successfully.");
-    } else {
-      setMessage(await getSupabaseWriteError(response));
     }
   }
 
@@ -401,7 +362,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                 <div>
                   <h2 className="font-serif text-3xl text-[#241f30]">{profile.full_name}</h2>
                   <div className="mt-6 space-y-4 text-sm text-[#2f2938]">
-                    <p className="flex items-center gap-3"><Mail className="size-4 text-[#4d2e91]" />{profile.email}</p>
+                    <p className="flex items-center gap-3"><Mail className="size-4 text-[#4d2e91]" />{profile.email || "No email added"}</p>
                     <p className="flex items-center gap-3"><Phone className="size-4 text-[#4d2e91]" />{profile.phone || "Add a phone number"}</p>
                     <p className="flex items-center gap-3"><MapPin className="size-4 text-[#4d2e91]" />{profile.address || "Add an address"}</p>
                   </div>
@@ -422,8 +383,8 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                   {isProfileFormOpen ? (
                     <form onSubmit={saveProfile} className="mt-6 grid gap-4 rounded-xl bg-[#fbf8ff] p-4">
                       <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Full Name<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="full_name" defaultValue={profile.full_name} placeholder="Full name" /></label>
-                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Email Address<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="email" type="email" defaultValue={profile.email} placeholder="Email address" /></label>
-                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Phone Number<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="phone" defaultValue={profile.phone ?? ""} placeholder="Phone" /></label>
+                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Email Address<input className="rounded border border-[#24163f]/15 bg-slate-50 px-4 py-3 font-normal text-slate-500" type="email" value={profile.email ?? ""} readOnly /><span className="text-xs font-normal text-[#665d70]">Contact Jeroen to change a login identity.</span></label>
+                      <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Phone Number<input className="rounded border border-[#24163f]/15 bg-slate-50 px-4 py-3 font-normal text-slate-500" value={profile.phone ?? ""} readOnly /></label>
                       <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Address<input className="rounded border border-[#24163f]/15 px-4 py-3 font-normal" name="address" defaultValue={profile.address ?? ""} placeholder="Address" /></label>
                       <label className="grid gap-1 text-sm font-semibold text-[#17132a]">Profile picture<input className="rounded border border-[#24163f]/15 bg-white px-4 py-3 font-normal" name="avatar_file" type="file" accept="image/*" /></label>
                       <div className="flex flex-wrap gap-3">
@@ -434,7 +395,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
                   ) : (
                     <div className="mt-6 grid gap-4">
                       <InfoLine label="Full Name" value={profile.full_name} />
-                      <InfoLine label="Email Address" value={profile.email} />
+                      <InfoLine label="Email Address" value={profile.email || "No email added"} />
                       <InfoLine label="Phone Number" value={profile.phone || "Add a phone number"} />
                       <InfoLine label="Address" value={profile.address || "Add an address"} />
                     </div>
@@ -446,19 +407,7 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
               <div className="space-y-6">
                 <Panel className="p-6 sm:p-7">
                   <SectionTitle showIcon={false}>Security</SectionTitle>
-                  <div className="mt-6 divide-y divide-[#24163f]/10">
-                    <button type="button" onClick={() => setIsPasswordFormOpen((isOpen) => !isOpen)} className="flex w-full items-center justify-between py-4 text-left first:pt-0">
-                      <span className="flex items-center gap-4"><span className="grid size-12 place-items-center rounded-full bg-[#f4eef8] text-[#5b2aa0]"><LockKeyhole className="size-5" /></span><span><span className="block font-semibold">Password</span><span className="text-sm text-[#665d70]">************</span></span></span>
-                      <ChevronRight className={`size-4 text-[#5b2aa0] transition-transform ${isPasswordFormOpen ? "rotate-90" : ""}`} />
-                    </button>
-                  </div>
-                  {isPasswordFormOpen ? (
-                    <form onSubmit={savePassword} className="mt-4 grid gap-3 rounded-xl bg-[#fbf8ff] p-4">
-                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="password" type="password" placeholder="New password" minLength={6} required />
-                      <input className="rounded border border-[#24163f]/15 px-4 py-3" name="confirm_password" type="password" placeholder="Confirm new password" minLength={6} required />
-                      <button className="inline-flex w-fit items-center gap-2 rounded bg-[#4d2e91] px-6 py-3 text-xs font-black uppercase tracking-[0.14em] text-white"><Save className="size-4" />Save password</button>
-                    </form>
-                  ) : null}
+                  <div className="mt-5 flex items-center gap-4 rounded-xl bg-[#fbf8ff] p-4"><span className="grid size-12 place-items-center rounded-full bg-[#f4eef8] text-[#5b2aa0]"><Phone className="size-5" /></span><span><span className="block font-semibold">Secure account login</span><span className="text-sm leading-6 text-[#665d70]">Sign in with your phone number or confirmed email address and password.</span></span></div>
                 </Panel>
 
                 <Panel className="p-6 sm:p-7">

@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Camera, CircleHelp, Eye, EyeOff, FileText, Home, ImageIcon, LockKeyhole, LogOut, Mail, PawPrint, ShieldCheck, Star, User, UserPlus } from "lucide-react";
+import { CalendarDays, CircleHelp, FileText, Home, ImageIcon, LogOut, PawPrint, Phone, ShieldCheck, User, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -40,6 +40,8 @@ type SupabaseAuthResponse = {
   msg?: string;
   error_description?: string;
   error?: string;
+  delivery?: "email" | "phone";
+  verificationRequired?: boolean;
 };
 
 const portalSessionStorageKey = "jeroen-and-paws-portal-session";
@@ -74,10 +76,6 @@ async function getSupabaseAuthPayload(response: Response, fallback: string) {
   return { error } satisfies SupabaseAuthResponse;
 }
 
-function getPortalEmailRedirectTo() {
-  return typeof window !== "undefined" ? `${window.location.origin}/portal` : undefined;
-}
-
 async function refreshPortalSession(session: PortalSession) {
   const authConfig = getSupabaseAuthConfig();
 
@@ -107,265 +105,90 @@ async function refreshPortalSession(session: PortalSession) {
 }
 
 function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: PortalSession) => void }) {
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const initialInviteCode = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("invite") || "" : "";
+  const [mode, setMode] = useState<"signup" | "login">(initialInviteCode ? "signup" : "login");
+  const [registrationMethod, setRegistrationMethod] = useState<"phone" | "email">("phone");
+  const [inviteCode, setInviteCode] = useState(initialInviteCode);
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [loginIdentifier, setLoginIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [challengeId, setChallengeId] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isResendingConfirmation, setIsResendingConfirmation] = useState(false);
-  const [confirmationEmail, setConfirmationEmail] = useState("");
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setErrorMessage(null);
-    setStatusMessage(null);
+  function saveSession(payload: { accessToken: string; refreshToken: string; expiresIn?: number; user?: { phone?: string; email?: string } }) {
+    const session = { accessToken: payload.accessToken, refreshToken: payload.refreshToken, email: payload.user?.email || payload.user?.phone || loginIdentifier, expiresAt: Date.now() + ((payload.expiresIn ?? 3600) * 1000) };
+    window.localStorage.setItem(portalSessionStorageKey, JSON.stringify(session));
+    onAuthenticated(session);
+  }
 
-    const authConfig = getSupabaseAuthConfig();
-
-    if (!authConfig) {
-      setErrorMessage("The client portal is not ready for sign in yet. Please try again later.");
-      return;
-    }
-
-    if (authMode === "signup" && password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
-      return;
-    }
-
-    setIsSubmitting(true);
-
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setErrorMessage(null); setStatusMessage(null); setIsSubmitting(true);
     try {
-      const emailRedirectTo = getPortalEmailRedirectTo();
-      const response = authMode === "signup"
-        ? await fetch("/api/portal/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fullName, email, password, redirectTo: emailRedirectTo }),
-        })
-        : await fetch(`${authConfig.supabaseUrl}/auth/v1/token?grant_type=password`, {
-          method: "POST",
-          headers: {
-            apikey: authConfig.supabaseAnonKey,
-            Authorization: `Bearer ${authConfig.supabaseAnonKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
-      const payload = await getSupabaseAuthPayload(response, authMode === "login" ? "Unable to log in." : "Unable to sign up.");
-
-      if (!response.ok) {
-        throw new Error(getSupabaseAuthError(payload, authMode === "login" ? "Unable to log in." : "Unable to sign up."));
-      }
-
-      if (authMode === "signup") {
-        setConfirmationEmail(email);
-        setStatusMessage("Account created. Please check your email and click the confirmation button, then log in.");
-        setAuthMode("login");
-        setPassword("");
-        setConfirmPassword("");
+      if (mode === "login") {
+        const authConfig = getSupabaseAuthConfig();
+        if (!authConfig) throw new Error("Portal authentication is not configured.");
+        const isEmail = loginIdentifier.includes("@");
+        const response = await fetch(`${authConfig.supabaseUrl}/auth/v1/token?grant_type=password`, { method: "POST", headers: { apikey: authConfig.supabaseAnonKey, Authorization: `Bearer ${authConfig.supabaseAnonKey}`, "Content-Type": "application/json" }, body: JSON.stringify(isEmail ? { email: loginIdentifier, password } : { phone: loginIdentifier.replace(/[\s().-]/g, ""), password }) });
+        const payload = await getSupabaseAuthPayload(response, "Unable to log in.");
+        if (!response.ok || !payload.access_token || !payload.refresh_token) throw new Error(getSupabaseAuthError(payload, "Unable to log in."));
+        saveSession({ accessToken: payload.access_token, refreshToken: payload.refresh_token, expiresIn: payload.expires_in, user: payload.user });
         return;
       }
 
-      if (!payload.access_token) {
-        throw new Error("Unable to log in. Please confirm your email address first.");
+      const redirectTo = `${window.location.origin}/portal`;
+      if (registrationMethod === "email") {
+        const response = await fetch("/api/portal/auth/register-email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ inviteCode, fullName, email, password, redirectTo }) });
+        const payload = (await response.json()) as { error?: string };
+        if (!response.ok) throw new Error(payload.error || "Unable to create the account.");
+        setStatusMessage("Account created. Check your email to confirm it, then log in with your email and password.");
+        setMode("login"); setLoginIdentifier(email); setPassword("");
+        return;
       }
 
-      if (!payload.refresh_token) {
-        throw new Error("Unable to keep you logged in. Please try again.");
-      }
-
-      const session = {
-        accessToken: payload.access_token,
-        refreshToken: payload.refresh_token,
-        email: payload.user?.email ?? email,
-        expiresAt: Date.now() + ((payload.expires_in ?? 3600) * 1000),
-      };
-      window.localStorage.setItem(portalSessionStorageKey, JSON.stringify(session));
-      onAuthenticated(session);
-    } catch (authError) {
-      setErrorMessage(authError instanceof Error ? authError.message : "Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+      const response = await fetch("/api/portal/auth/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ inviteCode, fullName, phone, email: email || undefined }) });
+      const payload = (await response.json()) as { challengeId?: string; error?: string };
+      if (!response.ok || !payload.challengeId) throw new Error(payload.error || "Unable to send the security code.");
+      setChallengeId(payload.challengeId); setStatusMessage("We sent a one-time security code to your phone.");
+    } catch (error) { setErrorMessage(error instanceof Error ? error.message : "Unable to continue."); } finally { setIsSubmitting(false); }
   }
 
-  async function handleResendConfirmation() {
-    const authConfig = getSupabaseAuthConfig();
-    const resendEmail = (confirmationEmail || email).trim();
-
-    setErrorMessage(null);
-    setStatusMessage(null);
-
-    if (!authConfig) {
-      setErrorMessage("The client portal is not ready to resend confirmation emails yet. Please try again later.");
-      return;
-    }
-
-    if (!resendEmail) {
-      setErrorMessage("Enter your email address first, then resend the confirmation email.");
-      return;
-    }
-
-    setIsResendingConfirmation(true);
-
+  async function verifyCode(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setErrorMessage(null); setIsSubmitting(true);
     try {
-      const response = await fetch("/api/portal/resend-confirmation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: resendEmail, redirectTo: getPortalEmailRedirectTo() }),
-      });
-      const payload = await getSupabaseAuthPayload(response, "Unable to resend the confirmation email right now.");
-
-      if (!response.ok) {
-        throw new Error(getSupabaseAuthError(payload, "Unable to resend the confirmation email right now."));
-      }
-
-      setConfirmationEmail(resendEmail);
-      setStatusMessage("Confirmation email sent again. Please check your inbox and spam folder.");
-    } catch (resendError) {
-      setErrorMessage(resendError instanceof Error ? resendError.message : "Unable to resend the confirmation email right now.");
-    } finally {
-      setIsResendingConfirmation(false);
-    }
+      const response = await fetch("/api/portal/auth/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ challengeId, code: verificationCode, password, redirectTo: `${window.location.origin}/portal` }) });
+      const payload = (await response.json()) as { accessToken?: string; refreshToken?: string; expiresIn?: number; user?: { phone?: string }; error?: string };
+      if (!response.ok || !payload.accessToken || !payload.refreshToken) throw new Error(payload.error || "Unable to verify the security code.");
+      saveSession({ accessToken: payload.accessToken, refreshToken: payload.refreshToken, expiresIn: payload.expiresIn, user: payload.user });
+    } catch (error) { setErrorMessage(error instanceof Error ? error.message : "Unable to verify the code."); } finally { setIsSubmitting(false); }
   }
 
-  function handleOAuthSignIn(provider: "google" | "apple") {
-    const authConfig = getSupabaseAuthConfig();
+  return <main className="min-h-screen bg-[#f7f4ef] p-3 text-[#1d1728] sm:p-4"><section className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-[94rem] overflow-hidden rounded-[2rem] bg-white shadow-[0_22px_80px_rgba(29,23,40,0.12)] lg:grid-cols-[1.05fr_1fr]">
+    <div className="relative hidden min-h-[48rem] overflow-hidden bg-[#171406] text-white lg:block"><Image src="/images/dogs/walk.jpeg" alt="Dog walking on a woodland path" fill sizes="50vw" className="object-cover" priority /><div className="absolute inset-0 bg-[#151303]/55" /><div className="absolute inset-0 px-12 py-10"><Link href="/" className="font-serif text-4xl text-white">Jeroen<br />And Paws <PawPrint className="ml-2 inline size-6 text-[#c4a7ff]" /></Link><p className="mt-24 font-serif text-6xl leading-tight">Happy dogs,<br />better lives. <span className="text-[#c4a7ff]">♡</span></p><div className="mt-12 space-y-5"><p className="flex items-center gap-4 text-lg"><ShieldCheck className="size-7 text-[#c4a7ff]" />Private invite-only registration</p><p className="flex items-center gap-4 text-lg"><Phone className="size-7 text-[#c4a7ff]" />Register with phone or email</p></div></div></div>
+    <div className="flex min-h-[48rem] items-center px-6 py-10 sm:px-10 lg:px-20"><div className="mx-auto w-full max-w-xl">
+      {!challengeId && <div className="grid grid-cols-2 border-b text-center"><button type="button" onClick={() => setMode("signup")} className={`pb-5 text-lg font-bold ${mode === "signup" ? "border-b-4 border-[#4c1d95] text-[#4c1d95]" : "text-[#6f687a]"}`}><UserPlus className="mx-auto mb-2 size-7" />Register</button><button type="button" onClick={() => setMode("login")} className={`pb-5 text-lg font-bold ${mode === "login" ? "border-b-4 border-[#4c1d95] text-[#4c1d95]" : "text-[#6f687a]"}`}><PawPrint className="mx-auto mb-2 size-7" />Log in</button></div>}
+      <h1 className="mt-10 font-serif text-4xl text-[#151b36]">{challengeId ? "Verify your phone" : mode === "signup" ? "Create your account" : "Welcome back"} <span className="text-[#9b5fd4]">♡</span></h1>
+      {!challengeId && mode === "signup" && <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-[#f7f4fb] p-1"><button type="button" onClick={() => setRegistrationMethod("phone")} className={`rounded-lg p-3 font-bold ${registrationMethod === "phone" ? "bg-white text-[#4c1d95] shadow" : "text-[#6f687a]"}`}>Phone + password</button><button type="button" onClick={() => setRegistrationMethod("email")} className={`rounded-lg p-3 font-bold ${registrationMethod === "email" ? "bg-white text-[#4c1d95] shadow" : "text-[#6f687a]"}`}>Email + password</button></div>}
+      <form onSubmit={challengeId ? verifyCode : submit} className="mt-7 space-y-4">
+        {!challengeId && mode === "signup" && <><Field label="Invite code" value={inviteCode} onChange={setInviteCode} placeholder="Private invite code" /><Field label="Full name" value={fullName} onChange={setFullName} placeholder="Your full name" /></>}
+        {!challengeId && mode === "signup" && registrationMethod === "phone" && <><Field label="Phone number" value={phone} onChange={setPhone} placeholder="+31612345678" type="tel" /><Field label="Email address (optional)" value={email} onChange={setEmail} placeholder="you@example.com" type="email" /></>}
+        {!challengeId && mode === "signup" && registrationMethod === "email" && <Field label="Email address" value={email} onChange={setEmail} placeholder="you@example.com" type="email" />}
+        {!challengeId && mode === "login" && <Field label="Phone number or email" value={loginIdentifier} onChange={setLoginIdentifier} placeholder="+316… or you@example.com" />}
+        {!challengeId && <Field label="Password" value={password} onChange={setPassword} placeholder="At least 8 characters" type="password" minLength={8} />}
+        {challengeId && <Field label="SMS security code" value={verificationCode} onChange={(value) => setVerificationCode(value.replace(/\D/g, ""))} placeholder="000000" inputMode="numeric" />}
+        {statusMessage && <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-semibold text-emerald-800">{statusMessage}</p>}{errorMessage && <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-700">{errorMessage}</p>}
+        <button disabled={isSubmitting} className="w-full rounded-xl bg-[#4c1d95] px-6 py-5 text-lg font-bold text-white disabled:opacity-60">{isSubmitting ? "Please wait…" : challengeId ? "Verify and create account" : mode === "login" ? "Log in" : registrationMethod === "phone" ? "Send SMS code" : "Create account"}</button>
+      </form>
+    </div></div>
+  </section></main>;
+}
 
-    if (!authConfig) {
-      setErrorMessage("Social sign in is not ready yet. Please try again later.");
-      return;
-    }
-
-    const redirectTo = encodeURIComponent(window.location.href);
-    window.location.href = `${authConfig.supabaseUrl}/auth/v1/authorize?provider=${provider}&redirect_to=${redirectTo}`;
-  }
-
-  const trustFeatures = [
-    [ShieldCheck, "Trusted & Insured", "Fully insured and dedicated to your dog’s safety."],
-    [CalendarDays, "Easy Booking", "Book walks and training in just a few taps."],
-    [Camera, "Photo Updates", "Visit notes and photos after every visit."],
-  ] as const;
-
-  return (
-    <main className="min-h-screen bg-[#f7f4ef] p-3 text-[#1d1728] sm:p-4">
-      <section className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-[94rem] overflow-hidden rounded-[2rem] bg-white shadow-[0_22px_80px_rgba(29,23,40,0.12)] lg:grid-cols-[1.05fr_1fr]">
-        <div className="relative hidden min-h-[48rem] overflow-hidden bg-[#171406] text-white lg:block">
-          <Image src="/images/dogs/walk.jpeg" alt="Dog walking on a woodland path" fill sizes="50vw" className="object-cover" priority />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#151303]/80 via-[#151303]/35 to-[#151303]/10" />
-          <div className="absolute inset-0 px-12 py-10">
-            <Link href="/" className="font-serif text-4xl leading-tight tracking-wide text-white drop-shadow-md">
-              Jeroen<br />And Paws <PawPrint aria-hidden="true" className="ml-2 inline size-6 text-[#c4a7ff]" />
-            </Link>
-
-            <div className="mt-24 max-w-lg">
-              <p className="font-serif text-6xl leading-[1.08] tracking-[-0.03em] text-white drop-shadow-lg">Happy dogs,<br />better lives. <span className="text-[#c4a7ff]">♡</span></p>
-              <p className="mt-6 max-w-sm text-2xl font-medium leading-9 text-white">Professional walks, training and care you can trust.</p>
-            </div>
-
-            <div className="mt-12 space-y-7">
-              {trustFeatures.map(([Icon, title, copy]) => (
-                <div key={title} className="flex max-w-md items-center gap-5">
-                  <span className="grid size-16 shrink-0 place-items-center rounded-full bg-white/90 text-[#5b2aa0] shadow-lg">
-                    <Icon aria-hidden="true" className="size-7" />
-                  </span>
-                  <span>
-                    <span className="block text-lg font-bold text-[#e9d7ff]">{title}</span>
-                    <span className="mt-2 block text-base leading-7 text-white">{copy}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="relative flex min-h-[48rem] items-center bg-white px-6 py-10 sm:px-10 lg:px-20">
-          <div className="pointer-events-none absolute -left-10 top-0 hidden h-full w-24 rounded-[50%] border-l-4 border-[#7c3ab6] bg-white lg:block" />
-          <div className="pointer-events-none absolute -left-8 top-1/2 z-10 hidden size-20 -translate-y-1/2 place-items-center rounded-full border-4 border-[#f2eef7] bg-white text-[#5b2aa0] shadow-xl lg:grid">
-            <PawPrint aria-hidden="true" className="size-10" />
-          </div>
-
-          <div className="mx-auto w-full max-w-xl">
-            <div className="grid grid-cols-2 border-b border-[#e5deea] text-center">
-              <button type="button" onClick={() => setAuthMode("signup")} className={`pb-5 text-lg font-bold transition ${authMode === "signup" ? "border-b-4 border-[#4c1d95] text-[#4c1d95]" : "text-[#6f687a]"}`}>
-                <UserPlus aria-hidden="true" className="mx-auto mb-3 size-8" /> Sign Up
-              </button>
-              <button type="button" onClick={() => setAuthMode("login")} className={`pb-5 text-lg font-bold transition ${authMode === "login" ? "border-b-4 border-[#4c1d95] text-[#4c1d95]" : "text-[#6f687a]"}`}>
-                <PawPrint aria-hidden="true" className="mx-auto mb-3 size-8" /> Log In
-              </button>
-            </div>
-
-            <div className="mt-12">
-              <h1 className="font-serif text-4xl leading-tight text-[#151b36]">{authMode === "signup" ? "Create your account" : "Welcome back!"} <span className="text-[#9b5fd4]">♡</span></h1>
-              <p className="mt-2 text-lg text-[#767083]">{authMode === "signup" ? "Join our pack and get started!" : "Log in to your account to continue"}</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-              {authMode === "signup" && (
-                <label className="block text-sm font-bold text-[#151b36]">
-                  Full name
-                  <span className="mt-2 flex items-center gap-3 rounded-xl border border-[#e8dfe4] px-4 py-4 text-[#77727c]">
-                    <User aria-hidden="true" className="size-6" />
-                    <input type="text" required value={fullName} onChange={(event) => setFullName(event.target.value)} autoComplete="name" placeholder="Enter your full name" className="w-full bg-transparent text-base font-medium text-[#151b36] outline-none placeholder:text-[#898394]" />
-                  </span>
-                </label>
-              )}
-
-              <label className="block text-sm font-bold text-[#151b36]">
-                Email address
-                <span className="mt-2 flex items-center gap-3 rounded-xl border border-[#e8dfe4] px-4 py-4 text-[#77727c]">
-                  <Mail aria-hidden="true" className="size-6" />
-                  <input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" placeholder="Enter your email" className="w-full bg-transparent text-base font-medium text-[#151b36] outline-none placeholder:text-[#898394]" />
-                </span>
-              </label>
-
-              <label className="block text-sm font-bold text-[#151b36]">
-                Password
-                <span className="mt-2 flex items-center gap-3 rounded-xl border border-[#e8dfe4] px-4 py-4 text-[#77727c]">
-                  <LockKeyhole aria-hidden="true" className="size-6" />
-                  <input type={showPassword ? "text" : "password"} required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={authMode === "login" ? "current-password" : "new-password"} placeholder={authMode === "login" ? "Enter your password" : "Create a password"} className="w-full bg-transparent text-base font-medium text-[#151b36] outline-none placeholder:text-[#898394]" />
-                  <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Hide password" : "Show password"} className="text-[#77727c]">{showPassword ? <EyeOff aria-hidden="true" className="size-5" /> : <Eye aria-hidden="true" className="size-5" />}</button>
-                </span>
-                {authMode === "signup" && <span className="mt-2 flex items-center gap-2 text-sm font-medium text-[#958a9d]"><ShieldCheck aria-hidden="true" className="size-5 text-[#b288d8]" /> At least 6 characters.</span>}
-              </label>
-
-              {authMode === "signup" && (
-                <label className="block text-sm font-bold text-[#151b36]">
-                  Confirm password
-                  <span className="mt-2 flex items-center gap-3 rounded-xl border border-[#e8dfe4] px-4 py-4 text-[#77727c]">
-                    <LockKeyhole aria-hidden="true" className="size-6" />
-                    <input type={showPassword ? "text" : "password"} required minLength={6} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" placeholder="Confirm your password" className="w-full bg-transparent text-base font-medium text-[#151b36] outline-none placeholder:text-[#898394]" />
-                  </span>
-                </label>
-              )}
-
-              {authMode === "login" && <button type="button" className="ml-auto block text-sm font-bold text-[#5b2aa0]">Forgot password?</button>}
-              {errorMessage && <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{errorMessage}</p>}
-              {statusMessage && <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">{statusMessage}</p>}
-              {authMode === "login" && (confirmationEmail || statusMessage?.toLowerCase().includes("confirm")) && (
-                <button type="button" onClick={handleResendConfirmation} disabled={isResendingConfirmation} className="w-full rounded-xl border border-[#d8c7ef] bg-[#f7f1ff] px-4 py-3 text-sm font-bold text-[#5b2aa0] transition hover:border-[#b288d8] hover:bg-[#efe2ff] disabled:cursor-not-allowed disabled:opacity-60">
-                  {isResendingConfirmation ? "Resending confirmation email…" : "Resend confirmation email"}
-                </button>
-              )}
-
-              <button type="submit" disabled={isSubmitting} className="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-[#4c1d95] px-6 py-5 text-lg font-bold text-white shadow-lg shadow-[#4c1d95]/20 transition hover:-translate-y-0.5 hover:bg-[#5b2aa0] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0">
-                {isSubmitting ? "Please wait…" : authMode === "login" ? "Log In" : "Sign Up"}<PawPrint aria-hidden="true" className="ml-auto size-7" />
-              </button>
-            </form>
-
-            <p className="mt-7 text-center text-base text-[#767083]">
-              {authMode === "login" ? "Don’t have an account?" : "Already have an account?"} <button type="button" onClick={() => setAuthMode(authMode === "login" ? "signup" : "login")} className="font-bold text-[#4c1d95]">{authMode === "login" ? "Sign up" : "Log in"}</button>
-            </p>
-            <p className="mt-7 flex items-center justify-center gap-3 text-sm text-[#767083]"><span className="grid size-11 place-items-center rounded-full bg-[#f1e9ff] text-[#5b2aa0]"><ShieldCheck aria-hidden="true" className="size-5" /></span><span><strong className="block text-[#767083]">Your data is safe with us.</strong>We never share your information.</span></p>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+function Field({ label, value, onChange, placeholder, type = "text", minLength, inputMode }: { label: string; value: string; onChange: (value: string) => void; placeholder: string; type?: string; minLength?: number; inputMode?: "numeric" }) {
+  return <label className="block text-sm font-bold text-[#151b36]">{label}<span className="mt-2 flex rounded-xl border border-[#e8dfe4] px-4 py-4"><input required={!label.includes("optional")} type={type} minLength={minLength} inputMode={inputMode} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="w-full bg-transparent text-base outline-none" /></span></label>;
 }
 
 function PlaceholderView({ title }: { title: string }) {

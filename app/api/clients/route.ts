@@ -172,13 +172,13 @@ export async function POST(request: Request) {
   if (!adminAccessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const payload = clientWriteSchema.safeParse(await request.json().catch(() => null));
-  if (!payload.success || !payload.data.name || !payload.data.email) {
-    return NextResponse.json({ error: payload.success ? "Client name and email are required." : payload.error.issues[0]?.message || "Invalid client payload." }, { status: 400 });
+  if (!payload.success || !payload.data.name || (!payload.data.email && !payload.data.phone)) {
+    return NextResponse.json({ error: payload.success ? "Client name and either email or phone are required." : payload.error.issues[0]?.message || "Invalid client payload." }, { status: 400 });
   }
 
   const { data, error } = await supabaseAdmin
     .from("portal_clients")
-    .insert({ full_name: payload.data.name, email: payload.data.email, phone: payload.data.phone || null, address: payload.data.address || null, status: payload.data.status?.toLowerCase() || "active" })
+    .insert({ full_name: payload.data.name, email: payload.data.email || null, phone: payload.data.phone || null, address: payload.data.address || null, status: payload.data.status?.toLowerCase() || "active" })
     .select("*")
     .single();
 

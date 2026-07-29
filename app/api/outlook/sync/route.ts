@@ -195,7 +195,42 @@ async function importOutlookEvent(event: Awaited<ReturnType<typeof listOutlookEv
   if (lookupError) throw lookupError;
 
   const connectedClient = await findConnectedClient(parsed.dogName, parsed.clientName);
-  const needsManualReview = parsed.needsReview || event.sensitivity === "private" || !connectedClient;
+  const importStatus = event.isCancelled ? "cancelled" : "confirmed";
+
+  let linkedBookingId: string | null = null;
+
+  if (connectedClient) {
+    const bookingPayload = {
+      client_id: connectedClient.clientId,
+      dog_id: connectedClient.dogId,
+      dog_ids: connectedClient.dogIds,
+      service_name: parsed.serviceName,
+      starts_at: startsAt,
+      ends_at: endsAt,
+      timezone: event.start?.timeZone ?? "Europe/Dublin",
+      location: event.location?.displayName ?? null,
+      notes: event.bodyPreview ?? null,
+      status: importStatus,
+      source: "outlook",
+      sync_status: "synced",
+      sync_error: null,
+      outlook_event_id: event.id,
+      outlook_ical_uid: event.iCalUId ?? null,
+      outlook_change_key: event.changeKey ?? null,
+      outlook_web_link: event.webLink ?? null,
+      outlook_last_synced_at: new Date().toISOString(),
+      needs_review: false,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data: bookingRows, error: bookingUpsertError } = await supabaseAdmin
+      .from("portal_bookings")
+      .upsert(bookingPayload, { onConflict: "outlook_event_id" })
+      .select("id");
+
+    if (bookingUpsertError) throw bookingUpsertError;
+    linkedBookingId = bookingRows?.[0]?.id ?? null;
+  }
 
   const payload = {
     outlook_event_id: event.id,
@@ -214,8 +249,9 @@ async function importOutlookEvent(event: Awaited<ReturnType<typeof listOutlookEv
     location: event.location?.displayName ?? null,
     notes: event.bodyPreview ?? null,
     sensitivity: event.sensitivity ?? null,
-    status: event.isCancelled ? "cancelled" : needsManualReview ? "needs_review" : "confirmed",
-    needs_review: needsManualReview,
+    status: importStatus,
+    needs_review: false,
+    linked_booking_id: linkedBookingId,
     updated_at: new Date().toISOString(),
   };
 

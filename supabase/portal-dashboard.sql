@@ -188,8 +188,8 @@ create table if not exists public.portal_outlook_imports (
   location text,
   notes text,
   sensitivity text,
-  status text not null default 'needs_review',
-  needs_review boolean not null default true,
+  status text not null default 'confirmed',
+  needs_review boolean not null default false,
   client_id uuid references public.portal_clients(id) on delete set null,
   dog_id uuid references public.portal_dogs(id) on delete set null,
   linked_booking_id uuid references public.portal_bookings(id) on delete set null,
@@ -197,6 +197,10 @@ create table if not exists public.portal_outlook_imports (
   updated_at timestamptz not null default now(),
   constraint portal_outlook_imports_valid_time check (ends_at > starts_at)
 );
+
+alter table public.portal_outlook_imports
+  alter column status set default 'confirmed',
+  alter column needs_review set default false;
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -579,7 +583,7 @@ select
   i.location,
   i.status,
   'outlook'::text as source,
-  'needs_review'::text as sync_status,
+  case when i.needs_review then 'needs_review'::text else 'synced'::text end as sync_status,
   i.outlook_event_id,
   i.outlook_web_link,
   i.needs_review,

@@ -2,6 +2,7 @@
 
 import {
   CalendarDays,
+  Check,
   ChevronDown,
   Edit3,
   Filter,
@@ -91,6 +92,8 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
   const [showNewClient, setShowNewClient] = useState(false);
   const [newClient, setNewClient] = useState({ name: "", email: "", phone: "", address: "" });
   const [isSavingClient, setIsSavingClient] = useState(false);
+  const [isCreatingInvite, setIsCreatingInvite] = useState(false);
+  const [inviteUrl, setInviteUrl] = useState("");
 
   const loadClients = useCallback(async () => {
     try {
@@ -178,6 +181,22 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
     setShowNewClient(false);
     await loadClients();
   }
+  async function createInvite() {
+    setClientError(null);
+    setInviteUrl("");
+    setIsCreatingInvite(true);
+    try {
+      const response = await fetch("/api/portal/invites", { method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: "{}" });
+      const payload = (await response.json()) as { inviteUrl?: string; error?: string };
+      if (!response.ok || !payload.inviteUrl) throw new Error(payload.error || "Unable to create the invite link.");
+      setInviteUrl(payload.inviteUrl);
+      await navigator.clipboard.writeText(payload.inviteUrl).catch(() => undefined);
+    } catch (error) {
+      setClientError(error instanceof Error ? error.message : "Unable to create the invite link.");
+    } finally {
+      setIsCreatingInvite(false);
+    }
+  }
   const activeClients = clientRows.filter((client) => client.status === "Active").length;
   const returningClients = clientRows.filter((client) => client.bookings > 1).length;
   const newClients = clientRows.filter((client) => client.joinedDate && new Date(client.joinedDate).getMonth() === new Date().getMonth() && new Date(client.joinedDate).getFullYear() === new Date().getFullYear()).length;
@@ -191,11 +210,13 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
   return (
     <div className="p-5 md:p-10">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-        <div><h1 className="font-serif text-3xl">Clients <PawPrint className="inline size-6 text-[#6c38c2]" /></h1><p className="mt-1 text-sm text-[#6d667a]">Manage your clients and their furry friends.</p></div>
-        <button onClick={() => setShowNewClient(true)} className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25"><Plus className="mr-2 inline size-4" />Add New Client</button>
+        <div><h1 className="font-serif text-3xl">Clients <PawPrint className="inline size-6 text-[#6c38c2]" /></h1><p className="mt-1 text-sm text-[#6d667a]">Create a signup invite first; new clients appear here after registering themselves.</p></div>
+        <div className="flex flex-wrap gap-3"><button onClick={() => void createInvite()} disabled={isCreatingInvite} className="rounded-lg border border-[#4f2c91] bg-white px-6 py-3 text-sm font-semibold text-[#4f2c91] disabled:opacity-60"><UserPlus className="mr-2 inline size-4" />{isCreatingInvite ? "Creating invite…" : "Create signup invite"}</button><button onClick={() => setShowNewClient(true)} className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25"><Plus className="mr-2 inline size-4" />Add New Client</button></div>
       </div>
 
-      {showNewClient && <div className="fixed inset-0 z-50 grid place-items-center bg-[#151124]/45 p-4 backdrop-blur-sm"><form onSubmit={createClient} className="w-full max-w-xl rounded-[1.5rem] bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#6c38c2]">New client</p><h2 className="mt-2 font-serif text-3xl">Save client to Supabase</h2></div><button type="button" onClick={() => setShowNewClient(false)} className="rounded-lg border border-[#151124]/10 p-2"><X className="size-5" /></button></div><div className="mt-6 grid gap-3"><input required value={newClient.name} onChange={(e) => setNewClient((v) => ({ ...v, name: e.target.value }))} placeholder="Full name" className="rounded-lg border px-3 py-2" /><input required type="email" value={newClient.email} onChange={(e) => setNewClient((v) => ({ ...v, email: e.target.value }))} placeholder="Email" className="rounded-lg border px-3 py-2" /><input value={newClient.phone} onChange={(e) => setNewClient((v) => ({ ...v, phone: e.target.value }))} placeholder="Phone" className="rounded-lg border px-3 py-2" /><input value={newClient.address} onChange={(e) => setNewClient((v) => ({ ...v, address: e.target.value }))} placeholder="Address" className="rounded-lg border px-3 py-2" /></div><div className="mt-6 flex justify-end gap-3"><button type="button" onClick={() => setShowNewClient(false)} className="rounded-lg border px-5 py-3 text-sm font-bold">Cancel</button><button disabled={isSavingClient} className="rounded-lg bg-[#4f2c91] px-5 py-3 text-sm font-bold text-white disabled:opacity-60">{isSavingClient ? "Saving…" : "Save to Supabase"}</button></div></form></div>}
+      {inviteUrl && <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm"><p className="flex items-center gap-2 font-semibold text-emerald-800"><Check className="size-4" />Signup invite copied</p><input readOnly value={inviteUrl} onFocus={(event) => event.currentTarget.select()} className="mt-2 w-full bg-transparent text-emerald-900 outline-none" /></div>}
+
+      {showNewClient && <div className="fixed inset-0 z-50 grid place-items-center bg-[#151124]/45 p-4 backdrop-blur-sm"><form onSubmit={createClient} className="w-full max-w-xl rounded-[1.5rem] bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#6c38c2]">New client</p><h2 className="mt-2 font-serif text-3xl">Save client to Supabase</h2></div><button type="button" onClick={() => setShowNewClient(false)} className="rounded-lg border border-[#151124]/10 p-2"><X className="size-5" /></button></div><div className="mt-6 grid gap-3"><input required value={newClient.name} onChange={(e) => setNewClient((v) => ({ ...v, name: e.target.value }))} placeholder="Full name" className="rounded-lg border px-3 py-2" /><input type="email" value={newClient.email} onChange={(e) => setNewClient((v) => ({ ...v, email: e.target.value }))} placeholder="Email (or add a phone number)" className="rounded-lg border px-3 py-2" /><input value={newClient.phone} onChange={(e) => setNewClient((v) => ({ ...v, phone: e.target.value }))} placeholder="Phone in +316… format (or add email)" className="rounded-lg border px-3 py-2" /><input value={newClient.address} onChange={(e) => setNewClient((v) => ({ ...v, address: e.target.value }))} placeholder="Address" className="rounded-lg border px-3 py-2" /></div><div className="mt-6 flex justify-end gap-3"><button type="button" onClick={() => setShowNewClient(false)} className="rounded-lg border px-5 py-3 text-sm font-bold">Cancel</button><button disabled={isSavingClient || (!newClient.email.trim() && !newClient.phone.trim())} className="rounded-lg bg-[#4f2c91] px-5 py-3 text-sm font-bold text-white disabled:opacity-60">{isSavingClient ? "Saving…" : "Save to Supabase"}</button></div></form></div>}
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 2xl:grid-cols-4">
         {clientStats.map(([key, label, Icon, tone]) => (
@@ -239,12 +260,12 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
               <Card className="overflow-hidden">
                 <div className="flex items-start gap-4 p-5"><SupabaseAvatar src={selectedClient.image} alt={`${selectedClient.name} profile`} width={64} height={64} className="size-16 rounded-full object-cover" /><div className="min-w-0 flex-1"><h2 className="font-serif text-xl">{selectedClient.name}</h2><span className="mt-2 inline-block rounded-md bg-green-100 px-3 py-1 text-xs font-medium text-green-700">{selectedClient.status} Client</span><p className="mt-3 text-sm text-[#6d667a]">{selectedClient.email}</p><p className="mt-1 text-sm text-[#6d667a]">{selectedClient.phone}</p></div><button aria-label="Close client details"><X className="size-5 text-[#3c246c]" /></button></div>
                 <div className="grid grid-cols-4 border-y border-[#151124]/10 text-center text-xs font-semibold text-[#4f4863]">{(["Overview", "Dogs", "Bookings", "Notes"] as const).map((tab) => <button key={tab} onClick={() => setActiveTab(tab)} className={`${activeTab === tab ? "border-b-2 border-[#5b2aa0] text-[#5b2aa0]" : ""} py-3`}>{tab}</button>)}</div>
-                <div className="space-y-6 p-5 text-sm"><div className="flex items-center justify-between"><h3 className="font-semibold">Client Information</h3><button onClick={() => setIsEditingClient((value) => !value)} className="font-semibold text-[#5b2aa0]"><Edit3 className="mr-1 inline size-4" />Edit</button></div>{isEditingClient ? <div className="grid gap-3"><input defaultValue={selectedClient.name} onBlur={(event) => void saveClientUpdates(selectedClient.id, { name: event.target.value })} className="rounded-lg border px-3 py-2" /><input defaultValue={selectedClient.email} onBlur={(event) => void saveClientUpdates(selectedClient.id, { email: event.target.value })} className="rounded-lg border px-3 py-2" /><input defaultValue={selectedClient.phone} onBlur={(event) => void saveClientUpdates(selectedClient.id, { phone: event.target.value })} className="rounded-lg border px-3 py-2" /></div> : activeTab === "Overview" ? <><InfoRow icon={MapPin} label="Address" value={selectedClient.address} /><InfoRow icon={CalendarDays} label="Joined" value={formatDisplayDate(selectedClient.joinedDate)} /><InfoRow icon={Mail} label="Preferred Contact" value="Email" /></> : activeTab === "Dogs" ? <InfoRow icon={PawPrint} label="Dogs" value={selectedClient.dogNames} /> : activeTab === "Bookings" ? <><InfoRow icon={CalendarDays} label="Bookings" value={String(selectedClient.bookings)} /><InfoRow icon={CalendarDays} label="Last Booking" value={`${formatDisplayDate(selectedClient.lastBookingDate)}\n${selectedClient.service}`} /></> : <InfoRow icon={StickyNote} label="Notes" value={selectedClient.notes} />}</div>
+                <div className="space-y-6 p-5 text-sm"><div className="flex items-center justify-between"><h3 className="font-semibold">Client Information</h3><button onClick={() => setIsEditingClient((value) => !value)} className="font-semibold text-[#5b2aa0]"><Edit3 className="mr-1 inline size-4" />Edit</button></div>{isEditingClient ? <div className="grid gap-3"><input defaultValue={selectedClient.name} onBlur={(event) => void saveClientUpdates(selectedClient.id, { name: event.target.value })} className="rounded-lg border px-3 py-2" /><input defaultValue={selectedClient.email} onBlur={(event) => void saveClientUpdates(selectedClient.id, { email: event.target.value })} className="rounded-lg border px-3 py-2" /><input defaultValue={selectedClient.phone} onBlur={(event) => void saveClientUpdates(selectedClient.id, { phone: event.target.value })} className="rounded-lg border px-3 py-2" /></div> : activeTab === "Overview" ? <><InfoRow icon={MapPin} label="Address" value={selectedClient.address} /><InfoRow icon={CalendarDays} label="Joined" value={formatDisplayDate(selectedClient.joinedDate)} /><InfoRow icon={Mail} label="Contact" value={`${selectedClient.email}\n${selectedClient.phone}`} /></> : activeTab === "Dogs" ? <InfoRow icon={PawPrint} label="Dogs" value={selectedClient.dogNames} /> : activeTab === "Bookings" ? <><InfoRow icon={CalendarDays} label="Bookings" value={String(selectedClient.bookings)} /><InfoRow icon={CalendarDays} label="Last Booking" value={`${formatDisplayDate(selectedClient.lastBookingDate)}\n${selectedClient.service}`} /></> : <InfoRow icon={StickyNote} label="Notes" value={selectedClient.notes} />}</div>
               </Card>
               <Card className="p-5"><h3 className="font-semibold">Summary</h3><div className="mt-5 space-y-5 text-sm"><InfoRow icon={CalendarDays} label="Total Bookings" value={String(selectedClient.bookings)} /><InfoRow icon={RefreshCw} label="Total Spent" value={selectedClient.spent} /><InfoRow icon={CalendarDays} label="Last Booking" value={`${formatDisplayDate(selectedClient.lastBookingDate)}\n${selectedClient.service}`} /></div></Card>
             </>
           ) : (
-            <Card className="grid min-h-80 place-items-center p-8 text-center text-sm text-[#6d667a]">No live clients found in Supabase yet.</Card>
+            <Card className="grid min-h-80 place-items-center p-8 text-center text-sm text-[#6d667a]">No clients yet. Use “Create signup invite” above and send the copied link to a new client.</Card>
           )}
         </aside>
       </div>
