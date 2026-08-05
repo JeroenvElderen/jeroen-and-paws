@@ -232,6 +232,9 @@ export default function PrivacyPage() {
                   explain any information we must retain for legal, payment,
                   safety, or dispute purposes.
                 </p>
+                <Link className="mt-4 inline-block font-semibold text-[#6d28d9] underline underline-offset-4" href="/delete-account">
+                  View the account deletion instructions
+                </Link>
               </div>
             </PolicySection>
 
