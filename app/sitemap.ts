@@ -11,6 +11,7 @@ const routes = [
   "/about",
   "/contact",
   "/privacy",
+  "/delete-account",
   "/policies",
 ];
 
