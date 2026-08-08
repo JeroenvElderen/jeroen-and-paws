@@ -16,6 +16,7 @@ import {
   Search,
   ShieldCheck,
   Settings,
+  Smartphone,
   Star,
   Users,
 } from "lucide-react";
@@ -32,13 +33,14 @@ import { BackendInvoices } from "./backend-invoices";
 import { BackendPhotoUpdates } from "./backend-photo-updates";
 import { BackendFAQ } from "./backend-faq";
 import { BackendSettings } from "./backend-settings";
+import { BackendMobileApp } from "./backend-mobile-app";
 
 const navGroups = [
   { label: "", items: [["dashboard", Home, "Dashboard"]] },
   { label: "Manage", items: [["bookings", CalendarDays, "Bookings"], ["services", PawPrint, "Services"], ["dogs", Dog, "Dogs"], ["clients", Users, "Clients"], ["calendar", CalendarDays, "Calendar"]] },
   { label: "Business", items: [["invoices", FileText, "Invoices"]] },
   { label: "Content", items: [["photo-updates", ImageIcon, "Photo Updates"], ["reviews", Star, "Reviews"], ["faq", HelpCircle, "FAQ"]] },
-  { label: "Settings", items: [["settings", Settings, "Settings"]] },
+  { label: "Settings", items: [["mobile-app", Smartphone, "Mobile App"], ["settings", Settings, "Settings"]] },
 ] as const;
 
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
@@ -265,10 +267,10 @@ function getViewTitle(activeView: BackendView) {
   return "Dashboard";
 }
 
-export function BackendDashboard() {
+export function BackendDashboard({ initialView = "dashboard" }: { initialView?: BackendView }) {
   const [backendSession, setBackendSession] = useState<BackendSession | null>(null);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const [activeView, setActiveView] = useState<BackendView>("dashboard");
+  const [activeView, setActiveView] = useState<BackendView>(initialView);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const activeTitle = getViewTitle(activeView);
 
@@ -365,6 +367,7 @@ export function BackendDashboard() {
     if (activeView === "photo-updates") return <BackendPhotoUpdates accessToken={backendSession.accessToken} />;
     if (activeView === "faq") return <BackendFAQ />;
     if (activeView === "settings") return <BackendSettings />;
+    if (activeView === "mobile-app") return <BackendMobileApp accessToken={backendSession.accessToken} />;
 
     return <BackendPlaceholder title={activeTitle} />;
   })();
