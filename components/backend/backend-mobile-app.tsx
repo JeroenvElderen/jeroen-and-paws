@@ -73,10 +73,14 @@ export function BackendMobileApp({ accessToken }: { accessToken: string }) {
 function ReleaseForm({ app, saving, onChange, onSave }: { app: MobileApp; saving: boolean; onChange: (values: Partial<MobileApp>) => void; onSave: () => void }) {
   const android = app.platform === "android";
   const destination = preferredMobileAppUrl(app);
+  const visibilityMessage = destination
+    ? "The public download link is visible. The release switch only controls its status label."
+    : `Add an ${android ? "APK or Google Play" : "TestFlight or App Store"} URL to show a public link.`;
   const inputClass = "mt-2 w-full rounded-xl border border-[#151124]/12 bg-white px-4 py-3 outline-none focus:border-[#6c4bb0]";
   return (
     <Card className="p-6 md:p-8">
-      <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#6c4bb0]">{android ? "Android" : "iOS"}</p><h2 className="mt-1 font-serif text-3xl">{android ? "Android" : "iPhone"}</h2></div><label className="flex cursor-pointer items-center gap-3 font-bold"><span>Enabled</span><input type="checkbox" role="switch" checked={app.enabled} onChange={(e) => onChange({ enabled: e.target.checked })} className="size-5" /></label></div>
+      <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#6c4bb0]">{android ? "Android" : "iOS"}</p><h2 className="mt-1 font-serif text-3xl">{android ? "Android" : "iPhone"}</h2></div><label className="flex cursor-pointer items-center gap-3 font-bold"><span>Released</span><input type="checkbox" role="switch" aria-describedby={`${app.platform}-visibility-message`} checked={app.enabled} onChange={(e) => onChange({ enabled: e.target.checked })} className="size-5" /></label></div>
+      <p id={`${app.platform}-visibility-message`} className={`mt-4 rounded-xl px-4 py-3 text-sm font-semibold ${destination ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-900"}`}>{visibilityMessage}</p>
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <Field label="Version"><input className={inputClass} value={app.version} onChange={(e) => onChange({ version: e.target.value })} placeholder="1.0.0" /></Field>
         {android && <Field label="Build Number"><input className={inputClass} type="number" min="0" value={app.build ?? ""} onChange={(e) => onChange({ build: e.target.value === "" ? null : Number(e.target.value) })} /></Field>}

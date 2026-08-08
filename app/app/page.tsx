@@ -39,7 +39,7 @@ export default async function MobileAppPage() {
 
 function ReleaseCard({ app }: { app: MobileApp }) {
   const android = app.platform === "android";
-  const url = app.enabled ? preferredMobileAppUrl(app) : null;
+  const url = preferredMobileAppUrl(app);
   const action = app.store_url ? (android ? "Open Google Play" : "Open App Store") : app.download_url ? (android ? "Download APK" : "Open TestFlight") : "Coming Soon";
   const Icon = android ? Smartphone : Apple;
   return (
