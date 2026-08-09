@@ -12,10 +12,17 @@ export const dynamic = "force-dynamic";
 
 async function getMobileApps() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // This page is rendered on the server, so prefer the service role. That keeps
+  // releases visible even when the public SELECT policy has not been installed
+  // (or was removed) in the deployed Supabase project.
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return [];
   const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-  const { data } = await supabase.from("mobile_app").select("*").order("platform");
+  const { data, error } = await supabase.from("mobile_app").select("*").order("platform");
+  if (error) {
+    console.error("Unable to load mobile app releases:", error.message);
+    return [];
+  }
   return (data ?? []) as MobileApp[];
 }
 
