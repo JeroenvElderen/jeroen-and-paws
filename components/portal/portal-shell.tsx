@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, CircleHelp, FileText, Home, ImageIcon, LogOut, PawPrint, Phone, ShieldCheck, User, UserPlus } from "lucide-react";
+import { CalendarDays, CircleHelp, FileText, Home, ImageIcon, LogOut, PawPrint, Phone, ShieldCheck, Smartphone, User, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ const navItems = [
   ["photos", ImageIcon, "Session Galleries"],
   ["invoices", FileText, "Invoices"],
   ["profile", User, "Profile"],
+  ["app", Smartphone, "App"],
   ["faq", CircleHelp, "FAQ"],
 ] as const;
 
@@ -282,6 +283,19 @@ export function PortalShell({ inviteCode = "" }: { inviteCode?: string }) {
             {navItems.map(([key, Icon, label]) => {
               const isActive = activeView === key;
 
+              if (key === "app") {
+                return (
+                  <Link
+                    key={key}
+                    href="/app"
+                    className="group flex items-center gap-4 rounded-xl px-5 py-4 text-left text-sm font-bold text-[#f5e9d5]/85 transition hover:bg-white/[0.06] hover:text-white"
+                  >
+                    <Icon aria-hidden="true" className="size-5 text-[#c4b5fd] transition group-hover:scale-105" />
+                    {label}
+                  </Link>
+                );
+              }
+
               return (
                 <button
                   key={key}
@@ -329,6 +343,19 @@ export function PortalShell({ inviteCode = "" }: { inviteCode?: string }) {
             <div className="flex gap-2 overflow-x-auto pb-1">
               {navItems.map(([key, Icon, label]) => {
                 const isActive = activeView === key;
+
+                if (key === "app") {
+                  return (
+                    <Link
+                      key={key}
+                      href="/app"
+                      className="flex shrink-0 items-center gap-2 rounded-full border border-[#24163f]/10 bg-white px-4 py-2 text-xs font-bold text-[#3a3048] transition"
+                    >
+                      <Icon aria-hidden="true" className="size-4 text-[#4d2e91]" />
+                      {label}
+                    </Link>
+                  );
+                }
 
                 return (
                   <button
