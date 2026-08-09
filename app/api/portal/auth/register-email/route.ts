@@ -3,10 +3,20 @@ import { z } from "zod";
 
 import { renderConfirmationEmail } from "@/utils/confirmation-email-template";
 import { generateEmailSignupLink, hashSensitiveValue } from "@/utils/portal-phone-auth";
+import { getEmailRegistrationError } from "@/utils/portal-registration-error";
 import { sendResendEmail } from "@/utils/resend-email";
 import { supabaseAdmin } from "@/utils/supabase-admin";
 
 const schema = z.object({ inviteCode: z.string().trim().min(8), fullName: z.string().trim().min(1).max(120), email: z.string().trim().email(), password: z.string().min(8).max(128), redirectTo: z.string().url() });
+
+function registrationErrorResponse(error: unknown) {
+  if (error instanceof z.ZodError) {
+    return NextResponse.json({ error: error.issues[0]?.message }, { status: 400 });
+  }
+
+  const response = getEmailRegistrationError(error);
+  return NextResponse.json({ error: response.message }, { status: response.status });
+}
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +27,8 @@ export async function POST(request: Request) {
     const { count, error: rateError } = await supabaseAdmin.from("portal_registration_attempts").select("id", { count: "exact", head: true }).eq("ip_hash", ipHash).gte("created_at", since);
     if (rateError) throw rateError;
     if ((count ?? 0) >= 10) return NextResponse.json({ error: "Too many attempts. Wait 10 minutes and try again." }, { status: 429 });
-    const { data: invite } = await supabaseAdmin.from("portal_invites").select("id,expires_at,used_at").eq("code", input.inviteCode).maybeSingle();
+    const { data: invite, error: inviteError } = await supabaseAdmin.from("portal_invites").select("id,expires_at,used_at").eq("code", input.inviteCode).maybeSingle();
+    if (inviteError) throw inviteError;
     if (!invite || invite.used_at || new Date(invite.expires_at) <= new Date()) return NextResponse.json({ error: "This invite is invalid, expired, or already used." }, { status: 400 });
     const { error: attemptError } = await supabaseAdmin.from("portal_registration_attempts").insert({ invite_id: invite.id, ip_hash: ipHash });
     if (attemptError) throw attemptError;
@@ -39,6 +50,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Portal email registration failed", { error });
-    return NextResponse.json({ error: error instanceof z.ZodError ? error.issues[0]?.message : "Unable to create the account right now." }, { status: 400 });
+    return registrationErrorResponse(error);
   }
 }

@@ -7,11 +7,18 @@ export const metadata = {
     "A warm customer portal concept for Jeroen & Paws to view bookings, care updates, photos, invoices, and keepsakes.",
 };
 
-export default function PortalPage() {
+export default async function PortalPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ invite?: string | string[] }>;
+}) {
+  const invite = (await searchParams).invite;
+  const inviteCode = typeof invite === "string" ? invite : "";
+
   return (
     <>
       <Header activePage="portal" />
-      <PortalShell />
+      <PortalShell inviteCode={inviteCode} />
     </>
   );
 }
