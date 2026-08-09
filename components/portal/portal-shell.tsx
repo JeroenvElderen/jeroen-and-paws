@@ -104,12 +104,10 @@ async function refreshPortalSession(session: PortalSession) {
   } satisfies PortalSession;
 }
 
-function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: PortalSession) => void }) {
-  const initialInviteCode = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("invite") || "" : "";
-  const hasInvite = Boolean(initialInviteCode);
-  const [mode, setMode] = useState<"signup" | "login">(initialInviteCode ? "signup" : "login");
+function PortalAuthPrompt({ inviteCode, onAuthenticated }: { inviteCode: string; onAuthenticated: (session: PortalSession) => void }) {
+  const hasInvite = Boolean(inviteCode);
+  const [mode, setMode] = useState<"signup" | "login">(inviteCode ? "signup" : "login");
   const [registrationMethod, setRegistrationMethod] = useState<"phone" | "email">("phone");
-  const [inviteCode] = useState(initialInviteCode);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -206,7 +204,7 @@ function PlaceholderView({ title }: { title: string }) {
   );
 }
 
-export function PortalShell() {
+export function PortalShell({ inviteCode = "" }: { inviteCode?: string }) {
   const [portalSession, setPortalSession] = useState<PortalSession | null>(null);
   const [activeView, setActiveView] = useState<PortalView>("dashboard");
 
@@ -255,7 +253,7 @@ export function PortalShell() {
   }, [activeView]);
 
   if (!portalSession) {
-    return <PortalAuthPrompt onAuthenticated={setPortalSession} />;
+    return <PortalAuthPrompt inviteCode={inviteCode} onAuthenticated={setPortalSession} />;
   }
 
   const ActiveContent = (() => {
