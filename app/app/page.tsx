@@ -123,6 +123,7 @@ function ReleaseCard({ app }: { app: MobileApp }) {
   const android = app.platform === "android";
   const url = preferredMobileAppUrl(app);
   const directDownload = android && !app.store_url;
+  const actionUrl = directDownload && app.download_url ? "/app/download/android" : url;
   const action = app.store_url ? (android ? "Get it on Google Play" : "Open the App Store") : app.download_url ? (android ? "Download Android APK" : "Open TestFlight") : "Coming soon";
   const Icon = android ? Smartphone : Apple;
 
@@ -142,8 +143,8 @@ function ReleaseCard({ app }: { app: MobileApp }) {
         <p className="text-xs font-black uppercase tracking-[.16em] text-[#a78bfa]">What&apos;s new</p>
         <p className="mt-3 whitespace-pre-wrap leading-7 text-[#b9aa99]">{app.release_notes || "The latest improvements and fixes are included in this release."}</p>
       </div>
-      {url ? (
-        <a href={url} target="_blank" rel="noopener noreferrer" className="motion-button mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-[#8b5cf6] px-6 py-4 font-black text-white shadow-lg shadow-[#8b5cf6]/20">
+      {actionUrl ? (
+        <a href={actionUrl} {...(!directDownload && { target: "_blank", rel: "noopener noreferrer" })} className="motion-button mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-[#8b5cf6] px-6 py-4 font-black text-white shadow-lg shadow-[#8b5cf6]/20">
           {directDownload ? <Download className="size-5" /> : <ExternalLink className="size-5" />}{action}
         </a>
       ) : (
