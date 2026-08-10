@@ -2,10 +2,20 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { supabaseAdmin } from "@/utils/supabase-admin";
+import { createPortalRegistrationCode } from "@/utils/portal-registration-code";
 
 export const runtime = "nodejs";
 const backendAdminEmail = "jeroen@jeroenandpaws.com";
-const inviteSchema = z.object({});
+const inviteSchema = z.object({
+  dogNames: z.string().trim().min(1, "Enter at least one dog name.").max(100).refine((value) => {
+    try {
+      createPortalRegistrationCode(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }, "Enter at least one dog name using letters or numbers."),
+});
 type SupabaseAuthUser = { email?: string; user?: { email?: string } };
 
 async function isBackendAdmin(request: Request) {
@@ -24,9 +34,10 @@ export async function POST(request: Request) {
   const payload = inviteSchema.safeParse(await request.json().catch(() => null));
   if (!payload.success) return NextResponse.json({ error: payload.error.issues[0]?.message || "Invalid invite request." }, { status: 400 });
 
-  const { data: invite, error: inviteError } = await supabaseAdmin.from("portal_invites").insert({}).select("code,expires_at").single();
+  const code = createPortalRegistrationCode(payload.data.dogNames);
+  const { data: invite, error: inviteError } = await supabaseAdmin.from("portal_invites").insert({ code }).select("code,expires_at").single();
+  if (inviteError?.code === "23505") return NextResponse.json({ error: "A registration code for these dog names already exists." }, { status: 409 });
   if (inviteError) return NextResponse.json({ error: inviteError.message }, { status: 502 });
 
-  const origin = new URL(request.url).origin;
-  return NextResponse.json({ inviteUrl: `${origin}/portal?invite=${encodeURIComponent(invite.code)}`, expiresAt: invite.expires_at }, { status: 201 });
+  return NextResponse.json({ code: invite.code, expiresAt: invite.expires_at }, { status: 201 });
 }

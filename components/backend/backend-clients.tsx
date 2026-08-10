@@ -92,8 +92,9 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
   const [showNewClient, setShowNewClient] = useState(false);
   const [newClient, setNewClient] = useState({ name: "", email: "", phone: "", address: "" });
   const [isSavingClient, setIsSavingClient] = useState(false);
-  const [isCreatingInvite, setIsCreatingInvite] = useState(false);
-  const [inviteUrl, setInviteUrl] = useState("");
+  const [isCreatingCode, setIsCreatingCode] = useState(false);
+  const [dogNamesForCode, setDogNamesForCode] = useState("");
+  const [registrationCode, setRegistrationCode] = useState("");
 
   const loadClients = useCallback(async () => {
     try {
@@ -181,20 +182,20 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
     setShowNewClient(false);
     await loadClients();
   }
-  async function createInvite() {
+  async function createRegistrationCode() {
     setClientError(null);
-    setInviteUrl("");
-    setIsCreatingInvite(true);
+    setRegistrationCode("");
+    setIsCreatingCode(true);
     try {
-      const response = await fetch("/api/portal/invites", { method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: "{}" });
-      const payload = (await response.json()) as { inviteUrl?: string; error?: string };
-      if (!response.ok || !payload.inviteUrl) throw new Error(payload.error || "Unable to create the invite link.");
-      setInviteUrl(payload.inviteUrl);
-      await navigator.clipboard.writeText(payload.inviteUrl).catch(() => undefined);
+      const response = await fetch("/api/portal/invites", { method: "POST", headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ dogNames: dogNamesForCode }) });
+      const payload = (await response.json()) as { code?: string; error?: string };
+      if (!response.ok || !payload.code) throw new Error(payload.error || "Unable to create the registration code.");
+      setRegistrationCode(payload.code);
+      await navigator.clipboard.writeText(payload.code).catch(() => undefined);
     } catch (error) {
-      setClientError(error instanceof Error ? error.message : "Unable to create the invite link.");
+      setClientError(error instanceof Error ? error.message : "Unable to create the registration code.");
     } finally {
-      setIsCreatingInvite(false);
+      setIsCreatingCode(false);
     }
   }
   const activeClients = clientRows.filter((client) => client.status === "Active").length;
@@ -210,11 +211,11 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
   return (
     <div className="p-5 md:p-10">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-        <div><h1 className="font-serif text-3xl">Clients <PawPrint className="inline size-6 text-[#6c38c2]" /></h1><p className="mt-1 text-sm text-[#6d667a]">Create a signup invite first; new clients appear here after registering themselves.</p></div>
-        <div className="flex flex-wrap gap-3"><button onClick={() => void createInvite()} disabled={isCreatingInvite} className="rounded-lg border border-[#4f2c91] bg-white px-6 py-3 text-sm font-semibold text-[#4f2c91] disabled:opacity-60"><UserPlus className="mr-2 inline size-4" />{isCreatingInvite ? "Creating invite…" : "Create signup invite"}</button><button onClick={() => setShowNewClient(true)} className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25"><Plus className="mr-2 inline size-4" />Add New Client</button></div>
+        <div><h1 className="font-serif text-3xl">Clients <PawPrint className="inline size-6 text-[#6c38c2]" /></h1><p className="mt-1 text-sm text-[#6d667a]">Generate a single-use registration code; new clients enter it when creating their account.</p></div>
+        <div className="flex flex-wrap gap-3"><input aria-label="Dog names for registration code" value={dogNamesForCode} onChange={(event) => setDogNamesForCode(event.target.value)} placeholder="Dog names (e.g. Luna, Max)" className="rounded-lg border border-[#151124]/10 bg-white px-4 py-3 text-sm outline-none focus:border-[#4f2c91]" /><button onClick={() => void createRegistrationCode()} disabled={isCreatingCode || !dogNamesForCode.trim()} className="rounded-lg border border-[#4f2c91] bg-white px-6 py-3 text-sm font-semibold text-[#4f2c91] disabled:opacity-60"><UserPlus className="mr-2 inline size-4" />{isCreatingCode ? "Generating…" : "Generate code"}</button><button onClick={() => setShowNewClient(true)} className="rounded-lg bg-[#4f2c91] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#4f2c91]/25"><Plus className="mr-2 inline size-4" />Add New Client</button></div>
       </div>
 
-      {inviteUrl && <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm"><p className="flex items-center gap-2 font-semibold text-emerald-800"><Check className="size-4" />Signup invite copied</p><input readOnly value={inviteUrl} onFocus={(event) => event.currentTarget.select()} className="mt-2 w-full bg-transparent text-emerald-900 outline-none" /></div>}
+      {registrationCode && <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm"><p className="flex items-center gap-2 font-semibold text-emerald-800"><Check className="size-4" />Registration code generated and copied</p><p className="mt-1 text-emerald-800">Send this code to the client. They can enter it on the portal registration form.</p><input readOnly value={registrationCode} onFocus={(event) => event.currentTarget.select()} className="mt-2 w-full bg-transparent font-mono text-base font-bold text-emerald-900 outline-none" /></div>}
 
       {showNewClient && <div className="fixed inset-0 z-50 grid place-items-center bg-[#151124]/45 p-4 backdrop-blur-sm"><form onSubmit={createClient} className="w-full max-w-xl rounded-[1.5rem] bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-[0.18em] text-[#6c38c2]">New client</p><h2 className="mt-2 font-serif text-3xl">Save client to Supabase</h2></div><button type="button" onClick={() => setShowNewClient(false)} className="rounded-lg border border-[#151124]/10 p-2"><X className="size-5" /></button></div><div className="mt-6 grid gap-3"><input required value={newClient.name} onChange={(e) => setNewClient((v) => ({ ...v, name: e.target.value }))} placeholder="Full name" className="rounded-lg border px-3 py-2" /><input type="email" value={newClient.email} onChange={(e) => setNewClient((v) => ({ ...v, email: e.target.value }))} placeholder="Email (or add a phone number)" className="rounded-lg border px-3 py-2" /><input value={newClient.phone} onChange={(e) => setNewClient((v) => ({ ...v, phone: e.target.value }))} placeholder="Phone in +316… format (or add email)" className="rounded-lg border px-3 py-2" /><input value={newClient.address} onChange={(e) => setNewClient((v) => ({ ...v, address: e.target.value }))} placeholder="Address" className="rounded-lg border px-3 py-2" /></div><div className="mt-6 flex justify-end gap-3"><button type="button" onClick={() => setShowNewClient(false)} className="rounded-lg border px-5 py-3 text-sm font-bold">Cancel</button><button disabled={isSavingClient || (!newClient.email.trim() && !newClient.phone.trim())} className="rounded-lg bg-[#4f2c91] px-5 py-3 text-sm font-bold text-white disabled:opacity-60">{isSavingClient ? "Saving…" : "Save to Supabase"}</button></div></form></div>}
 
@@ -265,7 +266,7 @@ export function BackendClients({ accessToken }: { accessToken: string }) {
               <Card className="p-5"><h3 className="font-semibold">Summary</h3><div className="mt-5 space-y-5 text-sm"><InfoRow icon={CalendarDays} label="Total Bookings" value={String(selectedClient.bookings)} /><InfoRow icon={RefreshCw} label="Total Spent" value={selectedClient.spent} /><InfoRow icon={CalendarDays} label="Last Booking" value={`${formatDisplayDate(selectedClient.lastBookingDate)}\n${selectedClient.service}`} /></div></Card>
             </>
           ) : (
-            <Card className="grid min-h-80 place-items-center p-8 text-center text-sm text-[#6d667a]">No clients yet. Use “Create signup invite” above and send the copied link to a new client.</Card>
+            <Card className="grid min-h-80 place-items-center p-8 text-center text-sm text-[#6d667a]">No clients yet. Generate a registration code above and send the copied code to a new client.</Card>
           )}
         </aside>
       </div>
