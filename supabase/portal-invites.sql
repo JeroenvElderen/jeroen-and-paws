@@ -1,4 +1,4 @@
--- Invite-only self-registration for new Jeroen & Paws portal clients.
+-- Code-only self-registration for new Jeroen & Paws portal clients.
 -- Run this after supabase/portal-dashboard.sql in the Supabase SQL editor.
 
 create extension if not exists pgcrypto;
@@ -127,5 +127,5 @@ begin
 end;
 $$;
 
--- Example: create a generic single-use signup invite.
--- insert into public.portal_invites default values returning code, expires_at;
+-- Registration codes are generated in the backend in the form
+-- DOGNAMES-Jeroen&Paws-YEAR and remain single-use.

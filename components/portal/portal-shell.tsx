@@ -105,9 +105,9 @@ async function refreshPortalSession(session: PortalSession) {
   } satisfies PortalSession;
 }
 
-function PortalAuthPrompt({ inviteCode, onAuthenticated }: { inviteCode: string; onAuthenticated: (session: PortalSession) => void }) {
-  const hasInvite = Boolean(inviteCode);
-  const [mode, setMode] = useState<"signup" | "login">(inviteCode ? "signup" : "login");
+function PortalAuthPrompt({ onAuthenticated }: { onAuthenticated: (session: PortalSession) => void }) {
+  const [mode, setMode] = useState<"signup" | "login">("login");
+  const [inviteCode, setInviteCode] = useState("");
   const [registrationMethod, setRegistrationMethod] = useState<"phone" | "email">("phone");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -168,13 +168,13 @@ function PortalAuthPrompt({ inviteCode, onAuthenticated }: { inviteCode: string;
   }
 
   return <main className="min-h-screen bg-[#f7f4ef] p-3 text-[#1d1728] sm:p-4"><section className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-[94rem] overflow-hidden rounded-[2rem] bg-white shadow-[0_22px_80px_rgba(29,23,40,0.12)] lg:grid-cols-[1.05fr_1fr]">
-    <div className="relative hidden min-h-[48rem] overflow-hidden bg-[#171406] text-white lg:block"><Image src="/images/dogs/walk.jpeg" alt="Dog walking on a woodland path" fill sizes="50vw" className="object-cover" priority /><div className="absolute inset-0 bg-[#151303]/55" /><div className="absolute inset-0 px-12 py-10"><Link href="/" className="font-serif text-4xl text-white">Jeroen<br />And Paws <PawPrint className="ml-2 inline size-6 text-[#c4a7ff]" /></Link><p className="mt-24 font-serif text-6xl leading-tight">Happy dogs,<br />better lives. <span className="text-[#c4a7ff]">♡</span></p><div className="mt-12 space-y-5"><p className="flex items-center gap-4 text-lg"><ShieldCheck className="size-7 text-[#c4a7ff]" />Private invite-only registration</p><p className="flex items-center gap-4 text-lg"><Phone className="size-7 text-[#c4a7ff]" />Register with phone or email</p></div></div></div>
+    <div className="relative hidden min-h-[48rem] overflow-hidden bg-[#171406] text-white lg:block"><Image src="/images/dogs/walk.jpeg" alt="Dog walking on a woodland path" fill sizes="50vw" className="object-cover" priority /><div className="absolute inset-0 bg-[#151303]/55" /><div className="absolute inset-0 px-12 py-10"><Link href="/" className="font-serif text-4xl text-white">Jeroen<br />And Paws <PawPrint className="ml-2 inline size-6 text-[#c4a7ff]" /></Link><p className="mt-24 font-serif text-6xl leading-tight">Happy dogs,<br />better lives. <span className="text-[#c4a7ff]">♡</span></p><div className="mt-12 space-y-5"><p className="flex items-center gap-4 text-lg"><ShieldCheck className="size-7 text-[#c4a7ff]" />Private registration codes</p><p className="flex items-center gap-4 text-lg"><Phone className="size-7 text-[#c4a7ff]" />Register with phone or email</p></div></div></div>
     <div className="flex min-h-[48rem] items-center px-6 py-10 sm:px-10 lg:px-20"><div className="mx-auto w-full max-w-xl">
-      {!challengeId && hasInvite && <div className="grid grid-cols-2 border-b text-center"><button type="button" onClick={() => setMode("signup")} className={`pb-5 text-lg font-bold ${mode === "signup" ? "border-b-4 border-[#4c1d95] text-[#4c1d95]" : "text-[#6f687a]"}`}><UserPlus className="mx-auto mb-2 size-7" />Register</button><button type="button" onClick={() => setMode("login")} className={`pb-5 text-lg font-bold ${mode === "login" ? "border-b-4 border-[#4c1d95] text-[#4c1d95]" : "text-[#6f687a]"}`}><PawPrint className="mx-auto mb-2 size-7" />Log in</button></div>}
+      {!challengeId && <div className="grid grid-cols-2 border-b text-center"><button type="button" onClick={() => setMode("signup")} className={`pb-5 text-lg font-bold ${mode === "signup" ? "border-b-4 border-[#4c1d95] text-[#4c1d95]" : "text-[#6f687a]"}`}><UserPlus className="mx-auto mb-2 size-7" />Register</button><button type="button" onClick={() => setMode("login")} className={`pb-5 text-lg font-bold ${mode === "login" ? "border-b-4 border-[#4c1d95] text-[#4c1d95]" : "text-[#6f687a]"}`}><PawPrint className="mx-auto mb-2 size-7" />Log in</button></div>}
       <h1 className="mt-10 font-serif text-4xl text-[#151b36]">{challengeId ? "Verify your phone" : mode === "signup" ? "Create your account" : "Welcome back"} <span className="text-[#9b5fd4]">♡</span></h1>
       {!challengeId && mode === "signup" && <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-[#f7f4fb] p-1"><button type="button" onClick={() => setRegistrationMethod("phone")} className={`rounded-lg p-3 font-bold ${registrationMethod === "phone" ? "bg-white text-[#4c1d95] shadow" : "text-[#6f687a]"}`}>Phone + password</button><button type="button" onClick={() => setRegistrationMethod("email")} className={`rounded-lg p-3 font-bold ${registrationMethod === "email" ? "bg-white text-[#4c1d95] shadow" : "text-[#6f687a]"}`}>Email + password</button></div>}
       <form onSubmit={challengeId ? verifyCode : submit} className="mt-7 space-y-4">
-        {!challengeId && mode === "signup" && <Field label="Full name" value={fullName} onChange={setFullName} placeholder="Your full name" />}
+        {!challengeId && mode === "signup" && <><Field label="Registration code" value={inviteCode} onChange={setInviteCode} placeholder="DOGNAMES-Jeroen&Paws-2026" /><Field label="Full name" value={fullName} onChange={setFullName} placeholder="Your full name" /></>}
         {!challengeId && mode === "signup" && registrationMethod === "phone" && <><Field label="Phone number" value={phone} onChange={setPhone} placeholder="+31612345678" type="tel" /><Field label="Email address (optional)" value={email} onChange={setEmail} placeholder="you@example.com" type="email" /></>}
         {!challengeId && mode === "signup" && registrationMethod === "email" && <Field label="Email address" value={email} onChange={setEmail} placeholder="you@example.com" type="email" />}
         {!challengeId && mode === "login" && <Field label="Phone number or email" value={loginIdentifier} onChange={setLoginIdentifier} placeholder="+316… or you@example.com" />}
@@ -205,7 +205,7 @@ function PlaceholderView({ title }: { title: string }) {
   );
 }
 
-export function PortalShell({ inviteCode = "" }: { inviteCode?: string }) {
+export function PortalShell() {
   const [portalSession, setPortalSession] = useState<PortalSession | null>(null);
   const [activeView, setActiveView] = useState<PortalView>("dashboard");
 
@@ -254,7 +254,7 @@ export function PortalShell({ inviteCode = "" }: { inviteCode?: string }) {
   }, [activeView]);
 
   if (!portalSession) {
-    return <PortalAuthPrompt inviteCode={inviteCode} onAuthenticated={setPortalSession} />;
+    return <PortalAuthPrompt onAuthenticated={setPortalSession} />;
   }
 
   const ActiveContent = (() => {
