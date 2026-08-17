@@ -46,29 +46,32 @@ export async function POST(request: Request) {
   if (clientError) return NextResponse.json({ error: "Your portal profile could not be checked." }, { status: 502 });
   if (!client) return NextResponse.json({ error: "Your portal profile could not be found." }, { status: 404 });
 
-  const form = await request.formData();
-  const file = form.get("image");
-  const folder = form.get("folder");
-  if (!(file instanceof File) || !file.size) return NextResponse.json({ error: "Please choose an image to upload." }, { status: 400 });
-  if (folder !== "avatars" && folder !== "dogs") return NextResponse.json({ error: "Invalid image folder." }, { status: 400 });
-  if (!file.type.startsWith("image/")) return NextResponse.json({ error: "Please choose an image file." }, { status: 400 });
-  if (file.size > maximumImageSize) return NextResponse.json({ error: "Please choose an image smaller than 15 MB." }, { status: 413 });
+  const body = (await request.json().catch(() => null)) as { folder?: unknown; fileName?: unknown; fileType?: unknown; fileSize?: unknown } | null;
+  const folder = body?.folder;
+  const fileName = body?.fileName;
+  const fileType = body?.fileType;
+  const fileSize = body?.fileSize;
 
-  const extension = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+  if (folder !== "avatars" && folder !== "dogs") return NextResponse.json({ error: "Invalid image folder." }, { status: 400 });
+  if (typeof fileName !== "string" || !fileName.trim() || typeof fileSize !== "number" || !Number.isFinite(fileSize) || fileSize <= 0) {
+    return NextResponse.json({ error: "Please choose an image to upload." }, { status: 400 });
+  }
+  if (typeof fileType !== "string" || !fileType.startsWith("image/")) return NextResponse.json({ error: "Please choose an image file." }, { status: 400 });
+  if (fileSize > maximumImageSize) return NextResponse.json({ error: "Please choose an image smaller than 15 MB." }, { status: 413 });
+
+  const extension = fileName.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
   const path = `${folder}/${client.id}/${crypto.randomUUID()}.${extension}`;
 
   try {
     await ensureStorageBucket();
-    const { error } = await supabaseAdmin.storage.from(storageBucket).upload(path, Buffer.from(await file.arrayBuffer()), {
-      contentType: file.type,
-      upsert: false,
-    });
+    const { data, error } = await supabaseAdmin.storage.from(storageBucket).createSignedUploadUrl(path);
     if (error) throw error;
+    if (!data?.token) throw new Error("Supabase did not return a signed upload token.");
 
     const publicUrl = supabaseAdmin.storage.from(storageBucket).getPublicUrl(path).data.publicUrl;
-    return NextResponse.json({ publicUrl }, { status: 201 });
+    return NextResponse.json({ path, token: data.token, publicUrl }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to upload image.";
+    const message = error instanceof Error ? error.message : "Unable to prepare the image upload.";
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }
