@@ -162,30 +162,30 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
     return `Your changes could not be saved (${response.status}). Please try again or contact Jeroen.`;
   }
 
-  async function uploadPortalImage(config: { url: string; key: string; accessToken: string }, file: File, folder: "avatars" | "dogs") {
+  async function uploadPortalImage(config: { accessToken: string }, file: File, folder: "avatars" | "dogs") {
     if (!file.size) return null;
     if (!file.type.startsWith("image/")) {
       throw new Error("Please choose an image file.");
     }
 
-    const extension = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-    const objectPath = `${folder}/${crypto.randomUUID()}.${extension}`;
-    const response = await fetch(`${config.url}/storage/v1/object/portal-images/${objectPath}`, {
+    const upload = new FormData();
+    upload.set("image", file);
+    upload.set("folder", folder);
+    const response = await fetch("/api/portal/images", {
       method: "POST",
       headers: {
-        apikey: config.key,
         Authorization: `Bearer ${config.accessToken}`,
-        "Content-Type": file.type || "application/octet-stream",
-        "x-upsert": "true",
       },
-      body: file,
+      body: upload,
     });
 
     if (!response.ok) {
-      throw new Error("Unable to upload image. Please try again.");
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      throw new Error(payload?.error || "Unable to upload image. Please try again.");
     }
 
-    return `${config.url}/storage/v1/object/public/portal-images/${objectPath}`;
+    const payload = (await response.json()) as { publicUrl: string };
+    return payload.publicUrl;
   }
 
   async function saveProfile(event: React.FormEvent<HTMLFormElement>) {
