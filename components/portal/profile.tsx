@@ -1,5 +1,6 @@
 "use client";
 
+import { createClient } from "@supabase/supabase-js";
 import {
   CalendarDays,
   Edit3,
@@ -51,6 +52,7 @@ const profileFallback: ProfileData = { profile: null, activity: [] };
 const profileRealtimeTables = ["portal_clients", "portal_dogs", "portal_client_activity"];
 const dogFallback: DogRow[] = [];
 const dogRealtimeTables = ["portal_dogs"];
+const maximumImageSize = 15 * 1024 * 1024;
 
 function mapProfileRows(rows: unknown): ProfileData {
   const list = Array.isArray(rows) ? (rows as (ProfileRow & { recent_activity: ActivityRow[] | null })[]) : [];
@@ -162,29 +164,36 @@ export function Profile({ accessToken, onBackToDashboard }: { accessToken?: stri
     return `Your changes could not be saved (${response.status}). Please try again or contact Jeroen.`;
   }
 
-  async function uploadPortalImage(config: { accessToken: string }, file: File, folder: "avatars" | "dogs") {
+  async function uploadPortalImage(config: { url: string; key: string; accessToken: string }, file: File, folder: "avatars" | "dogs") {
     if (!file.size) return null;
     if (!file.type.startsWith("image/")) {
       throw new Error("Please choose an image file.");
     }
+    if (file.size > maximumImageSize) {
+      throw new Error("Please choose an image smaller than 15 MB.");
+    }
 
-    const upload = new FormData();
-    upload.set("image", file);
-    upload.set("folder", folder);
     const response = await fetch("/api/portal/images", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${config.accessToken}`,
+        "Content-Type": "application/json",
       },
-      body: upload,
+      body: JSON.stringify({ folder, fileName: file.name, fileType: file.type, fileSize: file.size }),
     });
 
+    const payload = (await response.json().catch(() => null)) as { path?: string; token?: string; publicUrl?: string; error?: string } | null;
     if (!response.ok) {
-      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
       throw new Error(payload?.error || "Unable to upload image. Please try again.");
     }
+    if (!payload?.path || !payload.token || !payload.publicUrl) {
+      throw new Error("Unable to prepare the image upload. Please try again.");
+    }
 
-    const payload = (await response.json()) as { publicUrl: string };
+    const supabase = createClient(config.url, config.key, { auth: { persistSession: false, autoRefreshToken: false } });
+    const { error: uploadError } = await supabase.storage.from("portal-images").uploadToSignedUrl(payload.path, payload.token, file, { contentType: file.type });
+    if (uploadError) throw new Error(`Unable to upload image: ${uploadError.message}`);
+
     return payload.publicUrl;
   }
 
